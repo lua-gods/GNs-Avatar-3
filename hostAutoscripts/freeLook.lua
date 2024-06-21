@@ -29,8 +29,7 @@ end
 
 events.MOUSE_MOVE:register(function (x, y)
    if active then
-		if renderer:isCameraBackwards() then y = -y end
-      offset.x = offset.x + x * SENSITIVITY * zoom
+      offset.x = offset.x + x * SENSITIVITY * ((zoom - 1) * math.pow(1 - math.abs(client:getCameraDir().y),0.05) + 1)
       offset.y = offset.y + y * SENSITIVITY * zoom
       renderer:offsetCameraRot(offset.y,offset.x) -- mineccraft flipped them
       return true
