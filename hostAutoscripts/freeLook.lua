@@ -29,7 +29,7 @@ end
 
 events.MOUSE_MOVE:register(function (x, y)
    if active then
-      offset.x = offset.x + x * SENSITIVITY * ((zoom - 1) * math.pow(1 - math.abs(client:getCameraDir().y),0.05) + 1)
+      offset.x = offset.x + x * SENSITIVITY * ((zoom - 1) * math.pow(1 - math.abs(client:getCameraDir().y),zoom / 2) + 1) -- reduce the sensitivity based on the X rotation of the camera
       offset.y = offset.y + y * SENSITIVITY * zoom
       renderer:offsetCameraRot(offset.y,offset.x) -- mineccraft flipped them
       return true
