@@ -1,7 +1,11 @@
 local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 
-local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vectors.vec3(1,1,1)):setPixel(1,1,vectors.vec3(0,0,0))
+local debug_texture = textures['gnui_debug_outline'] or 
+textures:newTexture("gnui_debug_outline",6,6)
+:fill(0,0,6,6,vectors.vec3())
+:fill(1,1,4,4,vectors.vec3(1,1,1))
+:fill(2,2,2,2,vectors.vec3())
 local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
@@ -71,7 +75,7 @@ function container.new()
    -->==========[ Internals ]==========<--
    local debug_container 
    if core.debug_visible then
-      debug_container  = sprite.new():setModelpart(new.ModelPart):setTexture(debug_texture):setBorderThickness(1,1,1,1):setRenderType("EMISSIVE_SOLID"):setScale(core.debug_scale):setColor(1,1,1):excludeMiddle(true)
+      debug_container  = sprite.new():setModelpart(new.ModelPart):setTexture(debug_texture):setRenderType("EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(core.debug_scale):setColor(1,1,1):excludeMiddle(true)
       new.MOUSE_PRESSENCE_CHANGED:register(function (h)
          debug_container:setColor(1,1,h and 0.25 or 1)
       end)
