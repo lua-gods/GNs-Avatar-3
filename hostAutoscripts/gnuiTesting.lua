@@ -14,3 +14,5 @@ local container = fake_screen:newContainer()
 container
 :setDimensions(5,5,-5,-5)
 :setAnchor(0,0,1,1)
+:setCustomMinimumSize(64,64)
+:setGrowDirection(-1,-1)

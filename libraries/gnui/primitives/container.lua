@@ -33,7 +33,7 @@ local core = require("libraries.gnui.core")
 ---@field isClipping boolean               # `true` when the container is touching outside the parent's container.
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
 ---@field CustomMinimumSize Vector2        # Minimum size that the container will use.
----@field TheoreticalMinimumSize Vector2   # The minimum size that the container can use, set by the container itself.
+---@field SystemMinimumSize Vector2   # The minimum size that the container can use, set by the container itself.
 ---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
 local container = {}
 container.__index = function (t,i)
@@ -69,8 +69,8 @@ function container.new()
    new.MOUSE_EXITED = eventLib.new()
    new.PARENT_CHANGED = eventLib.new()
    new.PRESSED = eventLib.new()
-   new.TheoreticalMinimumSize = vectors.vec2()
-   new.GrowDirection = vectors.vec2(0.5,0.5)
+   new.SystemMinimumSize = vectors.vec2()
+   new.GrowDirection = vectors.vec2(1,1)
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
    local debug_container 
@@ -94,9 +94,10 @@ function container.new()
       new.Dimensions:scale(scale)
       local last_size = new.ContainmentRect.zw - new.ContainmentRect.xy
       -- generate the containment rect
-      new.ContainmentRect = new.Dimensions:copy()
+      local containment_rect = new.Dimensions:copy()
       -- adjust based on parent if this has one
       local clipping = false
+      local size
       if new.Parent and new.Parent.ContainmentRect then 
          local parent_scale = 1 / new.Parent.ScaleFactor
          local parent_containment = new.Parent.ContainmentRect - new.Parent.ContainmentRect.xyxy
@@ -106,18 +107,37 @@ function container.new()
             math.lerp(parent_containment.x,parent_containment.z,new.Anchor.z),
             math.lerp(parent_containment.y,parent_containment.w,new.Anchor.w)
          ) * parent_scale * scale_self
-         new.ContainmentRect.x = new.ContainmentRect.x + anchor_shift.x
-         new.ContainmentRect.y = new.ContainmentRect.y + anchor_shift.y
-         new.ContainmentRect.z = new.ContainmentRect.z + anchor_shift.z
-         new.ContainmentRect.w = new.ContainmentRect.w + anchor_shift.w
-
+         containment_rect.x = containment_rect.x + anchor_shift.x
+         containment_rect.y = containment_rect.y + anchor_shift.y
+         containment_rect.z = containment_rect.z + anchor_shift.z
+         containment_rect.w = containment_rect.w + anchor_shift.w
+         
+         size = containment_rect.zw - containment_rect.xy
+         
+         if new.CustomMinimumSize then
+            local final_minimum_size = vectors.vec2(
+               math.max(new.CustomMinimumSize.x,new.SystemMinimumSize.x),
+               math.max(new.CustomMinimumSize.x,new.SystemMinimumSize.y)
+            )
+            containment_rect.z = math.max(containment_rect.z,containment_rect.x + final_minimum_size.x)
+            containment_rect.w = math.max(containment_rect.w,containment_rect.y + final_minimum_size.y)
+            local shift = (size - (containment_rect.zw - containment_rect.xy)) * -new.GrowDirection
+            
+            containment_rect.x = containment_rect.x - shift.x
+            containment_rect.y = containment_rect.y - shift.y
+            containment_rect.z = containment_rect.z - shift.x
+            containment_rect.w = containment_rect.w - shift.y
+         end
+         
          -- calculate clipping
          if new.ClipOnParent then
-            clipping = parent_containment.x > new.ContainmentRect.x
-            or parent_containment.y > new.ContainmentRect.y
-            or parent_containment.z < new.ContainmentRect.z
-            or parent_containment.w < new.ContainmentRect.w
+            clipping = parent_containment.x > containment_rect.x
+            or parent_containment.y > containment_rect.y
+            or parent_containment.z < containment_rect.z
+            or parent_containment.w < containment_rect.w
          end
+      else
+         size = containment_rect.zw - containment_rect.xy
       end
       for _, child in pairs(new.Children) do
          if child.DIMENSIONS_CHANGED then
@@ -125,7 +145,6 @@ function container.new()
          end
       end
 
-      local size = new.ContainmentRect.zw - new.ContainmentRect.xy
       local size_changed = false
       if last_size ~= size then
          new.SIZE_CHANGED:invoke(size)
@@ -142,12 +161,12 @@ function container.new()
       if visible then
          new.ModelPart
          :setPos(
-            -new.ContainmentRect.x * unscale_self,
-            -new.ContainmentRect.y * unscale_self,
+            -containment_rect.x * unscale_self,
+            -containment_rect.y * unscale_self,
             -((new.Z + new.ChildIndex / (new.Parent and #new.Parent.Children or 1) * 0.99) * core.clipping_margin)
          )
          if new.Sprite then
-            local contain = new.ContainmentRect
+            local contain = containment_rect
             new.Sprite
                :setSize(
                   (contain.z - contain.x) * unscale_self,
@@ -155,7 +174,7 @@ function container.new()
                )
          end
          if core.debug_visible then
-            local contain = new.ContainmentRect
+            local contain = containment_rect
             debug_container
             :setPos(
                0,
@@ -168,6 +187,7 @@ function container.new()
             end
          end
       end
+      new.ContainmentRect = containment_rect
       new.Dimensions:scale(unscale)
    end,core.internal_events_name)
 
@@ -470,7 +490,7 @@ function container:setIsCursorHovering(toggle)
    return self
 end
 
---Sets the minimum size of the container
+--Sets the minimum size of the container. resets to none if no arguments is given
 ---@overload fun(self : GNUI.container, vec2 : Vector2): GNUI.container
 ---@param x number
 ---@param y number
@@ -479,11 +499,22 @@ end
 ---@return self
 function container:setCustomMinimumSize(x,y)
    ---@cast self GNUI.container
-   self.CustomMinimumSize = utils.figureOutVec2(x,y)
+   if (x and y) then
+      local value = utils.figureOutVec2(x,y)
+      if value.x == 0 and value.y == 0 then
+         self.CustomMinimumSize = nil
+      else
+         self.CustomMinimumSize = value
+      end
+   else
+      self.CustomMinimumSize = nil
+   end
    self.DIMENSIONS_CHANGED:invoke(self.Dimensions)
    return self
 end
 
+--- x -1 <-> 1 = left <-> right  
+--- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
 ---@overload fun(self : GNUI.container, vec2 : Vector2): GNUI.container
 ---@param x number
@@ -493,7 +524,8 @@ end
 ---@return self
 function container:setGrowDirection(x,y)
    ---@cast self GNUI.container
-   self.GrowDirection = utils.figureOutVec2(x,y)
+   self.GrowDirection = utils.figureOutVec2(x or 0,y or 0) * -0.5 + 0.5
+   
    self.DIMENSIONS_CHANGED:invoke(self.Dimensions)
    return self
 end
