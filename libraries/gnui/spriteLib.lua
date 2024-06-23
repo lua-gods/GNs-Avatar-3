@@ -29,6 +29,7 @@ local update = {}
 ---@field ExcludeMiddle boolean
 ---@field Visible boolean
 ---@field id integer
+---@field hasUpdated boolean
 ---@field package _queue_update boolean
 local Ninepatch = {}
 Ninepatch.__index = Ninepatch
@@ -276,15 +277,15 @@ function Ninepatch:buildRenderTasks()
       self.RenderTasks[1] = self.Modelpart:newSprite(self.id.."patch"):setTexture(self.Texture,d.x,d.y)
    else
       self.RenderTasks = {
-         self.Modelpart:newSprite(self.id.."patch_tl" ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_t"  ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_tr" ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_ml" ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_m"  ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_mr" ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_bl" ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_b"  ):setTexture(self.Texture,d.x,d.y),
-         self.Modelpart:newSprite(self.id.."patch_br" ):setTexture(self.Texture,d.x,d.y),
+         self.Modelpart:newSprite(self.id.."patch_tl" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_t"  ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_tr" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_ml" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_m"  ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_mr" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_bl" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_b"  ):setTexture(self.Texture,d.x,d.y):setVisible(false),
+         self.Modelpart:newSprite(self.id.."patch_br" ):setTexture(self.Texture,d.x,d.y):setVisible(false),
       }
    end
    self:update()
