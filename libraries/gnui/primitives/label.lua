@@ -30,7 +30,7 @@ end
 ---| "OUTLINE"
 ---| "SHADOW"
 
----@class GNUI.Label : GNUI.container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
+---@class GNUI.label : GNUI.container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
 ---@field Text string|table               # The text that will be displayed on the label, for raw json, pass a table instead of a string json.
 ---@field TextData table                  # Baked data of the text.
 ---@field TextEffect TextEffect           # Determins the effects applied to the label.
@@ -40,6 +40,7 @@ end
 ---@field Align Vector2                   # Determins where to fall on to when displaying the text (`0`-`1`, left-right, up-down)
 ---@field AutoWarp boolean                # Does nothing at the moment, but should toggle the word warping option.
 ---@field FontScale number                # Scales the text in the container.
+---@field DefaultColor string             # The color of the text.
 ---@field private _TextChanged boolean    
 ---@field TEXT_CHANGED eventLib           # Triggered when the text is changed.
 local label = {}
@@ -49,9 +50,9 @@ end
 label.__type = "GNUI.element.container.label"
 
 ---Creates a new label, which is just a container but can render text, separated into its own class for optimization.
----@return GNUI.Label
+---@return GNUI.label
 function label.new()
-   ---@type GNUI.Label
+   ---@type GNUI.label
    local new = container.new()
    new.Text = ""
    new.TextEffect = "NONE"
@@ -59,6 +60,7 @@ function label.new()
    new.WrapText = false
    new.TextData = {}
    new.Align = vectors.vec2()
+   new.DefaultColor = "white"
    new.RenderTasks = {}
    new.FontScale = 1
    new._TextChanged = false
@@ -112,9 +114,9 @@ end
 ---@param self self
 ---@param wrap boolean
 ---@return self
-function label:wrapText(wrap)
+function label:setWrapText(wrap)
    self.WrapText = wrap
-   self.DIMENSIONS_CHANGED:invoke()
+   self:_updateRenderTasks()
    return self
 end
 
@@ -148,8 +150,19 @@ end
 ---@return self
 function label:setTextEffect(effect)
    self.TextEffect = effect
-   label:_deleteRenderTasks()
-   label:_buildRenderTasks()
+   self:_deleteRenderTasks()
+   self:_buildRenderTasks()
+   self:_updateRenderTasks()
+   return self
+end
+
+---Sets the default color for the label, uses the same format as raw json text.
+---@param hex_or_name string
+function label:setDefaultColor(hex_or_name)
+   self.DefaultColor = hex_or_name
+   self:_deleteRenderTasks()
+   self:_bakeWords()
+   self:_buildRenderTasks()
    self:_updateRenderTasks()
    return self
 end
@@ -209,7 +222,7 @@ end
 
 ---@param from string|table
 ---@return table # TextData
-local function parseText(from)
+function label:parseText(from)
    local lines = {}
    local t = type(from)
    if t == "table" then
@@ -219,7 +232,7 @@ local function parseText(from)
          local compose = {}
          for word in string.gmatch(line,"[%S]+[%s]*") do -- split words
             local l = getlen(word)
-            compose[#compose+1] = {text=word,length=l}
+            compose[#compose+1] = {text=word,length=l,color=self.DefaultColor}
          end
          local l = getlen(line)
          lines[#lines+1] = {length=l,content=compose}
@@ -231,7 +244,7 @@ end
 
 ---@return self
 function label:_bakeWords()
-   self.TextData = parseText(self.Text)
+   self.TextData = self:parseText(self.Text)
    self._TextChanged = true
    return self
 end
@@ -278,6 +291,10 @@ function label:_updateRenderTasks()
       offset.x = (size.x / scale) * self.Align.x + line.length * self.Align.x
       for c, component in pairs(line.content) do
          i = i + 1
+         if self.WrapText and (pos.x - component.length < size.x / scale)  then
+            pos.y = pos.y - self.LineHeight
+            pos.x = 0
+         end
          local task = self.RenderTasks[i]
          if (pos.x - component.length > size.x / scale) or true then
             task
