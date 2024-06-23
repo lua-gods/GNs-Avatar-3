@@ -25,6 +25,7 @@ local button = gnui_extras.newButton()
 
 screen:addChild(button)
 button:setPos(16,16):setSize(64,0)
+button:setText("Hello World")
 --events.WORLD_TICK:register(function ()
 --   local t = client:getSystemTime() / 500
 --   button:setPos(64,64):setSize((math.sin(t) * 0.5 + 0.6) * 64,1)

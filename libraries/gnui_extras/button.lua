@@ -9,11 +9,11 @@ local eventLib = require("libraries.eventLib")
 
 ---@class GNUI.button : GNUI.container
 ---@field Pressed boolean
----@field text string
+---@field label GNUI.label
 ---@field Theme GNUI.theme
 local Button = {}
 Button.__index = function (t,i)
-   return rawget(t,i) or gnui.metatables.container[i] or gnui.metatables.element[i]
+   return rawget(t,i) or Button[i] or gnui.metatables.container[i] or gnui.metatables.element[i]
 end
 Button.__type = "GNUI.element.container.button"
 
@@ -28,11 +28,28 @@ function Button.new(variant)
    new.PRESSED = eventLib.new()
    new.RELEASED = eventLib.new()
    new.Theme = theme
-   
-   theme.button.variants[variant](new,gnui.newLabel())
-   
+   local label = gnui.newLabel()
+   theme.button.variants[variant](new,label)
+   new.label = label
    setmetatable(new,Button)
    return new
+end
+
+---Sets the text of this label, accepts raw json as a table
+---@param text string|table
+---@generic self
+---@param self self
+---@return self
+function Button:setText(text)
+   ---@cast self GNUI.button
+   self.label:setText(text)
+   return self
+end
+
+---Gets the text of this label
+---@return string|table
+function Button:getText()
+   return self.label.Text
 end
 
 return Button

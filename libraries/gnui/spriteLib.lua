@@ -29,7 +29,6 @@ local update = {}
 ---@field ExcludeMiddle boolean
 ---@field Visible boolean
 ---@field id integer
----@field hasUpdated boolean
 ---@field package _queue_update boolean
 local Ninepatch = {}
 Ninepatch.__index = Ninepatch
