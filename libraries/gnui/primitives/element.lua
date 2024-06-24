@@ -124,8 +124,11 @@ function element:addChild(child,index)
    end
    if child.Parent then return self end
    table.insert(self.Children, index or #self.Children+1, child)
-   child.Parent = self
-   child.PARENT_CHANGED:invoke(self)
+   if child.Parent ~= self then
+      local old_parent = child.Parent
+      child.Parent = self
+      child.PARENT_CHANGED:invoke(old_parent,self)
+   end
    self:updateChildrenIndex()
    return self
 end
@@ -139,9 +142,12 @@ function element:removeChild(child)
    ---@cast self GNUI.container
    if child.Parent == self then -- birth certificate check
       table.remove(self.Children, child.ChildIndex)
-      child.Parent = nil
       child.ChildIndex = 0
-      child.PARENT_CHANGED:invoke(nil)
+      if child.Parent then
+         local old_parent = child.Parent
+         child.Parent = nil
+         child.PARENT_CHANGED:invoke(old_parent,nil)
+      end
       self:updateChildrenIndex()
    end
    return self
@@ -159,7 +165,7 @@ function element:updateChildrenIndex()
    ---@cast self GNUI.element
    for i, child in pairs(self.Children) do
       child.ChildIndex = i
-      child.PARENT_CHANGED:invoke()
+      child.DIMENSIONS_CHANGED:invoke()
    end
    return self
 end

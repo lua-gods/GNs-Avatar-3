@@ -21,16 +21,27 @@ local screen = GNUI.getScreenCanvas()
 --   :setGrowDirection(-1,-1)
 --end
 
-local button = gnui_extras.newButton()
 
-screen:addChild(button)
-button:setPos(16,16):setSize(64,0)
-button:setText("Hello World")
+local stack = gnui_extras.newStack()
+
+events.WORLD_RENDER:register(function (delta)
+   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 128
+   stack:setDimensions(0+o,0,128+o,128)
+end)
+
+for i = 1, 3, 1 do
+   local button = gnui_extras.newButton()
+   stack:addChild(button)
+   button:setPos(16,16):setSize(64,0)
+   button:setText("Hello World")
+end
+
+screen:addChild(stack)
+
 --events.WORLD_TICK:register(function ()
 --   local t = client:getSystemTime() / 500
 --   button:setPos(64,64):setSize((math.sin(t) * 0.5 + 0.6) * 64,1)
---end)
-
+--end)--
 --local last = screen
 --for i = 1, 7, 1 do
 --   local label = GNUI.newLabel()
