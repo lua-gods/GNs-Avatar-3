@@ -35,7 +35,6 @@ for i = 1, 3, 1 do
    button:setPos(16,16):setSize(64,0)
    button:setText("Hello World")
    button.PRESSED:register(function ()
-      print("boing "..tonumber(i))
    end)
 end
 

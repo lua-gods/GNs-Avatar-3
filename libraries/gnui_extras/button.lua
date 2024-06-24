@@ -36,8 +36,8 @@ function Button.new(variant)
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)
       if event.key == "key.mouse.left" then
-         if event.isPressed then new.BUTTON_DOWN:invoke()
-         else new.BUTTON_UP:invoke() end
+         if event.isPressed then new.BUTTON_DOWN:invoke() gnui:playSound("minecraft:block.wooden_button.click_on",0.5,0.1)
+         else new.BUTTON_UP:invoke() gnui:playSound("minecraft:ui.button.click",1,1) end
          if new.isCursorHovering then
             if not event.isPressed and new.cache.was_pressed then
                new.PRESSED:invoke()
