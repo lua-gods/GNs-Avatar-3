@@ -113,7 +113,7 @@ function Container.new()
       root_containe_count = root_containe_count + 1
       events.WORLD_RENDER:register(function ()
          new:_propagateUpdateToChildren()
-      end,new.__type.."."..new.id)
+      end,"GNUI_root_container."..new.id)
    end
    orphan()
    new.PARENT_CHANGED:register(function ()

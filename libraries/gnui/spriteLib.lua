@@ -472,7 +472,7 @@ local t = 19
 events.WORLD_TICK:register(function ()
    t = t + 1
    if t > 20 then
-      events.WORLD_RENDER:remove("priority-last")
+      events.WORLD_RENDER:remove("GNUI_priority-last")
       events.WORLD_RENDER:register(function ()
          if #update > 0 then
             for i = 1, #update, 1 do
@@ -481,7 +481,7 @@ events.WORLD_TICK:register(function ()
             end
             update = {}
          end
-      end,"priority-last")
+      end,"GNUI_priority-last")
    end
 end)
 
