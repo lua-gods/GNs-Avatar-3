@@ -30,7 +30,7 @@ local theme = {
       label:setAnchor(0,0,1,1)
       label:setDimensions(2,2,-2,-2)
       label:setText("Text")
-      label:setDefaultColor("black")
+      label:setDefaultColor('black')
       label:setCanCaptureCursor(false)
       label:setAlign(0.5,0.5)
       container.SystemMinimumSize.y = 24

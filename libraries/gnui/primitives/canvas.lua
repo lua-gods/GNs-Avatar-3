@@ -226,7 +226,7 @@ function Canvas:parseInputEvent(key,status,shift,ctrl,alt)
    end
    if not captured then
       parseInputEventToChildren(self,key_event,self.MousePosition)
-      if self.PressedElement and status == 0 then -- QOL fix for buttons that have been unhovered but still pressed
+      if self.PressedElement and status == 0 and self.PressedElement ~= self.HoveredElement then -- QOL fix for buttons that have been unhovered but still pressed
          parseInputEventOnElement(self.PressedElement,key_event)
       end
    end

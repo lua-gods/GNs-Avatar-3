@@ -24,14 +24,28 @@ function Button.new(variant)
    ---@type GNUI.button
    local new = gnui.newContainer()
    new.Text = ""
-   new.Pressed = false
    new.PRESSED = eventLib.new()
-   new.RELEASED = eventLib.new()
+   new.BUTTON_DOWN = eventLib.new()
+   new.BUTTON_UP = eventLib.new()
    new.Theme = theme
    local label = gnui.newLabel()
    theme.button.variants[variant](new,label)
    new.label = label
    setmetatable(new,Button)
+   new.cache.was_pressed = false
+   ---@param event GNUI.InputEvent
+   new.INPUT:register(function (event)
+      if event.key == "key.mouse.left" then
+         if event.isPressed then new.BUTTON_DOWN:invoke()
+         else new.BUTTON_UP:invoke() end
+         if new.isCursorHovering then
+            if not event.isPressed and new.cache.was_pressed then
+               new.PRESSED:invoke()
+            end
+            new.cache.was_pressed = event.isPressed
+         end
+      end
+   end,"_button")
    return new
 end
 
