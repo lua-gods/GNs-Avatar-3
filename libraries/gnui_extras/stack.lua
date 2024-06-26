@@ -31,7 +31,7 @@ function Stack:updateDimensions()
    self:_updateDimensions()
    if not self.cache.final_stack_size or self.cache.final_stack_size ~= size then
       self.cache.final_stack_size = size
-      self.Dimensions = vec(self.Dimensions.x,self.Dimensions.y,self.Dimensions.z,self.Dimensions.y + size.y)
+      self.SystemMinimumSize = vec(0,size.y)
       local y = 0
       for i, child in pairs(self.Children) do
          child:setDimensions(0,y,0,y):setAnchor(0,0,1,0)
