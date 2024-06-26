@@ -24,10 +24,10 @@ local screen = GNUI.getScreenCanvas()
 
 local stack = gnui_extras.newStack()
 
-events.WORLD_RENDER:register(function (delta)
-   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
-   stack:setDimensions(0+o,0,128+o,128)
-end)
+--events.WORLD_RENDER:register(function (delta)
+--   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
+--   stack:setDimensions(0+o,0,128+o,128)
+--end)
 
 for i = 1, 3, 1 do
    local button = gnui_extras.newButton()
@@ -38,15 +38,7 @@ for i = 1, 3, 1 do
    end)
 end
 
-do
-   local start = client:getSystemTime()
-   local a = 0
-   for i = 1, 1000, 1 do
-      a = GNUI.newContainer()
-   end
-   local finish = client:getSystemTime()
-   print("Time: " .. (finish - start) / 1000)
-end
+stack:setDimensions(0,0,256,256)
 
 screen:addChild(stack)
 

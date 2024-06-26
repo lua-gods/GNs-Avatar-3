@@ -1,9 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 
 local gnui = require("libraries.gnui")
-
 local theme = require("libraries.gnui_extras.theme")
-
 local eventLib = require("libraries.eventLib")
 
 
@@ -29,14 +27,14 @@ function Button.new(variant)
    new.BUTTON_UP = eventLib.new()
    new.Theme = theme
    local label = gnui.newLabel()
-   theme.button.variants[variant](new,label)
    new.label = label
    setmetatable(new,Button)
+   theme.applyTheme(new)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)
       if event.key == "key.mouse.left" then
-         if event.isPressed then new.BUTTON_DOWN:invoke() gnui:playSound("minecraft:block.wooden_button.click_on",0.5,0.1)
+         if event.isPressed then new.BUTTON_DOWN:invoke()
          else new.BUTTON_UP:invoke() gnui:playSound("minecraft:ui.button.click",1,1) end
          if new.isCursorHovering then
             if not event.isPressed and new.cache.was_pressed then
