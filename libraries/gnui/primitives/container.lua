@@ -10,6 +10,11 @@ local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
 
+local WORLD_RENDER = eventLib.new()
+events.WORLD_RENDER:register(function (delta)
+   WORLD_RENDER:invoke()
+end)
+
 ---@class GNUI.container : GNUI.element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
 ---@field Z number                         # Offsets the container forward(+) or backward(-) if Z fighting is occuring, also affects its children.
@@ -111,13 +116,13 @@ function Container.new()
 
    local function orphan()
       root_containe_count = root_containe_count + 1
-      events.WORLD_RENDER:register(function ()
+      WORLD_RENDER:register(function ()
          new:_propagateUpdateToChildren()
       end,"GNUI_root_container."..new.id)
    end
    orphan()
    new.PARENT_CHANGED:register(function ()
-      events.WORLD_RENDER:remove(new.__type.."."..new.id)
+      WORLD_RENDER:remove(new.__type.."."..new.id)
       root_containe_count = root_containe_count - 1
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
