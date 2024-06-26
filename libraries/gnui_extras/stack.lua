@@ -16,7 +16,7 @@ Stack.__type = "GNUI.element.container.stack"
 
 
 function Stack:updateDimensions()
-   local size = vectors.vec2()
+   local size = vec(0,0)
    local minimum_sizes = {}
    for i, child in pairs(self.Children) do
       if child.cache.final_minimum_size_changed or not child.cache.final_minimum_size then
@@ -31,7 +31,7 @@ function Stack:updateDimensions()
    self:_updateDimensions()
    if not self.cache.final_stack_size or self.cache.final_stack_size ~= size then
       self.cache.final_stack_size = size
-      self.Dimensions = vectors.vec4(self.Dimensions.x,self.Dimensions.y,self.Dimensions.z,self.Dimensions.y + size.y)
+      self.Dimensions = vec(self.Dimensions.x,self.Dimensions.y,self.Dimensions.z,self.Dimensions.y + size.y)
       local y = 0
       for i, child in pairs(self.Children) do
          child:setDimensions(0,y,0,y):setAnchor(0,0,1,0)

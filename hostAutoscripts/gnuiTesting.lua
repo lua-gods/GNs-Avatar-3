@@ -38,6 +38,16 @@ for i = 1, 3, 1 do
    end)
 end
 
+do
+   local start = client:getSystemTime()
+   local a = 0
+   for i = 1, 1000, 1 do
+      a = GNUI.newContainer()
+   end
+   local finish = client:getSystemTime()
+   print("Time: " .. (finish - start) / 1000)
+end
+
 screen:addChild(stack)
 
 --events.WORLD_TICK:register(function ()

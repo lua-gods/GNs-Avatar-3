@@ -3,9 +3,9 @@ local utils = require("libraries.gnui.utils")
 
 local debug_texture = textures['gnui_debug_outline'] or 
 textures:newTexture("gnui_debug_outline",6,6)
-:fill(0,0,6,6,vectors.vec3())
-:fill(1,1,4,4,vectors.vec3(1,1,1))
-:fill(2,2,2,2,vectors.vec3())
+:fill(0,0,6,6,vec(0,0,0,0))
+:fill(1,1,4,4,vec(1,1,1))
+:fill(2,2,2,2,vec(0,0,0,0))
 local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
@@ -52,11 +52,11 @@ function Container.new()
 ---@diagnostic disable-next-line: assign-type-mismatch
    local new = element.new()
    setmetatable(new,Container)
-   new.Dimensions = vectors.vec4(0,0,0,0) 
+   new.Dimensions = vec(0,0,0,0) 
    new.Z = 0
    new.SIZE_CHANGED = eventLib.new()
-   new.ContainmentRect = vectors.vec4() -- Dimensions but with margins and anchored applied
-   new.Anchor = vectors.vec4(0,0,0,0)
+   new.ContainmentRect = vec(0,0,0,0) -- Dimensions but with margins and anchored applied
+   new.Anchor = vec(0,0,0,0)
    new.ModelPart = models:newPart("container"..new.id)
    new.ClipOnParent = false
    new.isCursorHovering = false
@@ -73,8 +73,8 @@ function Container.new()
    new.MOUSE_PRESSENCE_CHANGED = eventLib.new()
    new.MOUSE_EXITED = eventLib.new()
    new.PARENT_CHANGED = eventLib.new()
-   new.SystemMinimumSize = vectors.vec2()
-   new.GrowDirection = vectors.vec2(1,1)
+   new.SystemMinimumSize = vec(0,0)
+   new.GrowDirection = vec(1,1)
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
    if core.debug_visible then
@@ -178,7 +178,7 @@ end
 
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec4 : Vector4): GNUI.container
+---@overload fun(self : self, vec : Vector4): GNUI.container
 ---@param x number
 ---@param y number
 ---@param w number
@@ -195,7 +195,7 @@ end
 ---Sets the position of this container
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number?
 ---@return self
@@ -203,7 +203,7 @@ function Container:setPos(x,y)
    ---@cast self GNUI.container
    local new = utils.figureOutVec2(x,y)
    local size = self.Dimensions.zw - self.Dimensions.xy
-   self.Dimensions = vectors.vec4(new.x,new.y,new.x + size.x,new.y + size.y)
+   self.Dimensions = vec(new.x,new.y,new.x + size.x,new.y + size.y)
    self:updateDimensions()
    return self
 end
@@ -212,7 +212,7 @@ end
 ---Sets the Size of this container.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@return self
@@ -227,7 +227,7 @@ end
 ---Sets the top left offset from the origin anchor of its parent.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@return self
@@ -241,7 +241,7 @@ end
 ---Sets the bottom right offset from the origin anchor of its parent.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@return self
@@ -253,7 +253,7 @@ function Container:setBottomRight(x,y)
 end
 
 ---Shifts the container based on the top left.
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@return self
@@ -267,7 +267,7 @@ function Container:offsetTopLeft(x,y)
 end
 
 ---Shifts the container based on the bottom right.
----@overload fun(self : self, vec2 : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.container
 ---@param z number
 ---@param w number
 ---@return self
@@ -281,7 +281,7 @@ function Container:offsetBottomRight(z,w)
 end
 
 ---Checks if the given position is inside the container, in local BBunits of this container with dimension offset considered.
----@overload fun(self : self, vec2 : Vector2): boolean
+---@overload fun(self : self, vec : Vector2): boolean
 ---@param x number|Vector2
 ---@param y number?
 ---@return boolean
@@ -426,7 +426,7 @@ function Container:setIsCursorHovering(toggle)
 end
 
 --Sets the minimum size of the container. resets to none if no arguments is given
----@overload fun(self : GNUI.container, vec2 : Vector2): GNUI.container
+---@overload fun(self : GNUI.container, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@generic self
@@ -452,7 +452,7 @@ end
 --- x -1 <-> 1 = left <-> right  
 --- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
----@overload fun(self : GNUI.container, vec2 : Vector2): GNUI.container
+---@overload fun(self : GNUI.container, vec : Vector2): GNUI.container
 ---@param x number
 ---@param y number
 ---@generic self
@@ -468,7 +468,7 @@ end
 
 ---Gets the minimum size of the container.
 function Container:getMinimumSize()
-   local smallest = vectors.vec2()
+   local smallest = vec(0,0)
    if self.CustomMinimumSize then
       smallest = self.CustomMinimumSize
    end
@@ -497,7 +497,7 @@ function Container:_updateDimensions()
    if self.Parent and self.Parent.ContainmentRect then 
       local parent_scale = 1 / self.Parent.ScaleFactor
       local parent_containment = self.Parent.ContainmentRect - self.Parent.ContainmentRect.xyxy
-      local anchor_shift = vectors.vec4(
+      local anchor_shift = vec(
          math.lerp(parent_containment.x,parent_containment.z,self.Anchor.x),
          math.lerp(parent_containment.y,parent_containment.w,self.Anchor.y),
          math.lerp(parent_containment.x,parent_containment.z,self.Anchor.z),
@@ -508,14 +508,14 @@ function Container:_updateDimensions()
       containment_rect.z = containment_rect.z + anchor_shift.z
       containment_rect.w = containment_rect.w + anchor_shift.w
       
-      size = vectors.vec2(
+      size = vec(
          math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
          math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
       )
       
       if self.CustomMinimumSize or (self.SystemMinimumSize.x ~= 0 or self.SystemMinimumSize.y ~= 0) then
-         local final_minimum_size = vectors.vec2(0,0)
-         local shift = vectors.vec2(0,0)
+         local final_minimum_size = vec(0,0)
+         local shift = vec(0,0)
          if self.cache.final_minimum_size_changed or not self.cache.final_minimum_size then
             self.cache.final_minimum_size_changed = false
             if self.CustomMinimumSize then
@@ -545,7 +545,7 @@ function Container:_updateDimensions()
          or parent_containment.w < containment_rect.w
       end
    else
-      size = vectors.vec2(
+      size = vec(
          math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
          math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
       )

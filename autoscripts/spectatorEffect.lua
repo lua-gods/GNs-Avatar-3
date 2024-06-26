@@ -12,7 +12,7 @@ local colors = {
 
 
 function pings.GNPOOF(x,y,z,appear)
-   local pos = vectors.vec3(x,y,z)
+   local pos = vec(x,y,z)
    particles:newParticle("minecraft:flash",pos):setColor(0.5,1,0.4)
    local max_pow = 0.5
    for ci = 1, #colors, 1 do

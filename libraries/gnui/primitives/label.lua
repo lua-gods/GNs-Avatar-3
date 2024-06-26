@@ -59,7 +59,7 @@ function label.new()
    new.LineHeight = 8
    new.WrapText = false
    new.TextData = {}
-   new.Align = vectors.vec2()
+   new.Align = vec(0,0)
    new.DefaultColor = "white"
    new.RenderTasks = {}
    new.FontScale = 1
@@ -128,7 +128,7 @@ end
 ---@param vertical number?   #up 0 <-> 1 down  
 ---@return self
 function label:setAlign(horizontal,vertical)
-   self.Align = vectors.vec2(horizontal or 0,vertical or 0)
+   self.Align = vec(horizontal or 0,vertical or 0)
    self:_updateRenderTasks()
    return self
 end
@@ -279,10 +279,10 @@ end
 function label:_updateRenderTasks()
    local i = 0
    local size = self.ContainmentRect.xy - self.ContainmentRect.zw -- inverted for optimization
-   local pos = vectors.vec2(0,self.LineHeight)
+   local pos = vec(0,self.LineHeight)
    local scale = self.FontScale * self.AccumulatedScaleFactor
    if #self.TextData == 0 then return self end
-   local offset = vectors.vec2(
+   local offset = vec(
       0,
       (size.y / scale)  * self.Align.y + #self.TextData * self.LineHeight * self.Align.y)
    for _, line in pairs(self.TextData) do

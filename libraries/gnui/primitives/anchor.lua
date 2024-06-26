@@ -1,7 +1,7 @@
 local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 
-local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vectors.vec3(1,1,1)):setPixel(1,1,vectors.vec3(0,0,0))
+local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vec(1,1,1)):setPixel(1,1,vec(0,0,0))
 local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
@@ -33,9 +33,9 @@ function container.new(preset,force_debug)
 ---@diagnostic disable-next-line: assign-type-mismatch
    local new = element.new()
    setmetatable(new,container)
-   new.Offset = preset.Offset or vectors.vec2(0,0) 
+   new.Offset = preset.Offset or vec(0,0) 
    new.Z = preset.Z or 0
-   new.Anchor = preset.Anchor or vectors.vec2(0,0)
+   new.Anchor = preset.Anchor or vec(0,0)
    new.ModelPart = preset.ModelPart and preset.ModelPart:copy("anchor_point"..new.id) or models:newPart("anchor_point"..new.id)
    new.ClipOnParent = preset.ClipOnParent or false
    new.isClipping = preset.isClipping or false
@@ -55,7 +55,7 @@ function container.new(preset,force_debug)
    end)
    new.OFFSET_CHANGED:register(function ()
       -- generate the containment rect
-      new.FinalPosition = vectors.vec2(
+      new.FinalPosition = vec(
          new.Offset.x,
          new.Offset.y
       )
@@ -69,7 +69,7 @@ function container.new(preset,force_debug)
             dim = new.Parent.Dimensions
          end
          local parent_containment = dim - dim.xyxy
-         local anchor_shift = vectors.vec2(
+         local anchor_shift = vec(
 ---@diagnostic disable-next-line: param-type-mismatch
 math.lerp(parent_containment.x,parent_containment.z,new.Anchor.x), 
 ---@diagnostic disable-next-line: param-type-mismatch

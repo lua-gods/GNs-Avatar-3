@@ -104,7 +104,7 @@ end)
 ---@return GNUI.canvas
 function Canvas.new()
    local new = Container.new()
-   new.MousePosition = vectors.vec2()
+   new.MousePosition = vec(0,0)
    new.isActive = true
    new.MOUSE_POSITION_CHANGED = eventLib.new()
    new.INPUT = eventLib.new()

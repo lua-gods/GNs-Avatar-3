@@ -3,7 +3,7 @@
  / / __/  |/ / Sprite Library, specifically made for GNUI and its needs.
 / /_/ / /|  /
 \____/_/ |_/]]
-local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vectors.vec3(1,1,1))
+local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
 local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 local core = require("libraries.gnui.core")
@@ -42,16 +42,16 @@ function Ninepatch.new(obj)
    new.Texture = obj.Texture or default_texture
    new.TEXTURE_CHANGED = eventLib.new()
    new.MODELPART_CHANGED = eventLib.new()
-   new.Position = obj.Position or vectors.vec3()
-   new.UV = obj.UV or vectors.vec4(0,0,1,1)
-   new.Size = obj.Size or vectors.vec2(0,0)
+   new.Position = obj.Position or vec(0,0,0)
+   new.UV = obj.UV or vec(0,0,1,1)
+   new.Size = obj.Size or vec(0,0)
    new.Alpha = obj.Alpha or 1
-   new.Color = obj.Color or vectors.vec3(1,1,1)
+   new.Color = obj.Color or vec(1,1,1)
    new.Scale = obj.Scale or 1
    new.DIMENSIONS_CHANGED = eventLib.new()
    new.RenderTasks = {}
    new.RenderType = obj.RenderType or "CUTOUT_EMISSIVE_SOLID"
-   new.BorderThickness = obj.BorderThickness or vectors.vec4(0,0,0,0)
+   new.BorderThickness = obj.BorderThickness or vec(0,0,0,0)
    new.BORDER_THICKNESS_CHANGED = eventLib.new()
    new.ExcludeMiddle = obj.ExcludeMiddle or false
    new.Visible = true
@@ -96,7 +96,7 @@ function Ninepatch:setTexture(texture)
    if type(texture) ~= "Texture" then error("Invalid texture, recived "..type(texture)..".",2) end
    self.Texture = texture
    local dim = texture:getDimensions()
-   self.UV = vectors.vec4(0,0,dim.x-1,dim.y-1)
+   self.UV = vec(0,0,dim.x-1,dim.y-1)
    self.TEXTURE_CHANGED:invoke(self,self.Texture)
    return self
 end
@@ -312,7 +312,7 @@ function Ninepatch:updateRenderTasks()
       local border = self.BorderThickness             --border, used in UVs
       local pos = self.Position
       local size = self.Size
-      local uvsize = vectors.vec2(uv.z-uv.x,uv.w-uv.y)
+      local uvsize = vec(uv.z-uv.x,uv.w-uv.y)
       for _, task in pairs(self.RenderTasks) do
          task
          :setColor(self.Color:augmented(self.Alpha))

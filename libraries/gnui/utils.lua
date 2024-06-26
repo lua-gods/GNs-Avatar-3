@@ -5,7 +5,7 @@ local utils = {}
 ---@param vec4 Vector4
 ---@return Vector4
 function utils.vec4FixNegativeBounds(vec4)
-   return vectors.vec4(
+   return vec(
       math.min(vec4.x,vec4.z),
       math.min(vec4.y,vec4.w),
       math.max(vec4.x,vec4.z),
@@ -53,7 +53,7 @@ function utils.figureOutVec2(posx,y)
    if typa == "Vector2" then
       return posx:copy()
    elseif typa == "number" and typb == "number" then
-      return vectors.vec2(posx,y)
+      return vec(posx,y)
    else
       error("Invalid Vector2 parameter, expected Vector2 or (number, number), instead got ("..typa..", "..typb..")")
    end
@@ -69,7 +69,7 @@ function utils.figureOutVec3(posx,y,z)
    if typa == "Vector3" then
       return posx:copy()
    elseif typa == "number" and typb == "number" and typc == "number" then
-      return vectors.vec3(posx,y,z)
+      return vec(posx,y,z)
    else
       error("Invalid Vector3 parameter, expected Vector3 or (number, number, number), instead got ("..typa..", "..typb..", "..typc..")")
    end

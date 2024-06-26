@@ -3,7 +3,7 @@ local tween = require "libraries.tween"
 local SENSITIVITY = 0.1
 
 local keybind = keybinds:newKeybind("freelook","key.keyboard.left.alt")
-local offset = vectors.vec2()
+local offset = vec(0,0)
 local zoom = 1
 local active = false
 
@@ -12,7 +12,7 @@ local function release()
    zoom = 1
    renderer:setFOV()
    local from = offset:copy()
-   tween.tweenFunction(from,vectors.vec2(0,0),0.2,"inOutSine",function (value, transition)
+   tween.tweenFunction(from,vec(0,0),0.2,"inOutSine",function (value, transition)
       offset = value
       renderer:offsetCameraRot(offset.y,offset.x)
    end)

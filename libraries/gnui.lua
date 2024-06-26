@@ -48,7 +48,7 @@ function api.getScreenCanvas()
     models:addChild(screenCanvas.ModelPart)
     screenCanvas.ModelPart:setParentType("HUD")
   
-    local lastWindowSize = vectors.vec2()
+    local lastWindowSize = vec(0,0)
     events.WORLD_RENDER:register(function (delta)
       local windowSize = client:getScaledWindowSize()
       
