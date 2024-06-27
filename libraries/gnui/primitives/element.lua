@@ -2,16 +2,17 @@ local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 
 local element_next_free = 0
----@class GNUI.element # The base element of every GNUI element
----@field name string                 # An optional property used to get the element by a name
----@field id integer                  # A unique integer for this element. (next-free based)
----@field Visible boolean             # `true` to see
----@field Parent GNUI.any             # the element's parents
----@field Children table<any,GNUI.any># A list of the element's children
----@field ChildIndex integer          # the element's place order on its parent
----@field VISIBILITY_CHANGED eventLib # on change of visibility
----@field CHILDREN_CHANGED table      # when the order of the children changes.
----@field PARENT_CHANGED table        # when the parent changes
+---@class GNUI.element # The base element of every GNUI element.
+---@field name string                 # An optional property used to get the element by a name.
+---@field id integer                  # A unique integer for this element. (next-free based).
+---@field Visible boolean             # `true` to see.
+---@field Parent GNUI.any             # the element's parents.
+---@field Children table<any,GNUI.any># A list of the element's children.
+---@field ChildIndex integer          # the element's place order on its parent.
+---@field VISIBILITY_CHANGED eventLib # on change of visibility.
+---@field CHILDREN_ADDED table        # when a child is added. first parameter is the child added.
+---@field CHILDREN_REMOVED table      # when a child is removed. first parameter is the child removed.
+---@field PARENT_CHANGED table        # when the parent changes.
 ---@field ON_FREE eventLib            # when the element is wiped from history.
 ---@field cache table
 local element = {}
@@ -25,14 +26,15 @@ element.__type = "GNUI.element"
 function element.new(preset)
    local new = preset or {}
    new.id = element_next_free
-   new.Visible            = true
-   new.cache              = {final_visible = true}
+   new.Visible = true
+   new.cache = {final_visible = true}
    new.VISIBILITY_CHANGED = eventLib.new()
-   new.Children           = {}
-   new.ChildIndex         = 0
-   new.CHILDREN_CHANGED   = eventLib.new()
-   new.PARENT_CHANGED     = eventLib.new()
-   new.ON_FREE            = eventLib.new()
+   new.Children = {}
+   new.ChildIndex = 0
+   new.CHILDREN_ADDED = eventLib.new()
+   new.CHILDREN_REMOVED = eventLib.new()
+   new.PARENT_CHANGED = eventLib.new()
+   new.ON_FREE = eventLib.new()
    setmetatable(new,element)
    element_next_free = element_next_free + 1
    return new
@@ -128,6 +130,7 @@ function element:addChild(child,index)
       local old_parent = child.Parent
       child.Parent = self
       child.PARENT_CHANGED:invoke(old_parent,self)
+      self.CHILDREN_ADDED:invoke(child)
    end
    self:updateChildrenIndex()
    return self
@@ -147,6 +150,7 @@ function element:removeChild(child)
          local old_parent = child.Parent
          child.Parent = nil
          child.PARENT_CHANGED:invoke(old_parent,nil)
+         self.CHILDREN_REMOVED:invoke(child)
       end
       self:updateChildrenIndex()
    end

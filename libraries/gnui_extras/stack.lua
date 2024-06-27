@@ -21,7 +21,7 @@ function Stack:updateDimensions()
    for i, child in pairs(self.Children) do
       if child.cache.final_minimum_size_changed or not child.cache.final_minimum_size then
          child.cache.final_minimum_size_changed = false
-         local min = child:getMinimumSize()
+         local min = child:getSize()
          size = size + min
          minimum_sizes[i] = min
       else

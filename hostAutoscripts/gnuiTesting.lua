@@ -26,7 +26,7 @@ local stack = gnui_extras.newStack()
 
 --events.WORLD_RENDER:register(function (delta)
 --   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
---   stack:setDimensions(0+o,0,128+o,128)
+--   stack:setDimensions(0+o,0,64+o,128)
 --end)
 
 for i = 1, 3, 1 do
@@ -38,7 +38,8 @@ for i = 1, 3, 1 do
    end)
 end
 
-stack:setDimensions(0,0,256,256)
+stack:setCustomMinimumSize(64,64)
+stack:setPos(64,64)
 
 screen:addChild(stack)
 

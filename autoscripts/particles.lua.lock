@@ -1,0 +1,36 @@
+local dusts = {}
+
+local simplex = require("libraries.simplex")
+
+local function rand()return (math.random()-0.5)*0.2 end
+
+local key = keybinds:newKeybind("shoot","key.keyboard.h")
+
+local SPACING = 0.1
+local RADIANCE = 0.3
+
+key.press = function ()
+   pings.particles()
+end
+
+function pings.particles()
+   for x = -3, 3, 1 do
+      for y = -3, 3, 1 do
+         for z = -3, 3, 1 do
+            local vel = vec(x,y,z):normalize() * RADIANCE
+            dusts[#dusts+1] = particles["firework"]:pos(player:getPos():add(x*SPACING,y*SPACING+1,z*SPACING)):gravity(0.1):velocity(vel):spawn()
+         end
+      end
+   end
+end
+
+events.TICK:register(function ()
+   for i = 1, #dusts, 1 do
+      if dusts[i]:isAlive() then
+         local pos = dusts[i]:getPos():add(client:getSystemTime()*0.0001,0,0)*0.3
+         local vel = dusts[i]:getVelocity()
+         local turbulance = vec(simplex.Noise2D(pos.x,pos.z),simplex.Noise2D(pos.y,pos.z),simplex.Noise2D(pos.x,pos.y))
+         dusts[i]:setVelocity(math.lerp(vel:normalized(),turbulance:normalize(),0.1) * vel:length()*1.11)
+      end
+   end
+end)

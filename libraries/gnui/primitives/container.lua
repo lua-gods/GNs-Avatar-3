@@ -135,11 +135,6 @@ function Container.new()
    return new
 end
 
-
-events.WORLD_RENDER:register(function ()
-   host:setActionbar("Root container count: "..root_containe_count)
-end)
-
 ---Sets the backdrop of the container.  
 ---note: the object dosent get applied directly, its duplicated and the clone is used instead of the original.
 ---@generic self
@@ -227,6 +222,13 @@ function Container:setSize(x,y)
    self.Dimensions.zw = self.Dimensions.xy + size
    self:updateDimensions()
    return self
+end
+
+---Gets the Size of this container.
+---@return Vector2
+function Container:getSize()
+---@diagnostic disable-next-line: return-type-mismatch
+   return self.ContainmentRect.zw - self.ContainmentRect.xy
 end
 
 ---Sets the top left offset from the origin anchor of its parent.
@@ -439,7 +441,6 @@ end
 ---@return self
 function Container:setCustomMinimumSize(x,y)
    ---@cast self GNUI.container
-   self.cache.final_minimum_size_changed = true
    if (x and y) then
       local value = utils.figureOutVec2(x,y)
       if value.x == 0 and value.y == 0 then
@@ -450,6 +451,7 @@ function Container:setCustomMinimumSize(x,y)
    else
       self.CustomMinimumSize = nil
    end
+   self.cache.final_minimum_size_changed = true
    self:updateDimensions()
    return self
 end
@@ -538,8 +540,14 @@ function Container:_updateDimensions()
          end
          containment_rect.z = math.max(containment_rect.z,containment_rect.x + final_minimum_size.x)
          containment_rect.w = math.max(containment_rect.w,containment_rect.y + final_minimum_size.y)
+         
          ---@diagnostic disable-next-line: param-type-mismatch
          containment_rect:sub(shift.x,shift.y,shift.x,shift.y)
+         
+         size = vec(
+         math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
+         math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
+         )
       end
       
       -- calculate clipping
