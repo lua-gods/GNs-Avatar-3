@@ -10,8 +10,8 @@ local element_next_free = 0
 ---@field Children table<any,GNUI.any># A list of the element's children.
 ---@field ChildIndex integer          # the element's place order on its parent.
 ---@field VISIBILITY_CHANGED eventLib # on change of visibility.
----@field CHILDREN_ADDED table        # when a child is added. first parameter is the child added.
----@field CHILDREN_REMOVED table      # when a child is removed. first parameter is the child removed.
+---@field CHILDREN_ADDED eventLib     # when a child is added. first parameter is the child added.
+---@field CHILDREN_REMOVED eventLib   # when a child is removed. first parameter is the child removed.
 ---@field PARENT_CHANGED table        # when the parent changes.
 ---@field ON_FREE eventLib            # when the element is wiped from history.
 ---@field cache table

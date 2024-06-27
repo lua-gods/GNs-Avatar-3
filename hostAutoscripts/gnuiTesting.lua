@@ -29,7 +29,7 @@ local stack = gnui_extras.newStack()
 --   stack:setDimensions(0+o,0,64+o,128)
 --end)
 
-for i = 1, 3, 1 do
+for i = 1, 8, 1 do
    local button = gnui_extras.newButton()
    stack:addChild(button)
    button:setPos(16,16):setSize(64,0)

@@ -228,7 +228,7 @@ end
 ---@return Vector2
 function Container:getSize()
 ---@diagnostic disable-next-line: return-type-mismatch
-   return self.ContainmentRect.zw - self.ContainmentRect.xy
+   return self.cache.size or self.ContainmentRect.zw - self.ContainmentRect.xy
 end
 
 ---Sets the top left offset from the origin anchor of its parent.
@@ -564,6 +564,7 @@ function Container:_updateDimensions()
       )
    end
 
+   self.cache.size = size
    self.ContainmentRect = containment_rect
    self.Dimensions:scale(1 / scale)
    

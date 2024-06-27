@@ -1,6 +1,7 @@
 
 local base64 = require("libraries.base64inator")
 local matUtil = require("libraries.util_mat")
+local http = require("libraries.httpRequest")
 
 local history = {}
 local cube_data = {}
@@ -11,20 +12,17 @@ local avarage_time_samples = {}
 local last_sample_time = client:getSystemTime()
 local delta_since_last_sample = 1
 local avarage_wait = 0
-local waiting = false
-
-if host:isHost() then
-   local http = require("libraries.httpRequest")
-   
-   events.WORLD_RENDER:register(function ()
-      delta_since_last_sample = client:getSystemTime()-last_sample_time
-      if delta_since_last_sample > 200 and not waiting then
+local free = true
+local last_hash = ""
+events.WORLD_RENDER:register(function ()
+   if host:isHost() then
+      if delta_since_last_sample > 1000 and free then
          local body = data:createBuffer()
          body:clear()
          body:setPosition(0)
          body:writeString(toJson({type=0}))
          body:setPosition(0)
-         waiting = true
+         free = false
          ---@param result HttpResponse
          http.request("http://127.0.0.1:80",body,function (result)
             body:close()
@@ -36,35 +34,18 @@ if host:isHost() then
             local cmd = 'minecraft:player_head{extra:"'..base64.stringToBase64(string)..'",SkullOwner:{Id:[I;-457632696,995642399,-2093362161,1978444996]}}'
             host:setActionbar("Data Size: "..#cmd)
             host:setSlot("hotbar.8", cmd)
-            waiting = false
-            
-            table.insert(avarage_time_samples,1,delta_since_last_sample)
-            last_sample_time = client:getSystemTime()
-            
-            if #avarage_time_samples > 3 then
-               avarage_time_samples[#avarage_time_samples] = nil
-               
-               avarage_wait = 0
-               for i = 1, #avarage_time_samples, 1 do
-                  avarage_wait = avarage_wait + avarage_time_samples[i]
-               end
-               avarage_wait = avarage_wait / #avarage_time_samples
-            end
+            free = true
          end)
       end
-   end)
-end
-
-local last_hash = ""
-
-events.WORLD_RENDER:register(function (delta)
+   end
    if player:isLoaded() then
       local item = player:getHeldItem()
+      delta_since_last_sample = client:getSystemTime()-last_sample_time
       if item.id == "minecraft:player_head" and item.tag.extra then
          local snapshot = {}
          local hash = item.tag.extra
          cube_data = parseJson(base64.base64ToString(hash))
-         for i = 2, #cube_data, 1 do
+         for i = 1, #cube_data, 1 do
             local mat = matrices.mat4()
             mat:translate(-8,-8,-8)
             mat:rotateZ(cube_data[i][3])
@@ -75,12 +56,22 @@ events.WORLD_RENDER:register(function (delta)
          end
          if last_hash ~= hash then
             last_hash = hash
+            table.insert(avarage_time_samples,1,delta_since_last_sample)
+            last_sample_time = client:getSystemTime()
             table.insert(history,1,snapshot)
+            if #avarage_time_samples > 3 then
+               avarage_time_samples[#avarage_time_samples] = nil
+               
+               avarage_wait = 0
+               for i = 1, #avarage_time_samples, 1 do
+                  avarage_wait = avarage_wait + avarage_time_samples[i]
+               end
+               avarage_wait = avarage_wait / #avarage_time_samples
+            end
          end
          if history[4] then
             history[4] = nil
          end
-         
          if history[3] then
             local snaphshot = history[1]
             for i = 2, #snaphshot, 1 do
