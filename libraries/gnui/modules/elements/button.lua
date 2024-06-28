@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 
 local gnui = require("libraries.gnui")
-local theme = require("libraries.gnui_extras.theme")
+local theme = require("libraries.gnui.modules.themes")
 local eventLib = require("libraries.eventLib")
 
 

@@ -1,5 +1,6 @@
 local gnui = require("libraries.gnui")
-local texture = textures["libraries.gnui_extras.textures.ui.gnui_theme"]
+local texture = textures["libraries.gnui.modules.theme.textures.default"]
+
 local tween = require("libraries.tween")
 
 ---@type GNUI.theme

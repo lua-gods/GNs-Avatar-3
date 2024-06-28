@@ -1,5 +1,5 @@
 local GNUI = require("libraries.gnui")
-local gnui_extras = require("libraries.gnui_extras")
+local gnui_extras = require("libraries.gnui.modules.elements")
 local screen = GNUI.getScreenCanvas()
 
 --do
