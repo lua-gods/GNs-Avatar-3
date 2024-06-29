@@ -1,8 +1,8 @@
 ---@diagnostic disable: assign-type-mismatch
 local gnui = require("libraries.gnui")
 
-local container = require("libraries.gnui.primitives.container")
-local element = require("libraries.gnui.primitives.element")
+local container = gnui.container
+local element = gnui.element
 
 ---@class GNUI.stack : GNUI.container
 ---@field type boolean

@@ -43,6 +43,8 @@ stack:setPos(64,64)
 
 screen:addChild(stack)
 
+
+
 --events.WORLD_TICK:register(function ()
 --   local t = client:getSystemTime() / 500
 --   button:setPos(64,64):setSize((math.sin(t) * 0.5 + 0.6) * 64,1)

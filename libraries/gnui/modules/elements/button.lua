@@ -11,7 +11,7 @@ local eventLib = require("libraries.eventLib")
 ---@field Theme GNUI.theme
 local Button = {}
 Button.__index = function (t,i)
-   return rawget(t,i) or Button[i] or gnui.metatables.container[i] or gnui.metatables.element[i]
+   return rawget(t,i) or Button[i] or gnui.container[i] or gnui.element[i]
 end
 Button.__type = "GNUI.element.container.button"
 
@@ -28,8 +28,9 @@ function Button.new(variant)
    new.Theme = theme
    local label = gnui.newLabel()
    new.label = label
+   new:addChild(label)
    setmetatable(new,Button)
-   theme.applyTheme(new)
+   theme.applyTheme(new,nil,variant)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)

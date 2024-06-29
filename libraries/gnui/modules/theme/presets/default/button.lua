@@ -1,16 +1,13 @@
 local gnui = require("libraries.gnui")
-local texture = textures["libraries.gnui.modules.theme.textures.default"]
+local texture = textures["libraries.gnui.modules.theme.textures.element_default"]
 
 local tween = require("libraries.tween")
 
 ---@type GNUI.theme
 return {
- button = {
-  variants = {
    ---@param container GNUI.button
    default = function (container)
       local label = container.label
-      container:addChild(label)
       
       local sprite_normal = gnui.newSprite():setTexture(texture):setUV(9,2,13,8):setBorderThickness(2,2,2,4)
       local sprite_hovered = gnui.newSprite():setTexture(texture):setUV(15,2,19,8):setBorderThickness(2,2,2,4)
@@ -37,6 +34,4 @@ return {
       container.SystemMinimumSize.y = 24
       return container
    end,
-  },
- },
 }

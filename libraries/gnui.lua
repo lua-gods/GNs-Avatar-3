@@ -22,22 +22,20 @@ local element = require("libraries.gnui.primitives.element")
 local container = require("libraries.gnui.primitives.container")
 local anchor = require("libraries.gnui.primitives.anchor")
 
-api.newPointAnchor = anchor.new
-api.newContainer = container.new
-api.newCanvas = canvas.new
-api.newSprite = sprite.new
-api.newLabel = label.new
+api.newPointAnchor = function ()return anchor.new()end
+api.newContainer = function ()return container.new() end
+api.newCanvas = function ()return canvas.new() end
+api.newSprite = function ()return sprite.new() end
+api.newLabel = function ()return label.new() end
 
 api.utils = utils
 
-api.metatables = {
-  container = container,
-  anchor = anchor,
-  element = element,
-  canvas = canvas,
-  sprite = sprite,
-  label = label,
-}
+api.container = container
+api.anchor = anchor
+api.element = element
+api.canvas = canvas
+api.sprite = sprite
+api.label = label
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.
