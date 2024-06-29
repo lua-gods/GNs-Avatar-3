@@ -11,6 +11,7 @@ DEPENDENCIES
 
 local gnui = require("libraries.gnui")
 local gnui_elements = require("libraries.gnui.modules.elements")
+local themes = require("libraries.gnui.modules.themes")
 
 ---@class GNUI.window : GNUI.container
 ---@field Theme GNUI.theme
@@ -30,17 +31,27 @@ Window.__type = "GNUI.element.container.window"
 function Window.new()
    ---@type GNUI.window
    local new = gnui.newContainer()
-   new._parent_class = Window
    new.type = "window"
    new.Title = ""
+   
+   themes.applyTheme(new,nil,"window")
    
    local label = gnui.newLabel()
    new.LabelTitle = label
    new:addChild(label)
    
-   local closeButton = gnui_elements.newButton("nothing")
+   local closeButton = gnui_elements.newButton("window_close")
    new.CloseButton = closeButton
    new:addChild(closeButton)
+   
+   local maximizeButton = gnui_elements.newButton("window_maximize")
+   new.MaximizeButton = maximizeButton
+   new:addChild(maximizeButton)
+   
+   local minimizeButton = gnui_elements.newButton("window_minimize")
+   new.MinimizeButton = minimizeButton
+   new:addChild(minimizeButton)
+   
    return new
 end
 

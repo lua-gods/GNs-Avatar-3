@@ -1,14 +1,13 @@
 ---@diagnostic disable: assign-type-mismatch
 
 local gnui = require("libraries.gnui")
-local theme = require("libraries.gnui.modules.themes")
+local themes = require("libraries.gnui.modules.themes")
 local eventLib = require("libraries.eventLib")
 
 
 ---@class GNUI.button : GNUI.container
 ---@field Pressed boolean
 ---@field label GNUI.label
----@field Theme GNUI.theme
 local Button = {}
 Button.__index = function (t,i)
    return rawget(t,i) or Button[i] or gnui.container[i] or gnui.element[i]
@@ -17,20 +16,20 @@ Button.__type = "GNUI.element.container.button"
 
 ---Creates a new button.
 ---@return GNUI.button
-function Button.new(variant)
+function Button.new(variant,theme)
    variant = variant or "default"
+   theme = theme or "default"
    ---@type GNUI.button
    local new = gnui.newContainer()
    new.Text = ""
    new.PRESSED = eventLib.new()
    new.BUTTON_DOWN = eventLib.new()
    new.BUTTON_UP = eventLib.new()
-   new.Theme = theme
    local label = gnui.newLabel()
    new.label = label
    new:addChild(label)
    setmetatable(new,Button)
-   theme.applyTheme(new,nil,variant)
+   themes.applyTheme(new,theme,variant)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)

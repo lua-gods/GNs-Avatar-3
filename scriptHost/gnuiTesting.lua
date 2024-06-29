@@ -1,5 +1,7 @@
 local GNUI = require("libraries.gnui")
 local gnui_extras = require("libraries.gnui.modules.elements")
+local gnui_window = require("libraries.gnui.modules.windows")
+
 local screen = GNUI.getScreenCanvas()
 
 --do
@@ -24,11 +26,10 @@ local screen = GNUI.getScreenCanvas()
 
 local stack = gnui_extras.newStack()
 
---events.WORLD_RENDER:register(function (delta)
---   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
---   stack:setDimensions(0+o,0,64+o,128)
---end)
-
+events.WORLD_RENDER:register(function (delta)
+   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
+   stack:setDimensions(0+o,0,64+o,128)
+end)
 for i = 1, 5, 1 do
    local button = gnui_extras.newButton()
    stack:addChild(button)
@@ -60,3 +61,11 @@ screen:addChild(stack)
 --   last:addChild(label)
 --   last = label
 --end
+
+
+local window = gnui_window.newWindow()
+
+window:setSize(64,64)
+window:setPos(100,100)
+
+screen:addChild(window)
