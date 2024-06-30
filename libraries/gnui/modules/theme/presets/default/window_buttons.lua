@@ -2,76 +2,93 @@ local gnui = require("libraries.gnui")
 local texture = textures["libraries.gnui.modules.theme.textures.default_window"]
 
 return {
-   container = {
-      ---@param container GNUI.button
-      window = function (container)
-         local sprite_normal = gnui.newSprite():setTexture(texture):setUV(23,1,25,10):setBorderThickness(1,8,1,1)
-         local sprite_active = gnui.newSprite():setTexture(texture):setUV(27,1,29,10):setBorderThickness(1,8,1,1)
-         container:setSprite(sprite_active)
-      end
-   },
-   button = {
-      ---@param container GNUI.button
-      window_close = function (container)
+   window = {
+      ---@param container GNUI.window
+      default = function (container)
+         local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(23,1,25,10):setBorderThickness(1,8,1,1)
+         local sprite_border_active = gnui.newSprite():setTexture(texture):setUV(1,23,5,27):setBorderThickness(2,2,2,2)
+         container:setSprite(sprite_border_active)
          
-         local sprite_normal = gnui.newSprite():setTexture(texture):setUV(14,1,20,7)
-         local sprite_highlight = gnui.newSprite():setTexture(texture):setUV(14,9,20,15)
+         local sprite_titlebar_normal = gnui.newSprite():setTexture(texture):setUV(23,1,25,10):setBorderThickness(1,8,1,1)
+         local sprite_titlebar_active = gnui.newSprite():setTexture(texture):setUV(1,17,5,21):setBorderThickness(2,2,2,2)
+         container.Titlebar:setSprite(sprite_titlebar_active)
+         container.Titlebar:setAnchor(0,0,1,0):setDimensions(1,1,-1,12)
          
-         container:setSprite(sprite_normal)
-         container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+         
+         local close_button = container.CloseButton
+         local sprite_close_normal = gnui.newSprite():setTexture(texture):setUV(14,1,20,7)
+         local sprite_close_highlight = gnui.newSprite():setTexture(texture):setUV(14,9,20,15)
+         close_button:setSprite(sprite_close_normal)
+         close_button.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
             if pressed then
-               container:setSprite(sprite_normal)
+               close_button:setSprite(sprite_close_normal)
             else
                if hovered then
-                  container:setSprite(sprite_highlight)
+                  close_button:setSprite(sprite_close_highlight)
                else 
-                  container:setSprite(sprite_normal)
+                  close_button:setSprite(sprite_close_normal)
                end 
             end
          end)
-         container.label:free()
-         container:setAnchor(1,0,1,0):setDimensions(-8,1,-1,8)
-      end,
-      window_maximize = function (container)
+         close_button.label:free()
+         close_button:setAnchor(1,0,1,0):setDimensions(-10,3,-3,10)
          
-         local sprite_normal = gnui.newSprite():setTexture(texture):setUV(8,1,14,7)
-         local sprite_highlight = gnui.newSprite():setTexture(texture):setUV(8,9,14,15)
+         local maximize_button = container.MaximizeButton
+         local sprite_maximize_normal = gnui.newSprite():setTexture(texture):setUV(8,1,14,7)
+         local sprite_maximize_highlight = gnui.newSprite():setTexture(texture):setUV(8,9,14,15)
          
-         container:setSprite(sprite_normal)
-         container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+         maximize_button:setSprite(sprite_maximize_normal)
+         maximize_button.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
             if pressed then
-               container:setSprite(sprite_normal)
+               maximize_button:setSprite(sprite_maximize_normal)
             else
                if hovered then
-                  container:setSprite(sprite_highlight)
+                  maximize_button:setSprite(sprite_maximize_highlight)
                else 
-                  container:setSprite(sprite_normal)
+                  maximize_button:setSprite(sprite_maximize_normal)
                end 
             end
          end)
-         container.label:free()
-         container:setAnchor(1,0,1,0):setDimensions(-15,1,-8,8)
-      end,
-      window_minimize = function (container)
+         maximize_button.label:free()
+         maximize_button:setAnchor(1,0,1,0):setDimensions(-17,3,-10,10)
          
          local sprite_normal = gnui.newSprite():setTexture(texture):setUV(1,1,7,7)
          local sprite_highlight = gnui.newSprite():setTexture(texture):setUV(1,9,7,15)
          
-         container:setSprite(sprite_normal)
-         container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+         local minimize_button = container.MinimizeButton
+         minimize_button:setSprite(sprite_normal)
+         minimize_button.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
             if pressed then
-               container:setSprite(sprite_normal)
+               minimize_button:setSprite(sprite_normal)
             else
                if hovered then
-                  container:setSprite(sprite_highlight)
+                  minimize_button:setSprite(sprite_highlight)
                else 
-                  container:setSprite(sprite_normal)
+                  minimize_button:setSprite(sprite_normal)
                end 
             end
          end)
-         container.label:free()
-         container:setAnchor(1,0,1,0):setDimensions(-22,1,-15,8)
+         minimize_button.label:free()
+         minimize_button:setAnchor(1,0,1,0):setDimensions(-24,3,-17,10)
       end,
    },
-   
+   container = {
+      ---@param container GNUI.container
+      window_border_drag = function (container)
+         local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(1,29,1,29):setDepthOffset(0.1)
+         local sprite_border_active = gnui.newSprite():setTexture(texture):setUV(3,29,3,29):setDepthOffset(0.1)
+         container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+            if pressed then
+               container:setSprite(sprite_border_active)
+            else
+               if hovered then
+                  container:setSprite(sprite_border_active)
+               else 
+                  container:setSprite(sprite_border_normal)
+               end 
+            end
+         end)
+         container:setSprite(sprite_border_normal)
+      end
+   }
 }

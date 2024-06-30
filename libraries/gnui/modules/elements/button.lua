@@ -29,13 +29,13 @@ function Button.new(variant,theme)
    new.label = label
    new:addChild(label)
    setmetatable(new,Button)
-   themes.applyTheme(new,theme,variant)
+   themes.applyTheme(new,variant,theme)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)
       if event.key == "key.mouse.left" then
          if event.isPressed then new.BUTTON_DOWN:invoke()
-         else new.BUTTON_UP:invoke() gnui:playSound("minecraft:ui.button.click",1,1) end
+         else new.BUTTON_UP:invoke() gnui.playSound("minecraft:ui.button.click",1,1) end
          if new.isCursorHovering then
             if not event.isPressed and new.cache.was_pressed then
                new.PRESSED:invoke()

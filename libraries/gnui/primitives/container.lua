@@ -42,8 +42,8 @@ end)
 ---@field CustomMinimumSize Vector2        # Minimum size that the container will use.
 ---@field SystemMinimumSize Vector2        # The minimum size that the container can use, set by the container itself.
 ---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
----@field _child_preprocessor function     # The function that is called before each child is processed.
 ---@field cache table                      # Contains data to optimize the process.
+---@field Canvas GNUI.canvas               # The canvas that the container is attached to.
 local Container = {}
 Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
@@ -126,6 +126,19 @@ function Container.new()
       root_containe_count = root_containe_count - 1
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
+         
+         local stack = 0
+         local canvas = new
+         while canvas.Parent do
+            stack = stack + 1
+            canvas = canvas.Parent
+            if stack > 100 then
+               error("Alabama family tree detected! avoid making infinite loop family trees.")
+            end
+         end
+         if type(canvas) == "GNUI.element.container.canvas" then
+            new.Canvas = canvas
+         end
       else
          new.ModelPart:getParent():removeChild(new.ModelPart)
          orphan()
@@ -488,6 +501,32 @@ function Container:getMinimumSize()
    return smallest
 end
 
+--- Converts a point from BBunits to UV units.
+---@overload fun(self : GNUI.any, pos : Vector2): Vector2
+---@param x number
+---@param y number
+---@return Vector2
+function Container:XYtoUV(x,y)
+   local pos = utils.figureOutVec2(x,y)
+   return vec(
+      math.map(pos.x,self.Dimensions.x,self.Dimensions.z,0,1),
+      math.map(pos.y,self.Dimensions.y,self.Dimensions.w,0,1)
+   )
+end
+
+--- Converts a point from UV units to BB units.
+---@overload fun(self : GNUI.any, pos : Vector2): Vector2
+---@param x number
+---@param y number
+---@return Vector2
+function Container:UVtoXY(x,y)
+   local pos = utils.figureOutVec2(x,y)
+   return vec(
+      math.map(pos.x,0,1,self.Dimensions.x,self.Dimensions.z),
+      math.map(pos.y,0,1,self.Dimensions.y,self.Dimensions.w)
+   )
+end
+
 function Container:updateDimensions()
    self.UpdateQueue = true
 end
@@ -597,7 +636,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          -containment_rect.x * unscale_self,
          -containment_rect.y * unscale_self,
-         -((self.Z + self.ChildIndex / (self.Parent and #self.Parent.Children or 1) * 0.99) * core.clipping_margin)
+         -((self.Z + self.ChildIndex / (self.Parent and #self.Parent.Children or 1) * 0.88) * core.clipping_margin)
       )
       if self.Sprite and self.cache.size_changed or forced_resize_sprites then
          self.Sprite

@@ -17,7 +17,7 @@ local update = {}
 ---@field MODELPART_CHANGED eventLib
 ---@field UV Vector4
 ---@field Size Vector2
----@field Position Vector3
+---@field Position Vector2
 ---@field Color Vector3
 ---@field Alpha number
 ---@field Scale number
@@ -27,6 +27,7 @@ local update = {}
 ---@field BorderThickness Vector4
 ---@field BORDER_THICKNESS_CHANGED eventLib
 ---@field ExcludeMiddle boolean
+---@field DepthOffset number
 ---@field Visible boolean
 ---@field id integer
 ---@field package _queue_update boolean
@@ -42,7 +43,8 @@ function Ninepatch.new(obj)
    new.Texture = obj.Texture or default_texture
    new.TEXTURE_CHANGED = eventLib.new()
    new.MODELPART_CHANGED = eventLib.new()
-   new.Position = obj.Position or vec(0,0,0)
+   new.Position = obj.Position or vec(0,0)
+   new.DepthOffset = 0
    new.UV = obj.UV or vec(0,0,1,1)
    new.Size = obj.Size or vec(0,0)
    new.Alpha = obj.Alpha or 1
@@ -104,10 +106,9 @@ end
 ---Sets the position of the Sprite, relative to its parent.
 ---@param xpos number
 ---@param y number
----@param depth number?
 ---@return Ninepatch
-function Ninepatch:setPos(xpos,y,depth)
-   self.Position = utils.figureOutVec3(xpos,y,depth or 0)
+function Ninepatch:setPos(xpos,y)
+   self.Position = utils.figureOutVec2(xpos,y)
    self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
    return self
 end
@@ -253,6 +254,11 @@ function Ninepatch:setVisible(visibility)
    return self
 end
 
+function Ninepatch:setDepthOffset(offset_units)
+   self.DepthOffset = offset_units
+   return self
+end
+
 function Ninepatch:update()
    if not self._queue_update then
       self._queue_update = true
@@ -294,9 +300,10 @@ function Ninepatch:updateRenderTasks()
    if not self.Modelpart then return self end
    local res = self.Texture:getDimensions()
    local uv = self.UV:copy():add(0,0,1,1)
+   local pos = vec(self.Position.x,self.Position.y,self.DepthOffset)
    if not self.is_ninepatch then
       self.RenderTasks[1]
-      :setPos(self.Position)
+      :setPos(pos)
       :setScale(self.Size.x/res.x,self.Size.y/res.y)
       :setColor(self.Color:augmented(self.Alpha))
       :setRenderType(self.RenderType)
@@ -310,7 +317,6 @@ function Ninepatch:updateRenderTasks()
    else
       local sborder = self.BorderThickness*self.Scale --scaled border, used in rendering
       local border = self.BorderThickness             --border, used in UVs
-      local pos = self.Position
       local size = self.Size
       local uvsize = vec(uv.z-uv.x,uv.w-uv.y)
       for _, task in pairs(self.RenderTasks) do

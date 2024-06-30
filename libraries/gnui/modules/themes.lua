@@ -30,7 +30,7 @@ local api = {}
 ---@param element GNUI.any
 ---@param theme string?
 ---@param variant string|"nothing"?
-function api.applyTheme(element,theme,variant)
+function api.applyTheme(element,variant,theme)
    if not theme then theme = "default" end
    if not variant then variant = "default" end
    local type = element.__type:match("%.([^%.]+)$")
