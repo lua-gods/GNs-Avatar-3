@@ -16,6 +16,11 @@ local gnui = require("libraries.gnui")
 local gnui_elements = require("libraries.gnui.modules.elements")
 local themes = require("libraries.gnui.modules.themes")
 
+local eventLib = require("libraries.eventLib")
+
+local active_window
+local ACTIVE_WINDOW_CHANGED = eventLib.new()
+
 ---@param container GNUI.container
 ---@param window GNUI.window
 ---@param fun function
@@ -117,7 +122,7 @@ function Window.new()
       new:setDimensions(
          new.Dimensions.x,
          math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-MINIMUM_SIZE.y),
-         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x-MINIMUM_SIZE.x),
+         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+MINIMUM_SIZE.x),
          new.Dimensions.w)
    end)
    
@@ -129,8 +134,8 @@ function Window.new()
       new:setDimensions(
          new.Dimensions.x,
          new.Dimensions.y,
-         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x-MINIMUM_SIZE.x),
-         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y-MINIMUM_SIZE.y))
+         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+MINIMUM_SIZE.x),
+         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+MINIMUM_SIZE.y))
    end)
    
    local bottomLeftCornerDrag = gnui.newContainer()
@@ -142,7 +147,7 @@ function Window.new()
          math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-MINIMUM_SIZE.x),
          new.Dimensions.y,
          new.Dimensions.z,
-         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y-MINIMUM_SIZE.y))
+         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+MINIMUM_SIZE.y))
    end)
    
    local topLeftCornerDrag = gnui.newContainer()
@@ -157,8 +162,28 @@ function Window.new()
          new.Dimensions.w)
    end)
    
+   ACTIVE_WINDOW_CHANGED:register(function ()
+      local a = new.isActive
+         leftBorderDrag:setVisible(a)
+         rightBorderDrag:setVisible(a)
+         topBorderDrag:setVisible(a)
+         bottomBorderDrag:setVisible(a)
+         topRightCornerDrag:setVisible(a)
+         bottomRightCornerDrag:setVisible(a)
+         bottomLeftCornerDrag:setVisible(a)
+         topLeftCornerDrag:setVisible(a)
+   end)
+   
    new.isGrabbed = false
    local grab_canvas ---@type GNUI.canvas
+   ---@param event GNUI.InputEvent
+   new.INPUT:register(function (event)
+      if event.key == "key.mouse.left" and event.isPressed then
+         new:setAsActiveWindow()
+         return true
+      end
+   end)
+   
    ---@param event GNUI.InputEvent
    new.Titlebar.INPUT:register(function (event)
       if event.key == "key.mouse.left"then
@@ -186,6 +211,18 @@ function Window.new()
    end)
    
    return new
+end
+
+function Window:setAsActiveWindow()
+   if active_window ~= self then
+      local old = active_window
+      if active_window then
+         active_window.isActive = false
+      end
+      active_window = self
+      self.isActive = true
+      ACTIVE_WINDOW_CHANGED:invoke(old,self)
+   end
 end
 
 return Window

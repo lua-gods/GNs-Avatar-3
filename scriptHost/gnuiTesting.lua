@@ -63,7 +63,7 @@ local screen = GNUI.getScreenCanvas()
 --end
 
 
-for i = 1, 10, 1 do
+for i = 1, 2, 1 do
    local window = gnui_window.newWindow()
 
    window:setSize(math.random(64,100),math.random(64,100))
