@@ -1,0 +1,4 @@
+---@param message chatscript.post_data
+return function (message)
+   
+end
