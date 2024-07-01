@@ -75,8 +75,8 @@ return {
    container = {
       ---@param container GNUI.container
       window_border_drag = function (container)
-         local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(1,29,1,29):setDepthOffset(0.1)
-         local sprite_border_active = gnui.newSprite():setTexture(texture):setUV(3,29,3,29):setDepthOffset(0.1)
+         local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(1,29,1,29)
+         local sprite_border_active = gnui.newSprite():setTexture(texture):setUV(3,29,3,29)
          container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
             if pressed then
                container:setSprite(sprite_border_active)

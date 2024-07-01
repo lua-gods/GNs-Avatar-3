@@ -53,7 +53,7 @@ function Stack:updateDimensions()
       for i, child in pairs(self.Children) do
          child:setDimensions(0,y,0,y+sizes[i].y):setAnchor(0,0,1,0)
          y = y + sizes[i].y + self.Margin
-         child:updateDimensions()
+         child:update()
       end
    end
 end

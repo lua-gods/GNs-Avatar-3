@@ -25,6 +25,7 @@ local ACTIVE_WINDOW_CHANGED = eventLib.new()
 ---@param window GNUI.window
 ---@param fun function
 local function applyDrag(container,window,fun)
+   container:setZmultiplier(-0.1)
    container.INPUT:register(function (event)
       if event.key == "key.mouse.left"then
          if event.isPressed then
@@ -58,6 +59,7 @@ function Window.new()
    local new = gnui.newContainer()
    new.type = "window"
    new.Title = ""
+   new.isActive = false
    
    local label = gnui.newLabel()
    new.LabelTitle = label
@@ -162,17 +164,24 @@ function Window.new()
          new.Dimensions.w)
    end)
    
+   local function setActive(a)
+      leftBorderDrag:setVisible(a)
+      rightBorderDrag:setVisible(a)
+      topBorderDrag:setVisible(a)
+      bottomBorderDrag:setVisible(a)
+      topRightCornerDrag:setVisible(a)
+      bottomRightCornerDrag:setVisible(a)
+      bottomLeftCornerDrag:setVisible(a)
+      topLeftCornerDrag:setVisible(a)
+   end
+   
    ACTIVE_WINDOW_CHANGED:register(function ()
-      local a = new.isActive
-         leftBorderDrag:setVisible(a)
-         rightBorderDrag:setVisible(a)
-         topBorderDrag:setVisible(a)
-         bottomBorderDrag:setVisible(a)
-         topRightCornerDrag:setVisible(a)
-         bottomRightCornerDrag:setVisible(a)
-         bottomLeftCornerDrag:setVisible(a)
-         topLeftCornerDrag:setVisible(a)
+      setActive(new.isActive)
+      if new.isActive then
+         new:setChildIndex(2)
+      end
    end)
+   setActive(false)
    
    new.isGrabbed = false
    local grab_canvas ---@type GNUI.canvas

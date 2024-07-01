@@ -70,3 +70,14 @@ for i = 1, 2, 1 do
    window:setPos(math.random(1,300),math.random(1,200))
    screen:addChild(window)
 end
+
+-- EXTREME CONFUSION PROTOCOL
+--events.RENDER:register(function ()
+--   screen.ModelPart:setParentType("HUD")
+--end)
+--
+--events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
+--   if ctx == "BLOCK" then
+--      screen.ModelPart:setParentType("SKULL")
+--   end
+--end)

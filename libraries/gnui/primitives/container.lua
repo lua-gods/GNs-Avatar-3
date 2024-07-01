@@ -58,7 +58,7 @@ function Container.new()
    local new = element.new()
    setmetatable(new,Container)
    new.Dimensions = vec(0,0,0,0) 
-   new.Z = 0
+   new.Z = 1
    new.SIZE_CHANGED = eventLib.new()
    new.ContainmentRect = vec(0,0,0,0) -- Dimensions but with margins and anchored applied
    new.Anchor = vec(0,0,0,0)
@@ -111,7 +111,7 @@ function Container.new()
    end)
    
    new.VISIBILITY_CHANGED:register(function (v)
-      new:updateDimensions()
+      new:update()
    end)
 
    local function orphan()
@@ -143,7 +143,7 @@ function Container.new()
          new.ModelPart:getParent():removeChild(new.ModelPart)
          orphan()
       end
-      new:updateDimensions()
+      new:update()
    end)
    return new
 end
@@ -179,7 +179,7 @@ end
 function Container:setClipOnParent(clip)
    ---@cast self GNUI.container
    self.ClipOnParent = clip
-   self:updateDimensions()
+   self:update()
    return self
 end
 -->====================[ Dimensions ]====================<--
@@ -201,7 +201,7 @@ function Container:setDimensions(x,y,w,t)
    ---@cast self GNUI.container
    local new = utils.figureOutVec4(x,y,w or x,t or y)
    self.Dimensions = new
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -217,7 +217,7 @@ function Container:setPos(x,y)
    local new = utils.figureOutVec2(x,y)
    local size = self.Dimensions.zw - self.Dimensions.xy
    self.Dimensions = vec(new.x,new.y,new.x + size.x,new.y + size.y)
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -233,7 +233,7 @@ function Container:setSize(x,y)
    ---@cast self GNUI.container
    local size = utils.figureOutVec2(x,y)
    self.Dimensions.zw = self.Dimensions.xy + size
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -254,7 +254,7 @@ end
 function Container:setTopLeft(x,y)
    ---@cast self GNUI.container
    self.Dimensions.xy = utils.figureOutVec2(x,y)
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -268,7 +268,7 @@ end
 function Container:setBottomRight(x,y)
    ---@cast self GNUI.container
    self.Dimensions.zw = utils.figureOutVec2(x,y)
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -282,7 +282,7 @@ function Container:offsetTopLeft(x,y)
    local old,new = self.Dimensions.xy,utils.figureOutVec2(x,y)
    local delta = new-old
    self.Dimensions.xy,self.Dimensions.zw = new,self.Dimensions.zw - delta
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -296,7 +296,7 @@ function Container:offsetBottomRight(z,w)
    local old,new = self.Dimensions.xy+self.Dimensions.zw,utils.figureOutVec2(z,w)
    local delta = new-old
    self.Dimensions.zw = self.Dimensions.zw + delta
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -315,15 +315,15 @@ function Container:isPositionInside(x,y)
       and pos.y < self.ContainmentRect.w / self.ScaleFactor)
 end
 
----Sets the offset of the depth for this container, a work around to fixing Z fighting issues when two elements overlap.
----@param depth number
+---Multiplies the offset from its parent container, useful for making the future elements go behind the parent by setting this value to lower than 0.
+---@param mul number
 ---@generic self
 ---@param self self
 ---@return self
-function Container:setZ(depth)
+function Container:setZmultiplier(mul)
    ---@cast self GNUI.container
-   self.Z = depth
-   self:updateDimensions()
+   self.Z = mul
+   self:update()
    return self
 end
 
@@ -345,7 +345,7 @@ end
 function Container:setScaleFactor(factor)
    ---@cast self GNUI.container
    self.ScaleFactor = factor
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -360,7 +360,7 @@ end
 function Container:setAnchorTop(units)
    ---@cast self GNUI.container
    self.Anchor.y = units or 0
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -374,7 +374,7 @@ end
 function Container:setAnchorLeft(units)
    ---@cast self GNUI.container
    self.Anchor.x = units or 0
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -388,7 +388,7 @@ end
 function Container:setAnchorDown(units)
    ---@cast self GNUI.container
    self.Anchor.z = units or 0
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -402,7 +402,7 @@ end
 function Container:setAnchorRight(units)
    ---@cast self GNUI.container
    self.Anchor.w = units or 0
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -422,7 +422,7 @@ end
 function Container:setAnchor(left,top,right,bottom)
    ---@cast self GNUI.container
    self.Anchor = utils.figureOutVec4(left,top,right or left,bottom or top)
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -465,7 +465,7 @@ function Container:setCustomMinimumSize(x,y)
       self.CustomMinimumSize = nil
    end
    self.cache.final_minimum_size_changed = true
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -482,7 +482,7 @@ function Container:setGrowDirection(x,y)
    ---@cast self GNUI.container
    self.cache.final_minimum_size_changed = true
    self.GrowDirection = utils.figureOutVec2(x or 0,y or 0)
-   self:updateDimensions()
+   self:update()
    return self
 end
 
@@ -527,7 +527,7 @@ function Container:UVtoXY(x,y)
    )
 end
 
-function Container:updateDimensions()
+function Container:update()
    self.UpdateQueue = true
 end
 
@@ -636,7 +636,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          -containment_rect.x * unscale_self,
          -containment_rect.y * unscale_self,
-         -((self.Z + self.ChildIndex / (self.Parent and #self.Parent.Children or 1) * 0.88) * core.clipping_margin)
+         -(((self.ChildIndex * self.Z) / (self.Parent and #self.Parent.Children or 1) * 0.88) * core.clipping_margin)
       )
       if self.Sprite and self.cache.size_changed or forced_resize_sprites then
          self.Sprite
@@ -651,7 +651,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          0,
          0,
-         -((self.Z + 1 + self.ChildIndex / (self.Parent and #self.Parent.Children or 1)) * core.clipping_margin) * 0.6)
+         -((1 + (self.ChildIndex * self.Z) / (self.Parent and #self.Parent.Children or 1)) * core.clipping_margin) * 0.6)
          if self.cache.size_changed then
             ---@diagnostic disable-next-line: undefined-field
                   self.debug_container:setSize(
