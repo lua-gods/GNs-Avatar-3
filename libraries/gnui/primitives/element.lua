@@ -15,15 +15,15 @@ local element_next_free = 0
 ---@field PARENT_CHANGED table        # when the parent changes.
 ---@field ON_FREE eventLib            # when the element is wiped from history.
 ---@field cache table
-local element = {}
-element.__index = element
-element.__type = "GNUI.element"
+local Element = {}
+Element.__index = Element
+Element.__type = "GNUI.element"
 
 ---Creates a new basic element.
 ---@generic self
 ---@param preset table?
 ---@return self
-function element.new(preset)
+function Element.new(preset)
    local new = preset or {}
    new.id = element_next_free
    new.Visible = true
@@ -35,7 +35,7 @@ function element.new(preset)
    new.CHILDREN_REMOVED = eventLib.new()
    new.PARENT_CHANGED = eventLib.new()
    new.ON_FREE = eventLib.new()
-   setmetatable(new,element)
+   setmetatable(new,Element)
    element_next_free = element_next_free + 1
    return new
 end
@@ -45,7 +45,7 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function element:setVisible(visible)
+function Element:setVisible(visible)
    ---@cast self GNUI.element
    if self.Visible ~= visible then
       self.Visible = visible
@@ -60,7 +60,7 @@ function element:setVisible(visible)
    return self
 end
 
-function element:_updateVisibility()
+function Element:_updateVisibility()
    if self.Parent then
       self.cache.final_visible = self.Parent.Visible and self.Visible
    else
@@ -74,21 +74,21 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function element:setName(name)
+function Element:setName(name)
    ---@cast self GNUI.element
    self.name = name
    return self
 end
 
 ---@return string
-function element:getName()
+function Element:getName()
    return self.name
 end
 
 ---Gets a child by username
 ---@param name string
 ---@return GNUI.any
-function element:getChild(name)
+function Element:getChild(name)
    for _, child in pairs(self.Children) do
       if child.name and child.name == name then
          return child
@@ -97,14 +97,14 @@ function element:getChild(name)
    return self
 end
 
-function element:getChildByIndex(index)
+function Element:getChildByIndex(index)
    return self.Children[index]
 end
 
 ---@generic self
 ---@param self self
 ---@return self
-function element:updateChildrenOrder()
+function Element:updateChildrenOrder()
    ---@cast self GNUI.element
    for i, c in pairs(self.Children) do
       c.ChildIndex = i
@@ -118,7 +118,7 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function element:addChild(child,index)
+function Element:addChild(child,index)
    ---@cast self GNUI.container
    if not child then return self end
    if not type(child):find("^GNUI.element") then
@@ -141,7 +141,7 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function element:removeChild(child)
+function Element:removeChild(child)
    ---@cast self GNUI.container
    if child.Parent == self then -- birth certificate check
       table.remove(self.Children, child.ChildIndex)
@@ -158,24 +158,38 @@ function element:removeChild(child)
 end
 
 ---@return table<integer, GNUI.container|GNUI.element>
-function element:getChildren()
+function Element:getChildren()
    return self.Children
 end
 
 ---@generic self
 ---@param self self
 ---@return self
-function element:updateChildrenIndex()
+function Element:updateChildrenIndex()
    ---@cast self GNUI.element
-   for i, child in pairs(self.Children) do
+   for i = 1, #self.Children, 1 do
+      local child = self.Children[i]
       child.ChildIndex = i
-      child.DIMENSIONS_CHANGED:invoke()
+      if child.update then
+         child:update()
+      end
    end
    return self
 end
 
+---Sets the Child Index of the element.
+---@param i any
+function Element:setChildIndex(i)
+   if self.Parent then
+      i = math.clamp(i, 1, #self.Parent.Children)
+      table.remove(self.Parent.Children, self.ChildIndex)
+      table.insert(self.Parent.Children, i, self)
+      self.Parent:updateChildrenIndex()
+   end
+end
+
 ---Frees all the data of the element. all thats left to do is to forget it ever existed.
-function element:free()
+function Element:free()
    if self.Parent then
       self.Parent:removeChild(self)
    end
@@ -183,4 +197,4 @@ function element:free()
    self = nil
 end
 
-return element
+return Element
