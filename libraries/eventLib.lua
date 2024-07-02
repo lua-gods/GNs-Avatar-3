@@ -1,4 +1,4 @@
--- variables
+-- FROM: auriafoxgirl (note: old library)
 local lib = {}
 
 ---@class eventLib

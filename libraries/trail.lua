@@ -1,8 +1,8 @@
 --[[______   __
   / ____/ | / / by: GNamimates | Discord: "@gn8." | Youtube: @GNamimates
  / / __/  |/ / Trail Library
-/ /_/ / /|  / A Library for making trails in Figura.
-\____/_/ |_/ ]]
+/ /_/ / /|  / A Library for making trails in Figura. WARNING: old library lmao, has not been updated in a while.
+\____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/trail.lua]]
 local lib = {}
 local smears = {}
 

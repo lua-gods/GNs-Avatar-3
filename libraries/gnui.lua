@@ -2,7 +2,7 @@
   / ____/ | / / By: GNamimates
  / / __/  |/ / GNUI v2.0.0
 / /_/ / /|  / A high level UI library for figura.
-\____/_/ |_/ https://github.com/lua-gods/GNUI]]
+\____/_/ |_/ Stable Release: https://github.com/lua-gods/GNUI, Unstable Pre-release: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/gnui.lua]]
 
 --[[ NOTES
 Everything is in one file to make sure it is possible to load this script from a config file, 

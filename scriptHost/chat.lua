@@ -1,3 +1,8 @@
+--[[______   __
+  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+ / / __/  |/ / An advanced chat script for Figura.
+/ /_/ / /|  / comes with Anti spam, Theme, Coordinates detection, auto Solve equations in messages, clickable HTTP Links and copyable numbers
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/scriptHost/chat.lua]]
 ---@diagnostic disable: assign-type-mismatch, missing-fields
 
 ---@type chatscript.post_data[]

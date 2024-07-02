@@ -1,4 +1,9 @@
--- based
+--[[______   __
+  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+ / / __/  |/ / a library for base64 decoding/encoding
+/ /_/ / /|  / 
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/base64inator.lua]]
+
 local function base64ToString(base64)
    local result = {}
    local value = 0

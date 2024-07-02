@@ -1,9 +1,8 @@
---[[______   __                _                 __
-  / ____/ | / /___ _____ ___  (_)___ ___  ____ _/ /____  _____
- / / __/  |/ / __ `/ __ `__ \/ / __ `__ \/ __ `/ __/ _ \/ ___/
-/ /_/ / /|  / /_/ / / / / / / / / / / / / /_/ / /_/  __(__  )
-\____/_/ |_/\__,_/_/ /_/ /_/_/_/ /_/ /_/\__,_/\__/\___/____]]
---[[ Makes it easier to request certain things with just a few lines ]]
+--[[______   __
+  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+ / / __/  |/ / a library to make http requests simpler.
+/ /_/ / /|  / 
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/httpRequest.lua]]
 local lib = {}
 
 ---@class HTTPRequestQueue
