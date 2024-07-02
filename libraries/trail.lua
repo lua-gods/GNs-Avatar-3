@@ -21,7 +21,7 @@ local config = {
 ---@field duration integer
 ---@field texture Texture
 ---@field points table
----@field sprites table
+---@field sprites SpriteTask[]
 ---@field render_type ModelPart.renderType
 ---@field sprites_flipped table
 ---@field diverge number
@@ -108,6 +108,12 @@ function twoLeadTrail:delete()
    for _, t in pairs(self.sprites_flipped) do config.world:removeTask(t:getName()) end
 end
 
+function twoLeadTrail:setColor(r,g,b)
+   for _, t in pairs(self.sprites) do t:setColor(r,g,b) end
+   for _, t in pairs(self.sprites_flipped) do t:setColor(r,g,b) end
+   return self
+end
+
 ---Rebuilds the sprite tasks.
 ---@return twoLeadTrail
 function twoLeadTrail:rebuildSpriteTasks()
@@ -116,15 +122,17 @@ function twoLeadTrail:rebuildSpriteTasks()
    self.sprites = {}
    self.sprites_flipped = {}
    for i = 1, self.duration-1, 1 do
+      local weight,weight2 = i/self.duration,(i+1)/self.duration
       local new = config.world:newSprite(self.ID.."GNSMEAR"..i):setTexture(self.texture):setRenderType(self.render_type)
       local v = new:getVertices()
-      v[1]:uv(0,i/self.duration) v[2]:uv(1,i/self.duration) v[3]:uv(1,(i+1)/self.duration)v[4]:uv(0,(i+1)/self.duration)
+      v[1]:uv(0,weight) v[2]:uv(1,weight) v[3]:uv(1,weight2)v[4]:uv(0,weight2)
       table.insert(self.sprites,new)
    end
    for i = 1, self.duration-1, 1 do
+      local weight,weight2 = i/self.duration,(i+1)/self.duration
       local new = config.world:newSprite(self.ID.."GNSMEAR"..i.."FLIP"):setTexture(self.texture):setRenderType(self.render_type)
       local v = new:getVertices()
-      v[2]:uv(0,i/self.duration) v[1]:uv(1,i/self.duration) v[4]:uv(1,(i+1)/self.duration)v[3]:uv(0,(i+1)/self.duration)
+      v[2]:uv(0,weight) v[1]:uv(1,weight) v[4]:uv(1,weight2)v[3]:uv(0,weight2)
       table.insert(self.sprites_flipped,new)
    end
    return self
