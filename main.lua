@@ -52,7 +52,7 @@ function tracebackError(input)
       
 
    local json_paths = path2fancy(path)
-   compose[#compose+1] = {text="\n",color=""}
+   compose[#compose+1] = {text="\n"}
    compose[#compose+1] = {text="[ERROR]",color="#ff7b72"}
    compose[#compose+1] = {text="\n"}
       
