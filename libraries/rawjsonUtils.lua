@@ -25,10 +25,9 @@ function api.fragment(component,pattern,filter)
       if type(component) == "string" then -- 1.20.3 fix
          component = {text=component}
       end
-      
       -- component processing
       local a, b = component.text:find(pattern)
-      if a then -- split found
+      if a and not component.antiTamper then -- split found
          local ca,cb,cc = component.text:sub(1,a-1),component.text:sub(a,b),component.text:sub(b+1,-1)
          local ta,tb,tc = copyTable(component),copyTable(component),copyTable(component)
          ta.text = ca

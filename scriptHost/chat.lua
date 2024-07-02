@@ -18,11 +18,92 @@ local msg_data = {}
 ---@field time number
 ---@field with table
 
+local utils = require("libraries.rawjsonUtils")
+local env = {math=math}
+
 ---@type table<integer,{post: fun(message: chatscript.post_data), pre: fun(message: chatscript.pre_data)}>
-local message_filters = {}
-for key, path in pairs(listFiles("scriptHost.chatFilters")) do
-   message_filters[#message_filters+1] = require(path)
-end
+local message_filters = {
+   -- Theme
+   {
+      ---@param message chatscript.post_data
+      post = function (message)
+         
+         if message.translate == "chat.type.text" then
+            local json = message.post_json
+            json.extra[1].text = ""
+            json.extra[3] = {text = " : ",color="gray"}
+         end
+      end,
+   },
+   --Calculator
+   {
+      ---@param message chatscript.post_data
+      post = function (message)
+         if message.translate == "chat.type.text" then
+            ---@param component table
+            utils.fragment(message.post_json,"%[[^]]+%]",function (component)
+               local ok,result = pcall(load("return "..component.text:sub(2,-2),"meth","t",env))
+               if ok and (type(result) == "number" or not result) then
+                  if result then
+                     component.text = component.text .. " = " .. result
+                     component.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
+                     component.hoverEvent = {action = "show_text", contents = {text=tostring(result)}}
+                  end
+                  component.color = "gray"
+               end
+            end)
+         end
+      end,
+   },
+   --HTTP Links
+   {
+      ---@param message chatscript.post_data
+      post = function (message)
+         if message.translate == "chat.type.text" then
+            ---@param component table
+            utils.fragment(message.post_json,"https?://[%a%d;,/?:@&=+%$-_.!~*'()#]+",function (component)
+               component.color = "yellow"
+               component.underlined = "true"
+               component.clickEvent = {action = "open_url", value = component.text}
+               component.hoverEvent = {action = "show_text", contents = {text="Open URL"}}
+            end)
+         end
+      end,
+   },
+   -- Copy Coordinates
+   {
+      ---@param message chatscript.post_data
+      post = function (message)
+         if message.translate == "chat.type.text" then
+            ---@param component table
+            utils.fragment(message.post_json,"[%d-.]+%s+[%d-.]+%s+[%d-.]+",function (component)
+               local axis = 0
+               local colors = {"red","green","blue"}
+               utils.fragment(component,"[%d-.]+",function (sub_component)
+                  axis = axis + 1
+                  sub_component.color = colors[axis]
+                  sub_component.clickEvent = {action = "copy_to_clipboard", value = component.text}
+                  sub_component.hoverEvent = {action = "show_text", contents = {text="Copy Coordinates to Clipboard"}}
+                  sub_component.antiTamper = true
+               end)
+            end)
+         end
+      end,
+   },
+   -- Copy numbers
+   {
+      ---@param message chatscript.post_data
+      post = function (message)
+         if message.translate == "chat.type.text" then
+            ---@param component table
+            utils.fragment(message.post_json,"[%d.-]+",function (component)
+               component.clickEvent = {action = "copy_to_clipboard", value = component.text}
+               component.hoverEvent = {action = "show_text", contents = {text="Copy Numbers to Clipboard"}}
+            end)
+         end
+      end,
+   }
+}
 
 local recived_messages = 0
 events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
