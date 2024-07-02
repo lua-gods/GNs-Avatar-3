@@ -14,12 +14,16 @@ end
 function api.fragment(component,pattern,filter)
    if component[1] then -- is an array
       for i = 1, #component, 1 do
-         api.fragment(component[i],pattern,filter)
+         component[i] = api.fragment(component[i],pattern,filter)
       end
    else
       -- recursion
       if component.extra then
          api.fragment(component.extra,pattern,filter)
+      end
+      
+      if type(component) == "string" then -- 1.20.3 fix
+         component = {text=component}
       end
       
       -- component processing
