@@ -1,4 +1,3 @@
-local utils = require("libraries.rawjsonUtils")
 return {
    ---@param message chatscript.post_data
    post = function (message)

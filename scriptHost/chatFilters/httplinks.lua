@@ -11,7 +11,6 @@ return {
             component.hoverEvent = {action = "show_text", contents = {text="Open URL"}}
          end)
       end
-      --if message.translate == ""
    end,
 }
 

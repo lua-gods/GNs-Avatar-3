@@ -21,7 +21,6 @@ return {
             end)
          end
       end
-      --if message.translate == ""
    end,
 }
 
