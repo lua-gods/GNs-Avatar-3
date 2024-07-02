@@ -2,12 +2,12 @@ local utils = require("libraries.rawjsonUtils")
 return {
    ---@param message chatscript.post_data
    post = function (message)
+      
       if message.translate == "chat.type.text" then
-         ---@param component table
-         utils.fragment(message.post_json,"yellow",function (component)
-            component.color = "green"
-         end)
+         local json = message.post_json
+         json.extra[1].text = ""
+         json.extra[3] = {text = " : ",color="gray"}
       end
-      --if message.translate == ""
    end,
 }
+

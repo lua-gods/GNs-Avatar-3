@@ -43,11 +43,9 @@ events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
    return toJson(predata.pre_json)
 end)
 
-local block = false
+
 events.WORLD_RENDER:register(function ()
    for i = 1, recived_messages, 1 do
-      if block then return end
-      block = true
       local post_msg_data = host:getChatMessage(i)
       
       local json = parseJson(post_msg_data.json)
