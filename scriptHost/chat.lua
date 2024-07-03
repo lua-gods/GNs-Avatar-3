@@ -100,7 +100,7 @@ local message_filters = {
       post = function (message)
          if message.translate == "chat.type.text" then
             ---@param component table
-            utils.filterPattern(message.post_json,"[%d+%-*/ ()]+",function (component)
+            utils.filterPattern(message.post_json,"[%d+%-*/ ().]+",function (component)
                if #component.text > 1 then
                   local ok,result = pcall(load("return "..component.text,"meth","t",env))
                   if ok and (type(result) == "number" or not result) then
