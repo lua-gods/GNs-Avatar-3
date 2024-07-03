@@ -6,10 +6,14 @@
 
 local api = {}
 
-local function copyTable(tbl)
+function api.copyTable(tbl)
    local copy = {}
    for k,v in pairs(tbl) do
-      copy[k] = v
+      if type(v) == "table" then
+         copy[k] = api.copyTable(v)
+      else
+         copy[k] = v
+      end
    end
    return copy
 end
@@ -34,15 +38,15 @@ function api.filterPattern(component,pattern,filter)
       end
       -- component processing
       local a, b
-      if pattern then
+      if pattern and component.text then
          a, b  = component.text:find(pattern)
       else
          a = 1
          b = -1
       end
-      if a and not component.antiTamper then -- split found
+      if a and not component.antiTamper and component.text then -- split found
          local ca,cb,cc = component.text:sub(1,a-1),component.text:sub(a,b),component.text:sub(b+1,-1)
-         local ta,tb,tc = copyTable(component),copyTable(component),copyTable(component)
+         local ta,tb,tc = api.copyTable(component),api.copyTable(component),api.copyTable(component)
          ta.text = ca
          tb.text = cb
          tc.text = cc
@@ -89,7 +93,7 @@ end
 ---@param prefix table
 function api.insertPrefix(component,prefix)
    if not component then return end
-   local copy = copyTable(component)
+   local copy = api.copyTable(component)
    for key, value in pairs(component) do
       component[key] = nil
    end
@@ -103,7 +107,7 @@ function api.insertSuffix(component,suffix)
    for key, value in pairs(component) do
       component[key] = nil
    end
-   component.extra = {copyTable(component),suffix}
+   component.extra = {api.copyTable(component),suffix}
    return component
 end
 

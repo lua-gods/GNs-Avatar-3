@@ -81,41 +81,21 @@ local message_filters = {
          if message.translate == "chat.type.text" then
             ---@param component table
             utils.filterPattern(message.post_json,"[%d-.]+%s+[%d-.]+%s+[%d-.]+",function (component)
+               component.hoverEvent = {action = "show_text", contents = {text="Copy "..component.text.." to Clipboard"}}
+               component.clickEvent = {action = "copy_to_clipboard", value = component.text}
                local axis = 0
                local colors = {"red","green","blue"}
                utils.filterPattern(component,"[%d-.]+",function (sub_component)
                   axis = axis + 1
                   sub_component.color = colors[axis]
-                  sub_component.clickEvent = {action = "copy_to_clipboard", value = component.text}
-                  sub_component.hoverEvent = {action = "show_text", contents = {text="Copy Coordinates to Clipboard"}}
                   sub_component.antiTamper = true
                end)
+               component.antiTamper = true
             end)
          end
       end,
    },
-   --Calculator
-   {
-      ---@param message chatscript.post_data
-      post = function (message)
-         if message.translate == "chat.type.text" then
-            ---@param component table
-            utils.filterPattern(message.post_json,"[%d+%-*/ ().]+",function (component)
-               if #component.text > 1 then
-                  local ok,result = pcall(load("return "..component.text,"meth","t",env))
-                  if ok and (type(result) == "number" or not result) then
-                     if result then
-                        component.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
-                        component.hoverEvent = {action = "show_text", contents = {text="it's "..result.." btw"}}
-                     end
-                  end
-                  component.antiTamper = true
-                  component.color = "gray"
-               end
-            end)
-         end
-      end,
-   },
+   
    --HTTP Links
    {
       ---@param message chatscript.post_data
@@ -127,19 +107,29 @@ local message_filters = {
                component.underlined = "true"
                component.clickEvent = {action = "open_url", value = component.text}
                component.hoverEvent = {action = "show_text", contents = {text="Open URL"}}
+               component.antiTamper = true
             end)
          end
       end,
    },
-   -- Copy numbers
+   --Calculator
    {
       ---@param message chatscript.post_data
       post = function (message)
          if message.translate == "chat.type.text" then
             ---@param component table
-            utils.filterPattern(message.post_json,"[%d.-]+",function (component)
-               component.clickEvent = {action = "copy_to_clipboard", value = component.text}
-               component.hoverEvent = {action = "show_text", contents = {text="Copy Numbers to Clipboard"}}
+            utils.filterPattern(message.post_json,"[%d+%-*^./ ()]+",function (component)
+               if #component.text > 1 then
+                  local ok,result = pcall(load("return "..component.text,"meth","t",env))
+                  if ok and (type(result) == "number" or not result) then
+                     if result then
+                        component.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
+                        component.hoverEvent = {action = "show_text", contents = {text="it's "..result.." btw"}}
+                     end
+                  end
+                  component.antiTamper = true
+                  component.color = "gray"
+               end
             end)
          end
       end,
