@@ -636,7 +636,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          -containment_rect.x * unscale_self,
          -containment_rect.y * unscale_self,
-         -(((self.ChildIndex * self.Z) / (self.Parent and #self.Parent.Children or 1) * 0.88) * core.clipping_margin)
+         -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * core.clipping_margin)
       )
       if self.Sprite and self.cache.size_changed or forced_resize_sprites then
          self.Sprite
@@ -651,7 +651,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          0,
          0,
-         -((1 + (self.ChildIndex * self.Z) / (self.Parent and #self.Parent.Children or 1)) * core.clipping_margin) * 0.6)
+         -((1 + (self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1)) * core.clipping_margin) * 0.6)
          if self.cache.size_changed then
             ---@diagnostic disable-next-line: undefined-field
                   self.debug_container:setSize(

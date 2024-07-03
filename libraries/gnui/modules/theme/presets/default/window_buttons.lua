@@ -14,6 +14,10 @@ return {
          container.Titlebar:setSprite(sprite_titlebar_active)
          container.Titlebar:setAnchor(0,0,1,0):setDimensions(1,1,-1,12)
          
+         container.LabelTitle:setDefaultColor("#1e6f50")
+         :setText("Unknown")
+         :setAnchor(0,0,1,1):setDimensions(2,2,-2,-2)
+         
          
          local close_button = container.CloseButton
          local sprite_close_normal = gnui.newSprite():setTexture(texture):setUV(14,1,20,7)

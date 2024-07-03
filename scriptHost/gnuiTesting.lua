@@ -63,21 +63,21 @@ local screen = GNUI.getScreenCanvas()
 --end
 
 
---for i = 1, 1, 1 do
---   local window = gnui_window.newWindow()
---
---   window:setSize(math.random(64,100),math.random(64,100))
---   window:setPos(math.random(1,300),math.random(1,200))
---   screen:addChild(window)
---end
+for i = 1, 3, 1 do
+   local window = gnui_window.newWindow()
+
+   window:setSize(math.random(64,100),math.random(64,100))
+   window:setPos(math.random(1,300),math.random(1,200))
+   screen:addChild(window)
+end
 
 -- EXTREME CONFUSION PROTOCOL
---events.RENDER:register(function ()
---   screen.ModelPart:setParentType("HUD")
---end)
---
---events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
---   if ctx == "BLOCK" then
---      screen.ModelPart:setParentType("SKULL")
---   end
---end)
+events.RENDER:register(function ()
+   screen.ModelPart:setParentType("HUD")
+end)
+
+events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
+   if ctx == "BLOCK" then
+      screen.ModelPart:setParentType("SKULL")
+   end
+end)

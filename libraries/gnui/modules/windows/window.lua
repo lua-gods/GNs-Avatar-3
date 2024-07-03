@@ -61,13 +61,13 @@ function Window.new()
    new.Title = ""
    new.isActive = false
    
-   local label = gnui.newLabel()
-   new.LabelTitle = label
-   new:addChild(label)
-   
    local titleBar = gnui.newContainer()
    new.Titlebar = titleBar
    new:addChild(titleBar)
+   
+   local label = gnui.newLabel()
+   new.LabelTitle = label:setCanCaptureCursor(false)
+   titleBar:addChild(label)
    
    local closeButton = gnui_elements.newButton("nothing")
    new.CloseButton = closeButton
@@ -178,7 +178,7 @@ function Window.new()
    ACTIVE_WINDOW_CHANGED:register(function ()
       setActive(new.isActive)
       if new.isActive then
-         new:setChildIndex(2)
+         new:setChildIndex(999)
       end
    end)
    setActive(false)
