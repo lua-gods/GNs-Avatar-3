@@ -50,22 +50,32 @@ local screen = GNUI.getScreenCanvas()
 --   local t = client:getSystemTime() / 500
 --   button:setPos(64,64):setSize((math.sin(t) * 0.5 + 0.6) * 64,1)
 --end)--
+
 --local last = screen
 --for i = 1, 7, 1 do
---   local label = GNUI.newLabel()
+--   --do
+--   --   local label = GNUI.newLabel()
+--   --   label:setText("Lorem ipsum, dolor sit amet consectetur adipisicing elit")
+--   --   label:setWrapText(true)
+--   --   label:setDimensions(16,16,-16,-16)
+--   --   label:setAnchor(0,0,1,1)
+--   --   last:addChild(label)
+--   --end
+--   do
+--      local label = GNUI.newLabel()
 --
---   label:setText("Lorem ipsum, dolor sit amet consectetur adipisicing elit")
---   label:setWrapText(true)
---   label:setDimensions(16,16,-16,-16)
---   label:setAnchor(0,0,1,1)
---   last:addChild(label)
---   last = label
+--      label:setText("Lorem ipsum, dolor sit amet consectetur adipisicing elit")
+--      label:setWrapText(true)
+--      label:setDimensions(16,16,-16,-16)
+--      label:setAnchor(0,0,1,1)
+--      last:addChild(label)
+--      last = label
+--   end
 --end
 
 
 for i = 1, 3, 1 do
    local window = gnui_window.newWindow()
-
    window:setSize(math.random(64,100),math.random(64,100))
    window:setPos(math.random(1,300),math.random(1,200))
    screen:addChild(window)
