@@ -44,6 +44,8 @@ end)
 ---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
 ---@field cache table                      # Contains data to optimize the process.
 ---@field Canvas GNUI.canvas               # The canvas that the container is attached to.
+---@field StackDistance integer            # The layer of parent recursion of this container to root canvas. 0 when orphan, 1 or more when attached to a parent.
+---@field ZSquish number
 local Container = {}
 Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
@@ -80,6 +82,8 @@ function Container.new()
    new.PARENT_CHANGED = eventLib.new()
    new.SystemMinimumSize = vec(0,0)
    new.GrowDirection = vec(1,1)
+   new.StackDistance = 0
+   new.ZSquish = 1
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
    if core.debug_visible then
@@ -115,6 +119,7 @@ function Container.new()
    end)
 
    local function orphan()
+      new.StackDistance = 0
       root_containe_count = root_containe_count + 1
       WORLD_RENDER:register(function ()
          new:_propagateUpdateToChildren()
@@ -127,7 +132,7 @@ function Container.new()
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
          
-         local stack = 0
+         local stack = 1
          local canvas = new
          while canvas.Parent do
             stack = stack + 1
@@ -139,6 +144,7 @@ function Container.new()
          if type(canvas) == "GNUI.element.container.canvas" then
             new.Canvas = canvas
          end
+         new.StackDistance = stack
       else
          new.ModelPart:getParent():removeChild(new.ModelPart)
          orphan()
@@ -628,15 +634,18 @@ function Container:_updateDimensions()
       self:updateSpriteTasks()
    end
 end
-
 function Container:updateSpriteTasks(forced_resize_sprites)
    local containment_rect = self.ContainmentRect
    local unscale_self = 1 / self.ScaleFactor
+   local child_count = self.Parent and (#self.Parent.Children) or 1
+   self.ZSquish = (self.Parent and self.Parent.ZSquish or 1) * (1 / child_count)
+   local child_weight = self.ChildIndex / child_count
+   local nest = math.max(self.StackDistance,1)
    self.ModelPart
       :setPos(
          -containment_rect.x * unscale_self,
          -containment_rect.y * unscale_self,
-         -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * core.clipping_margin)
+         -(child_weight) * core.clipping_margin * self.Z * self.ZSquish
       )
       if self.Sprite and self.cache.size_changed or forced_resize_sprites then
          self.Sprite
@@ -651,7 +660,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
       :setPos(
          0,
          0,
-         -((1 + (self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1)) * core.clipping_margin) * 0.6)
+         -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * core.clipping_margin))
          if self.cache.size_changed then
             ---@diagnostic disable-next-line: undefined-field
                   self.debug_container:setSize(
