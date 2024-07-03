@@ -26,7 +26,8 @@ end
 
 local api = {}
 
----Gets the theme for that element.
+---Applies the theme to the element.  
+---NOTE: Themes stack, so only apply once to avoid unexpected behavior.
 ---@param element GNUI.any
 ---@param theme string?
 ---@param variant string|"nothing"?

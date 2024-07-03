@@ -81,6 +81,8 @@ for i = 1, 3, 1 do
    screen:addChild(window)
 end
 
+--goofy:setDisableGUIElement("CHAT",true)
+
 -- EXTREME CONFUSION PROTOCOL
 events.RENDER:register(function ()
    screen.ModelPart:setParentType("HUD")

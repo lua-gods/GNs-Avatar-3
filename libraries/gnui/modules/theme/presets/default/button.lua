@@ -31,7 +31,7 @@ return {
          label:setDefaultColor('black')
          label:setCanCaptureCursor(false)
          label:setAlign(0.5,0.5)
-         container.SystemMinimumSize.y = 24
+         container.SystemMinimumSize.y = 16
       end,
    },
 }

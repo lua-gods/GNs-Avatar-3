@@ -162,16 +162,18 @@ end
 ---@return self
 function Container:setSprite(sprite_obj)
    ---@cast self self
-   if self.Sprite then
-      self.Sprite:deleteRenderTasks()
-      self.Sprite = nil
+   if sprite_obj ~= self.Sprite then
+      if self.Sprite then
+         self.Sprite:deleteRenderTasks()
+         self.Sprite = nil
+      end
+      if sprite_obj then
+         self.Sprite = sprite_obj
+         sprite_obj:setModelpart(self.ModelPart)
+      end
+      self:updateSpriteTasks(true)
+      self.SPRITE_CHANGED:invoke()
    end
-   if sprite_obj then
-      self.Sprite = sprite_obj
-      sprite_obj:setModelpart(self.ModelPart)
-   end
-   self:updateSpriteTasks(true)
-   self.SPRITE_CHANGED:invoke()
    return self
 end
 
