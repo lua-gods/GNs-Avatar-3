@@ -52,7 +52,7 @@ function Ninepatch.new(obj)
    new.Scale = obj.Scale or 1
    new.DIMENSIONS_CHANGED = eventLib.new()
    new.RenderTasks = {}
-   new.RenderType = obj.RenderType or "CUTOUT_EMISSIVE_SOLID"
+   new.RenderType = obj.RenderType or "CUTOUT"
    new.BorderThickness = obj.BorderThickness or vec(0,0,0,0)
    new.BORDER_THICKNESS_CHANGED = eventLib.new()
    new.ExcludeMiddle = obj.ExcludeMiddle or false
@@ -304,7 +304,7 @@ function Ninepatch:updateRenderTasks()
    if not self.is_ninepatch then
       self.RenderTasks[1]
       :setPos(pos)
-      :setScale(self.Size.x/res.x,self.Size.y/res.y)
+      :setScale(self.Size.x/res.x,self.Size.y/res.y,0)
       :setColor(self.Color:augmented(self.Alpha))
       :setRenderType(self.RenderType)
       :setUVPixels(
@@ -329,7 +329,7 @@ function Ninepatch:updateRenderTasks()
          pos
       ):setScale(
          sborder.x/res.x,
-         sborder.y/res.y
+         sborder.y/res.y,0
       ):setUVPixels(
          uv.x,
          uv.y
@@ -345,7 +345,7 @@ function Ninepatch:updateRenderTasks()
          pos.z
       ):setScale(
          (size.x-sborder.z-sborder.x)/res.x,
-         sborder.y/res.y
+         sborder.y/res.y,0
       ):setUVPixels(
          uv.x+border.x,
          uv.y
@@ -360,7 +360,7 @@ function Ninepatch:updateRenderTasks()
          pos.y,
          pos.z
       ):setScale(
-         sborder.z/res.x,sborder.y/res.y
+         sborder.z/res.x,sborder.y/res.y,0
       ):setUVPixels(
          uv.z-border.z,
          uv.y
@@ -376,7 +376,7 @@ function Ninepatch:updateRenderTasks()
          pos.z
       ):setScale(
          sborder.x/res.x,
-         (size.y-sborder.y-sborder.w)/res.y
+         (size.y-sborder.y-sborder.w)/res.y,0
       ):setUVPixels(
          uv.x,
          uv.y+border.y
@@ -393,7 +393,7 @@ function Ninepatch:updateRenderTasks()
          )
          :setScale(
             (size.x-sborder.x-sborder.z)/res.x,
-            (size.y-sborder.y-sborder.w)/res.y
+            (size.y-sborder.y-sborder.w)/res.y,0
          ):setUVPixels(
             uv.x+border.x,
             uv.y+border.y
@@ -413,7 +413,7 @@ function Ninepatch:updateRenderTasks()
       )
       :setScale(
          sborder.z/res.x,
-         (size.y-sborder.y-sborder.w)/res.y
+         (size.y-sborder.y-sborder.w)/res.y,0
       ):setUVPixels(
          uv.z-border.z,
          uv.y+border.y
@@ -431,7 +431,7 @@ function Ninepatch:updateRenderTasks()
       )
       :setScale(
          sborder.x/res.x,
-         sborder.w/res.y
+         sborder.w/res.y,0
       ):setUVPixels(
          uv.x,
          uv.w-border.w
@@ -447,7 +447,7 @@ function Ninepatch:updateRenderTasks()
          pos.z
       ):setScale(
          (size.x-sborder.z-sborder.x)/res.x,
-         sborder.w/res.y
+         sborder.w/res.y,0
       ):setUVPixels(
          uv.x+border.x,
          uv.w-border.w
@@ -463,7 +463,7 @@ function Ninepatch:updateRenderTasks()
          pos.z
       ):setScale(
          sborder.z/res.x,
-         sborder.w/res.y
+         sborder.w/res.y,0
       ):setUVPixels(
          uv.z-border.z,
          uv.w-border.w
