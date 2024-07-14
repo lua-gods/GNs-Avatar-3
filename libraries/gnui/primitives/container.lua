@@ -23,7 +23,7 @@ end)
 ---@field SIZE_CHANGED eventLib            # Triggered when the size of the final container dimensions is different from the last tick.
 ---@field Anchor Vector4                   # Determins where to attach to its parent, (`0`-`1`, left-right, up-down)
 ---@field ANCHOR_CHANGED eventLib          # Triggered when the anchors applied to the container is changed.
----@field Sprite Ninepatch                 # the sprite that will be used for displaying textures.
+---@field Sprite Sprite                 # the sprite that will be used for displaying textures.
 ---@field SPRITE_CHANGED eventLib          # Triggered when the sprite object set to this container has changed.
 ---@field CursorHovering boolean           # True when the cursor is hovering over the container, compared with the parent container.
 ---@field PRESSED eventLib                 # Triggered when `setCursor` is called with the press argument set to true
@@ -158,7 +158,7 @@ end
 ---note: the object dosent get applied directly, its duplicated and the clone is used instead of the original.
 ---@generic self
 ---@param self self
----@param sprite_obj Ninepatch?
+---@param sprite_obj Sprite?
 ---@return self
 function Container:setSprite(sprite_obj)
    ---@cast self self

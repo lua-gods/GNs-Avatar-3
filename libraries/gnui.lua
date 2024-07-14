@@ -25,8 +25,13 @@ local anchor = require("libraries.gnui.primitives.anchor")
 api.newPointAnchor = function ()return anchor.new()end
 api.newContainer = function ()return container.new() end
 api.newCanvas = function ()return canvas.new() end
-api.newSprite = function ()return sprite.new() end
 api.newLabel = function ()return label.new() end
+
+---@param texture Texture?
+---@return Sprite
+api.newSprite = function (texture)
+  return sprite.new()
+end
 
 api.utils = utils
 

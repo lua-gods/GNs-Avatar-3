@@ -45,7 +45,7 @@ end
 ---@field CloseButton GNUI.Button
 ---@field MinimizeButton GNUI.Button
 ---@field MaximizeButton GNUI.Button
----@field Icon Ninepatch
+---@field Icon Sprite
 ---@field isActive boolean
 ---@field isMaximized boolean
 ---@field isGrabbed boolean
