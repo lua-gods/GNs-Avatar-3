@@ -1,35 +1,31 @@
 ---@diagnostic disable: assign-type-mismatch
+-- The Base class for all buttons. does not contain any visual elements.
 
 local gnui = require("libraries.gnui")
 local themes = require("libraries.gnui.modules.themes")
 local eventLib = require("libraries.eventLib")
 
 
----@class GNUI.button : GNUI.container
+---@class GNUI.Button : GNUI.Container
 ---@field Pressed boolean
----@field label GNUI.label
 local Button = {}
 Button.__index = function (t,i)
-   return rawget(t,i) or Button[i] or gnui.container[i] or gnui.element[i]
+   return rawget(t,i) or Button[i] or gnui.Container[i] or gnui.Element[i]
 end
 Button.__type = "GNUI.element.container.button"
 
 ---Creates a new button.
----@return GNUI.button
+---@return GNUI.Button
 function Button.new(variant,theme)
    variant = variant or "default"
    theme = theme or "default"
-   ---@type GNUI.button
+   ---@type GNUI.Button
    local new = gnui.newContainer()
-   new.Text = ""
    new.PRESSED = eventLib.new()
    new.BUTTON_DOWN = eventLib.new()
    new.BUTTON_UP = eventLib.new()
    local label = gnui.newLabel()
-   new.label = label
-   new:addChild(label)
    setmetatable(new,Button)
-   themes.applyTheme(new,variant,theme)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)
@@ -45,23 +41,6 @@ function Button.new(variant,theme)
       end
    end,"_button")
    return new
-end
-
----Sets the text of this label, accepts raw json as a table
----@param text string|table
----@generic self
----@param self self
----@return self
-function Button:setText(text)
-   ---@cast self GNUI.button
-   self.label:setText(text)
-   return self
-end
-
----Gets the text of this label
----@return string|table
-function Button:getText()
-   return self.label.Text
 end
 
 return Button

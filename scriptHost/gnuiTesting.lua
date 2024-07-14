@@ -24,25 +24,25 @@ local screen = GNUI.getScreenCanvas()
 --end
 
 
---local stack = gnui_extras.newStack()
---
---events.WORLD_RENDER:register(function (delta)
---   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
---   stack:setDimensions(0+o,0,64+o,128)
---end)
---for i = 1, 5, 1 do
---   local button = gnui_extras.newButton()
---   stack:addChild(button)
---   button:setPos(16,16):setSize(64,0)
---   button:setText("Hello World")
---   button.PRESSED:register(function ()
---   end)
---end
---
---stack:setCustomMinimumSize(64,64)
---stack:setPos(64,64)
---
---screen:addChild(stack)
+local stack = gnui_extras.newStack()
+
+events.WORLD_RENDER:register(function (delta)
+   local o = (math.sin(client:getSystemTime() / 500) * 0.5 + 0.5) * 16
+   stack:setDimensions(0+o,0,64+o,128)
+end)
+for i = 1, 5, 1 do
+   local button = gnui_extras.newTextButton()
+   stack:addChild(button)
+   button:setPos(16,16):setSize(64,0)
+   button:setText("Hello World")
+   button.PRESSED:register(function ()
+   end)
+end
+
+stack:setCustomMinimumSize(64,64)
+stack:setPos(64,64)
+
+screen:addChild(stack)
 
 
 

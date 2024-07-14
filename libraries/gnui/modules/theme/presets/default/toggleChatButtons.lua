@@ -4,7 +4,7 @@ local texture = textures["textures.icons"]
 
 return {
    button = {
-      ---@param container GNUI.button
+      ---@param container GNUI.Button
       toggle_chat = function (container)
          local sprite_idle = gnui.newSprite():setTexture(texture):setUV(1,1,13,13)
          local sprite_alert = gnui.newSprite():setTexture(texture):setUV(15,1,27,13)

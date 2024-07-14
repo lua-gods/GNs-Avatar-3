@@ -273,6 +273,11 @@ function Ninepatch:deleteRenderTasks()
    return self
 end
 
+function Ninepatch:free()
+   self:deleteRenderTasks()
+   return self
+end
+
 function Ninepatch:buildRenderTasks()
    if not self.Modelpart then return self end
    local b = self.BorderThickness

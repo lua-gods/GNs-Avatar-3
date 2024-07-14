@@ -4,8 +4,8 @@ local tween = require("libraries.tween")
 
 ---@type GNUI.theme
 return {
-   button = {
-      ---@param container GNUI.button
+   text_button = {
+      ---@param container GNUI.TextButton
       default = function (container)
          local label = container.label
          

@@ -1,10 +1,10 @@
 ---@diagnostic disable: assign-type-mismatch
 local gnui = require("libraries.gnui")
 
-local container = gnui.container
-local element = gnui.element
+local container = gnui.Container
+local element = gnui.Element
 
----@class GNUI.stack : GNUI.container
+---@class GNUI.stack : GNUI.Container
 ---@field type boolean
 ---@field Margin number
 local Stack = {}

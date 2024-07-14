@@ -21,7 +21,7 @@ local eventLib = require("libraries.eventLib")
 local active_window
 local ACTIVE_WINDOW_CHANGED = eventLib.new()
 
----@param container GNUI.container
+---@param container GNUI.Container
 ---@param window GNUI.window
 ---@param fun function
 local function applyDrag(container,window,fun)
@@ -37,21 +37,22 @@ local function applyDrag(container,window,fun)
    end)
 end
 
----@class GNUI.window : GNUI.container
+---@class GNUI.window : GNUI.Container
 ---@field Theme GNUI.theme
 ---@field LabelTitle GNUI.label
 ---@field Title string
----@field Titlebar GNUI.container
----@field CloseButton GNUI.button
----@field MinimizeButton GNUI.button
----@field MaximizeButton GNUI.button
+---@field Titlebar GNUI.Container
+---@field CloseButton GNUI.Button
+---@field MinimizeButton GNUI.Button
+---@field MaximizeButton GNUI.Button
 ---@field Icon Ninepatch
 ---@field isActive boolean
 ---@field isMaximized boolean
 ---@field isGrabbed boolean
+---@field CLOSE_REQUESTED eventLib
 local Window = {}
 Window.__index = function (t,i)
-   return rawget(t,i) or Window[i] or gnui.container[i] or gnui.element[i]
+   return rawget(t,i) or Window[i] or gnui.Container[i] or gnui.Element[i]
 end
 Window.__type = "GNUI.element.container.window"
 function Window.new()
@@ -60,6 +61,7 @@ function Window.new()
    new.type = "window"
    new.Title = ""
    new.isActive = false
+   new.CLOSE_REQUESTED = eventLib.new()
    
    local titleBar = gnui.newContainer()
    new.Titlebar = titleBar
@@ -83,6 +85,10 @@ function Window.new()
    
    setmetatable(new,Window)
    themes.applyTheme(new)
+   
+   new.CLOSE_REQUESTED:register(function ()
+      new:close()
+   end)
    
    local leftBorderDrag = gnui.newContainer()
    :setAnchor(0,0,0,1):setDimensions(0,BDS,BDS,-BDS)
@@ -232,6 +238,10 @@ function Window:setAsActiveWindow()
       self.isActive = true
       ACTIVE_WINDOW_CHANGED:invoke(old,self)
    end
+end
+
+function Window:close()
+   self.Parent:removeChild(self)
 end
 
 return Window

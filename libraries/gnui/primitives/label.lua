@@ -30,7 +30,7 @@ end
 ---| "OUTLINE"
 ---| "SHADOW"
 
----@class GNUI.label : GNUI.container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
+---@class GNUI.label : GNUI.Container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
 ---@field Text string|table               # The text that will be displayed on the label, for raw json, pass a table instead of a string json.
 ---@field TextData table                  # Baked data of the text.
 ---@field TextEffect TextEffect           # Determins the effects applied to the label.

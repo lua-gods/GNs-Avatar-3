@@ -34,7 +34,6 @@ return {
                end 
             end
          end)
-         close_button.label:free()
          close_button:setAnchor(1,0,1,0):setDimensions(-10,3,-3,10)
          
          local maximize_button = container.MaximizeButton
@@ -53,7 +52,6 @@ return {
                end 
             end
          end)
-         maximize_button.label:free()
          maximize_button:setAnchor(1,0,1,0):setDimensions(-17,3,-10,10)
          
          local sprite_normal = gnui.newSprite():setTexture(texture):setUV(1,1,7,7)
@@ -72,12 +70,11 @@ return {
                end 
             end
          end)
-         minimize_button.label:free()
          minimize_button:setAnchor(1,0,1,0):setDimensions(-24,3,-17,10)
       end,
    },
    container = {
-      ---@param container GNUI.container
+      ---@param container GNUI.Container
       window_border_drag = function (container)
          local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(1,29,1,29)
          local sprite_border_active = gnui.newSprite():setTexture(texture):setUV(3,29,3,29)

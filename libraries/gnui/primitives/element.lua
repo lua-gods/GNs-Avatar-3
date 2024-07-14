@@ -119,7 +119,7 @@ end
 ---@param self self
 ---@return self
 function Element:addChild(child,index)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    if not child then return self end
    if not type(child):find("^GNUI.element") then
       error("invalid child given, recived: "..type(child),2)
@@ -142,7 +142,7 @@ end
 ---@param self self
 ---@return self
 function Element:removeChild(child)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    if child.Parent == self then -- birth certificate check
       table.remove(self.Children, child.ChildIndex)
       child.ChildIndex = 0
@@ -157,7 +157,7 @@ function Element:removeChild(child)
    return self
 end
 
----@return table<integer, GNUI.container|GNUI.element>
+---@return table<integer, GNUI.Container|GNUI.element>
 function Element:getChildren()
    return self.Children
 end

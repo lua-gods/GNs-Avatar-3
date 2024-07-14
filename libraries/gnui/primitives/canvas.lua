@@ -41,7 +41,7 @@ local mousemap = {
 
 for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 
----@class GNUI.canvas : GNUI.container # A special type of container that handles all the inputs
+---@class GNUI.canvas : GNUI.Container # A special type of container that handles all the inputs
 ---@field MousePosition Vector2 # the position of the mouse
 ---@field HoveredElement GNUI.any? # the element the mouse is currently hovering over
 ---@field PressedElement GNUI.any? # the last pressed element, used to unpress buttons that have been unhovered.

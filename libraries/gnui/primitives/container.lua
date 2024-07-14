@@ -15,7 +15,7 @@ events.WORLD_RENDER:register(function (delta)
    WORLD_RENDER:invoke()
 end)
 
----@class GNUI.container : GNUI.element    # A container is a Rectangle that represents the building block of GNUI
+---@class GNUI.Container : GNUI.element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
 ---@field Z number                         # Offsets the container forward(+) or backward(-) if Z fighting is occuring, also affects its children.
 ---@field ContainmentRect Vector4          # The final output dimensions with anchors applied. incredibly handy piece of data.
@@ -55,7 +55,7 @@ local root_containe_count = 0
 ---Creates a new container.
 ---@return self
 function Container.new()
-   ---@type GNUI.container
+   ---@type GNUI.Container
 ---@diagnostic disable-next-line: assign-type-mismatch
    local new = element.new()
    setmetatable(new,Container)
@@ -185,7 +185,7 @@ end
 ---@param clip any
 ---@return self
 function Container:setClipOnParent(clip)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.ClipOnParent = clip
    self:update()
    return self
@@ -199,14 +199,14 @@ end
 
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector4): GNUI.container
+---@overload fun(self : self, vec : Vector4): GNUI.Container
 ---@param x number
 ---@param y number
 ---@param w number
 ---@param t number
 ---@return self
 function Container:setDimensions(x,y,w,t)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local new = utils.figureOutVec4(x,y,w or x,t or y)
    self.Dimensions = new
    self:update()
@@ -216,12 +216,12 @@ end
 ---Sets the position of this container
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number?
 ---@return self
 function Container:setPos(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local new = utils.figureOutVec2(x,y)
    local size = self.Dimensions.zw - self.Dimensions.xy
    self.Dimensions = vec(new.x,new.y,new.x + size.x,new.y + size.y)
@@ -233,12 +233,12 @@ end
 ---Sets the Size of this container.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@return self
 function Container:setSize(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local size = utils.figureOutVec2(x,y)
    self.Dimensions.zw = self.Dimensions.xy + size
    self:update()
@@ -255,12 +255,12 @@ end
 ---Sets the top left offset from the origin anchor of its parent.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@return self
 function Container:setTopLeft(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Dimensions.xy = utils.figureOutVec2(x,y)
    self:update()
    return self
@@ -269,24 +269,24 @@ end
 ---Sets the bottom right offset from the origin anchor of its parent.
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@return self
 function Container:setBottomRight(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Dimensions.zw = utils.figureOutVec2(x,y)
    self:update()
    return self
 end
 
 ---Shifts the container based on the top left.
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@return self
 function Container:offsetTopLeft(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local old,new = self.Dimensions.xy,utils.figureOutVec2(x,y)
    local delta = new-old
    self.Dimensions.xy,self.Dimensions.zw = new,self.Dimensions.zw - delta
@@ -295,12 +295,12 @@ function Container:offsetTopLeft(x,y)
 end
 
 ---Shifts the container based on the bottom right.
----@overload fun(self : self, vec : Vector2): GNUI.container
+---@overload fun(self : self, vec : Vector2): GNUI.Container
 ---@param z number
 ---@param w number
 ---@return self
 function Container:offsetBottomRight(z,w)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local old,new = self.Dimensions.xy+self.Dimensions.zw,utils.figureOutVec2(z,w)
    local delta = new-old
    self.Dimensions.zw = self.Dimensions.zw + delta
@@ -314,7 +314,7 @@ end
 ---@param y number?
 ---@return boolean
 function Container:isPositionInside(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    local pos = utils.figureOutVec2(x,y)
    return (
           pos.x > self.ContainmentRect.x
@@ -329,7 +329,7 @@ end
 ---@param self self
 ---@return self
 function Container:setZmultiplier(mul)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Z = mul
    self:update()
    return self
@@ -341,7 +341,7 @@ end
 ---@param self self
 ---@return self
 function Container:setCanCaptureCursor(capture)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.canCaptureCursor = capture
    return self
 end
@@ -351,7 +351,7 @@ end
 ---@param self self
 ---@return self
 function Container:setScaleFactor(factor)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.ScaleFactor = factor
    self:update()
    return self
@@ -366,7 +366,7 @@ end
 ---@param self self
 ---@return self
 function Container:setAnchorTop(units)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Anchor.y = units or 0
    self:update()
    return self
@@ -380,7 +380,7 @@ end
 ---@param self self
 ---@return self
 function Container:setAnchorLeft(units)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Anchor.x = units or 0
    self:update()
    return self
@@ -394,7 +394,7 @@ end
 ---@param self self
 ---@return self
 function Container:setAnchorDown(units)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Anchor.z = units or 0
    self:update()
    return self
@@ -408,7 +408,7 @@ end
 ---@param self self
 ---@return self
 function Container:setAnchorRight(units)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Anchor.w = units or 0
    self:update()
    return self
@@ -418,8 +418,8 @@ end
 --- x 0 <-> 1 = left <-> right  
 --- y 0 <-> 1 = top <-> bottom  
 ---if right and bottom are not given, they will use left and top instead.
----@overload fun(self : GNUI.container, xz : Vector2, yw : Vector2): GNUI.container
----@overload fun(self : GNUI.container, rect : Vector4): GNUI.container
+---@overload fun(self : GNUI.Container, xz : Vector2, yw : Vector2): GNUI.Container
+---@overload fun(self : GNUI.Container, rect : Vector4): GNUI.Container
 ---@param left number
 ---@param top number
 ---@param right number?
@@ -428,7 +428,7 @@ end
 ---@param self self
 ---@return self
 function Container:setAnchor(left,top,right,bottom)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.Anchor = utils.figureOutVec4(left,top,right or left,bottom or top)
    self:update()
    return self
@@ -440,7 +440,7 @@ end
 ---@param self self
 ---@return self
 function Container:setIsCursorHovering(toggle)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    if self.isCursorHovering ~= toggle then
       self.isCursorHovering = toggle
       self.MOUSE_PRESSENCE_CHANGED:invoke(toggle,self.isPressed)
@@ -454,14 +454,14 @@ function Container:setIsCursorHovering(toggle)
 end
 
 --Sets the minimum size of the container. resets to none if no arguments is given
----@overload fun(self : GNUI.container, vec : Vector2): GNUI.container
+---@overload fun(self : GNUI.Container, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@generic self
 ---@param self self
 ---@return self
 function Container:setCustomMinimumSize(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    if (x and y) then
       local value = utils.figureOutVec2(x,y)
       if value.x == 0 and value.y == 0 then
@@ -480,14 +480,14 @@ end
 --- x -1 <-> 1 = left <-> right  
 --- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
----@overload fun(self : GNUI.container, vec : Vector2): GNUI.container
+---@overload fun(self : GNUI.Container, vec : Vector2): GNUI.Container
 ---@param x number
 ---@param y number
 ---@generic self
 ---@param self self
 ---@return self
 function Container:setGrowDirection(x,y)
-   ---@cast self GNUI.container
+   ---@cast self GNUI.Container
    self.cache.final_minimum_size_changed = true
    self.GrowDirection = utils.figureOutVec2(x or 0,y or 0)
    self:update()

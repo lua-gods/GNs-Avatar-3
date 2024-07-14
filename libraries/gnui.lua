@@ -12,7 +12,7 @@ allowing me to put as much as I want without worrying about storage space.
 ---@class GNUI
 local api = {}
 
----@alias GNUI.any GNUI.element|GNUI.container|GNUI.label|GNUI.anchorPoint|GNUI.canvas
+---@alias GNUI.any GNUI.element|GNUI.Container|GNUI.label|GNUI.anchorPoint|GNUI.canvas
 
 local utils = require("libraries.gnui.utils")
 local label = require("libraries.gnui.primitives.label")
@@ -30,12 +30,12 @@ api.newLabel = function ()return label.new() end
 
 api.utils = utils
 
-api.container = container
-api.anchor = anchor
-api.element = element
-api.canvas = canvas
-api.sprite = sprite
-api.label = label
+api.Container = container
+api.Anchor = anchor
+api.Element = element
+api.Canvas = canvas
+api.Sprite = sprite
+api.Label = label
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.
