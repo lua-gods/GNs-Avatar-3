@@ -83,12 +83,12 @@ end
 --goofy:setDisableGUIElement("CHAT",true)
 
 -- EXTREME CONFUSION PROTOCOL
---events.RENDER:register(function ()
---   screen.ModelPart:setParentType("HUD")
---end)
---
---events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
---   if ctx == "BLOCK" then
---      screen.ModelPart:setParentType("SKULL")
---   end
---end)
+events.RENDER:register(function ()
+   screen.ModelPart:setParentType("HUD")
+end)
+
+events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
+   if ctx == "BLOCK" then
+      screen.ModelPart:setParentType("SKULL")
+   end
+end)

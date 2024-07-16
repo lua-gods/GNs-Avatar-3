@@ -3413,11 +3413,3 @@ LibDeflate.internals = {
 
 return Compression
 ]=]
-print("Original: §b".. #text)
-
-local function result(name,length)
-   print(name..":§b ",length," §r(§b" .. math.floor(length / #text * 10000) / 100 .. "%§r)")
-end
-
-local zlib = require("libraries.compression.zlib")
-result("Zlib", #zlib.Zlib.Compress(text, {level = 9, strategy = "dynamic"}))

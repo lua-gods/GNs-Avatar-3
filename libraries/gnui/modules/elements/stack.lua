@@ -5,7 +5,7 @@ local container = gnui.Container
 local element = gnui.Element
 
 ---@class GNUI.stack : GNUI.Container
----@field type boolean
+---@field is_horizontal boolean
 ---@field Margin number
 local Stack = {}
 
@@ -18,7 +18,7 @@ function Stack.new()
    ---@type GNUI.stack
    local new = container.new()
    new._parent_class = Stack
-   new.type = "stack"
+   new.is_horizontal = false
    new.Margin = 1
    ---@param child GNUI.any
    new.CHILDREN_ADDED:register(function (child)
@@ -44,17 +44,32 @@ function Stack:updateDimensions()
       size = size + min
       sizes[i] = min
    end
-   self:_updateDimensions()
-   
    if not self.cache.final_stack_size or self.cache.final_stack_size ~= size then
       self.cache.final_stack_size = size
       self.SystemMinimumSize = vec(0,size.y)
-      local y = 0
-      for i, child in pairs(self.Children) do
-         child:setDimensions(0,y,0,y+sizes[i].y):setAnchor(0,0,1,0)
-         y = y + sizes[i].y + self.Margin
-         child:update()
+      if self.is_horizontal then
+         local x = 0
+         for i, child in pairs(self.Children) do
+            child:setDimensions(x,0,x+sizes[i].x,0):setAnchor(0,0,0,1)
+            x = x + sizes[i].x + self.Margin
+            child:update()
+         end
+      else
+         local y = 0
+         for i, child in pairs(self.Children) do
+            child:setDimensions(0,y,0,y+sizes[i].y):setAnchor(0,0,1,0)
+            y = y + sizes[i].y + self.Margin
+            child:update()
+         end
       end
+   end
+   self:_updateDimensions()
+end
+
+function Stack:setIsHorizontal(is_horizontal)
+   if self.is_horizontal ~= is_horizontal then
+      self.is_horizontal = is_horizontal
+      self:updateDimensions()
    end
 end
 

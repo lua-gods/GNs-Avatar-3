@@ -2,8 +2,6 @@
 -- Serves as a way to create buttons with custom textures without having to make a theme for it.
 
 local gnui = require("libraries.gnui")
-local themes = require("libraries.gnui.modules.themes")
-local eventLib = require("libraries.eventLib")
 local button = require("libraries.gnui.modules.elements.button")
 
 ---@class GNUI.TextureButton : GNUI.Button

@@ -3,7 +3,6 @@
 
 local gnui = require("libraries.gnui")
 local themes = require("libraries.gnui.modules.themes")
-local eventLib = require("libraries.eventLib")
 local button = require("libraries.gnui.modules.elements.button")
 
 ---@class GNUI.TextButton : GNUI.Button

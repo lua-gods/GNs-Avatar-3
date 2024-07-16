@@ -2,7 +2,6 @@
 -- The Base class for all buttons. does not contain any visual elements.
 
 local gnui = require("libraries.gnui")
-local themes = require("libraries.gnui.modules.themes")
 local eventLib = require("libraries.eventLib")
 
 
