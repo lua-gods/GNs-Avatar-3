@@ -1,22 +1,41 @@
-if not goofy then return end -- requires the goofy plugin
-
 local GNUI = require("libraries.gnui")
 local GNUIElements = require("libraries.gnui.modules.elements")
 local screen = GNUI.getScreenCanvas()
 
-local texture = textures["textures.icons"]
-local sprite_idle = GNUI.newSprite():setTexture(texture):setUV(1,1,13,13)
-local sprite_alert = GNUI.newSprite():setTexture(texture):setUV(15,1,27,13)
+local statusbar = GNUIElements.newStack():setIsHorizontal(true)
+:setPos(2,2)
+:setSize(8,8)
+--:setPos(2,-23)
+screen:addChild(statusbar)
 
+local api = {}
 
-local button = GNUIElements.newSingleSpriteButton(sprite_alert)
-:setAnchor(0,1)
-:setPos(2,-23):setSize(8,8)
-screen:addChild(button)
+local function newButton()
+   local button = GNUIElements.newSingleSpriteButton()
+   button:setCustomMinimumSize(8,8)
+   statusbar:addChild(button)
+   return button
+end
 
+--- Registers a new button for the statusbar.
+---@param icon Texture
+---@param x number?
+---@param y number?
+---@param w number?
+---@param h number?
+---@return GNUI.SingleSpriteButton
+function api.newButtonTexture(icon,x,y,w,h)
+   local button = newButton()
+   button:setSprite(GNUI.newSprite():setTexture(icon):setUV(x,y,w,h))
+   return button
+end
 
-local hide = false
-button.PRESSED:register(function ()
-   hide = not hide
-   goofy:setDisableGUIElement("CHAT",hide)
-end)
+---Registers a new button for the statusbar.
+---@param sprite Sprite
+---@return GNUI.SingleSpriteButton
+function api.newButtonSprite(sprite)
+   local button = newButton():setSprite(sprite)
+   return button
+end
+
+return api

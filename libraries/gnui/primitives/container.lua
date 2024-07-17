@@ -477,6 +477,27 @@ function Container:setCustomMinimumSize(x,y)
    return self
 end
 
+-- This API is only made for libraries, use `Container:setCustomMinimumSize()` instead
+--Sets the minimum size of the container.  
+--* this does not make the container update. `Container:update()` still needs to be called.
+---@overload fun(self : GNUI.Container, vec : Vector2): GNUI.Container
+---@param x number
+---@param y number
+---@generic self
+---@param self self
+---@return self
+function Container:setSystemMinimumSize(x,y)
+   ---@cast self GNUI.Container
+   if (x and y) then
+      local value = utils.figureOutVec2(x,y)
+      self.SystemMinimumSize = value
+   else
+      self.SystemMinimumSize = vec(0,0)
+   end
+   self.cache.final_minimum_size_changed = true
+   return self
+end
+
 --- x -1 <-> 1 = left <-> right  
 --- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
@@ -538,7 +559,7 @@ end
 function Container:update()
    self.UpdateQueue = true
 end
-
+local o = 0
 function Container:_updateDimensions()
    local scale = (self.Parent and self.Parent.AccumulatedScaleFactor or 1) * self.ScaleFactor
    self.AccumulatedScaleFactor = scale
@@ -566,7 +587,6 @@ function Container:_updateDimensions()
          math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
          math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
       )
-      
       if self.CustomMinimumSize or (self.SystemMinimumSize.x ~= 0 or self.SystemMinimumSize.y ~= 0) then
          local final_minimum_size = vec(0,0)
          local shift = vec(0,0)
@@ -642,7 +662,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
    local child_count = self.Parent and (#self.Parent.Children) or 1
    self.ZSquish = (self.Parent and self.Parent.ZSquish or 1) * (1 / child_count)
    local child_weight = self.ChildIndex / child_count
-   local nest = math.max(self.StackDistance,1)
+   --local nest = math.max(self.StackDistance,1)
    self.ModelPart
       :setPos(
          -containment_rect.x * unscale_self,

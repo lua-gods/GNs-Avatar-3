@@ -73,12 +73,12 @@ local screen = GNUI.getScreenCanvas()
 --end
 
 
-for i = 1, 1, 1 do
-   local window = gnui_window.newWindow()
-   window:setSize(math.random(64,100),math.random(64,100))
-   window:setPos(math.random(1,300),math.random(1,200))
-   screen:addChild(window)
-end
+--for i = 1, 1, 1 do
+--   local window = gnui_window.newWindow()
+--   window:setSize(math.random(64,100),math.random(64,100))
+--   window:setPos(math.random(1,300),math.random(1,200))
+--   screen:addChild(window)
+--end
 
 --goofy:setDisableGUIElement("CHAT",true)
 
