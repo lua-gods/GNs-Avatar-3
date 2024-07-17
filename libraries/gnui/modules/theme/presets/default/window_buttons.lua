@@ -14,7 +14,7 @@ return {
          container.Titlebar:setSprite(sprite_titlebar_active)
          container.Titlebar:setAnchor(0,0,1,0):setDimensions(1,1,-1,12)
          
-         container.LabelTitle:setDefaultColor("#1e6f50")
+         container.TitleLabel:setDefaultColor("#1e6f50")
          :setText("Unknown")
          :setAnchor(0,0,1,1):setDimensions(2,2,-2,-2)
          

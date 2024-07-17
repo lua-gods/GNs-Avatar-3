@@ -47,6 +47,9 @@ end
 ---@param sprite Sprite
 ---@return GNUI.SingleSpriteButton
 function SSB:setSprite(sprite)
+   if type(sprite) ~= "Sprite" then
+      error("argument 1 expected 'Sprite', got "..type(sprite),2)
+   end
    self.sprite = sprite
    if sprite then
       self.sprite_pressed = sprite:copy():setColor(0.5,0.5,0.5)

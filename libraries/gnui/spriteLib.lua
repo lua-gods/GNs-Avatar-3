@@ -33,6 +33,7 @@ local update = {}
 ---@field package _queue_update boolean
 local Ninepatch = {}
 Ninepatch.__index = Ninepatch
+Ninepatch.__type = "Sprite"
 
 local sprite_next_free = 0
 ---@return Sprite
@@ -479,21 +480,17 @@ function Ninepatch:updateRenderTasks()
    end
 end
 
-local t = 19
 events.WORLD_TICK:register(function ()
-   t = t + 1
-   if t > 20 then
-      events.WORLD_RENDER:remove("GNUI_priority-last")
-      events.WORLD_RENDER:register(function ()
-         if #update > 0 then
-            for i = 1, #update, 1 do
-               update[i]:updateRenderTasks()
-               update[i]._queue_update = nil
-            end
-            update = {}
+   events.WORLD_RENDER:remove("GNUI_priority-last")
+   events.WORLD_RENDER:register(function ()
+      if #update > 0 then
+         for i = 1, #update, 1 do
+            update[i]:updateRenderTasks()
+            update[i]._queue_update = nil
          end
-      end,"GNUI_priority-last")
-   end
+         update = {}
+      end
+   end,"GNUI_priority-last")
 end)
 
 return Ninepatch

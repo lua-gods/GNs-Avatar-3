@@ -39,7 +39,7 @@ end
 
 ---@class GNUI.window : GNUI.Container
 ---@field Theme GNUI.theme
----@field LabelTitle GNUI.label
+---@field TitleLabel GNUI.label
 ---@field Title string
 ---@field Titlebar GNUI.Container
 ---@field CloseButton GNUI.Button
@@ -68,7 +68,7 @@ function Window.new()
    new:addChild(titleBar)
    
    local label = gnui.newLabel()
-   new.LabelTitle = label:setCanCaptureCursor(false)
+   new.TitleLabel = label:setCanCaptureCursor(false)
    titleBar:addChild(label)
    
    local closeButton = gnui_elements.newButton("nothing")
@@ -86,6 +86,9 @@ function Window.new()
    setmetatable(new,Window)
    themes.applyTheme(new)
    
+   closeButton.PRESSED:register(function ()
+      new.CLOSE_REQUESTED:invoke()
+   end)
    new.CLOSE_REQUESTED:register(function ()
       new:close()
    end)
@@ -240,8 +243,19 @@ function Window:setAsActiveWindow()
    end
 end
 
+
+---Sets the title of the window.
+---@param text string
+---@return GNUI.window
+function Window:setTitle(text)
+   self.TitleLabel:setText(text)
+   return self
+end
+
+
+---Deletes the window.
 function Window:close()
-   self.Parent:removeChild(self)
+   self:free()
 end
 
 return Window
