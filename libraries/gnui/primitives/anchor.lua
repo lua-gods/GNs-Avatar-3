@@ -6,7 +6,7 @@ local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
 
----@class GNUI.anchorPoint : GNUI.element # A point version of a container, used to anchor ModelParts into the container.
+---@class GNUI.AnchorPoint : GNUI.Element # A point version of a container, used to anchor ModelParts into the container.
 ---@field Offset Vector2                  # Determins the offset of each side from the final output
 ---@field FinalPosition Vector2           # Determins the offset of each side from the final output
 ---@field OFFSET_CHANGED eventLib         # Triggered when the final container Offset has changed.
@@ -20,16 +20,16 @@ local container = {}
 container.__index = function (t,i)
    return rawget(t,i) or container[i] or element[i]
 end
-container.__type = "GNUI.element.anchor"
+container.__type = "GNUI.Element.Anchor"
 
 ---Creates a new container.
 ---if `preset` is applied, it will just get duplicated into its own thing. 
----@param preset GNUI.anchorPoint?
+---@param preset GNUI.AnchorPoint?
 ---@param force_debug boolean?
 ---@return self
 function container.new(preset,force_debug)
    preset = preset or {}
-   ---@type GNUI.anchorPoint
+   ---@type GNUI.AnchorPoint
 ---@diagnostic disable-next-line: assign-type-mismatch
    local new = element.new()
    setmetatable(new,container)
@@ -136,7 +136,7 @@ end
 ---@param clip any
 ---@return self
 function container:setClipOnParent(clip)
-   ---@cast self GNUI.anchorPoint
+   ---@cast self GNUI.AnchorPoint
    self.ClipOnParent = clip
    self.OFFSET_CHANGED:invoke()
    return self
@@ -150,12 +150,12 @@ end
 
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec2 : Vector4): GNUI.anchorPoint
+---@overload fun(self : self, vec2 : Vector4): GNUI.AnchorPoint
 ---@param x number
 ---@param y number
 ---@return self
 function container:setOffset(x,y)
-   ---@cast self GNUI.anchorPoint
+   ---@cast self GNUI.AnchorPoint
    local new = utils.figureOutVec2(x,y)
    self.Offset = new
    self.OFFSET_CHANGED:invoke(self.Offset)
@@ -167,7 +167,7 @@ end
 ---@param y number?
 ---@return boolean
 function container:isHovering(x,y)
-   ---@cast self GNUI.anchorPoint
+   ---@cast self GNUI.AnchorPoint
    local pos = utils.figureOutVec2(x,y)
    return (
           pos.x > 0
@@ -182,7 +182,7 @@ end
 ---@param self self
 ---@return self
 function container:setZ(depth)
-   ---@cast self GNUI.anchorPoint
+   ---@cast self GNUI.AnchorPoint
    self.Z = depth
    self.OFFSET_CHANGED:invoke(self.Offset)
    return self
@@ -192,14 +192,14 @@ end
 --- x 0 <-> 1 = left <-> right  
 --- y 0 <-> 1 = top <-> bottom  
 ---if right and bottom are not given, they will use left and top instead.
----@overload fun(self : GNUI.anchorPoint, xz : Vector2): GNUI.anchorPoint
+---@overload fun(self : GNUI.AnchorPoint, xz : Vector2): GNUI.AnchorPoint
 ---@param x number
 ---@param y number
 ---@generic self
 ---@param self self
 ---@return self
 function container:setAnchor(x,y)
-   ---@cast self GNUI.anchorPoint
+   ---@cast self GNUI.AnchorPoint
    self.Anchor = utils.figureOutVec2(x,y)
    self.OFFSET_CHANGED:invoke(self.Offset)
    return self

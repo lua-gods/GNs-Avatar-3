@@ -2,7 +2,7 @@ local gnui = require("libraries.gnui")
 local texture = textures["libraries.gnui.modules.theme.textures.default_window"]
 
 return {
-   window = {
+   Window = {
       ---@param container GNUI.window
       default = function (container)
          local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(23,1,25,10):setBorderThickness(1,8,1,1)
@@ -57,23 +57,23 @@ return {
          local sprite_normal = gnui.newSprite():setTexture(texture):setUV(1,1,7,7)
          local sprite_highlight = gnui.newSprite():setTexture(texture):setUV(1,9,7,15)
          
-         local minimize_button = container.MinimizeButton
-         minimize_button:setSprite(sprite_normal)
-         minimize_button.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+         local minimizeButton = container.MinimizeButton
+         minimizeButton:setSprite(sprite_normal)
+         minimizeButton.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
             if pressed then
-               minimize_button:setSprite(sprite_normal)
+               minimizeButton:setSprite(sprite_normal)
             else
                if hovered then
-                  minimize_button:setSprite(sprite_highlight)
+                  minimizeButton:setSprite(sprite_highlight)
                else 
-                  minimize_button:setSprite(sprite_normal)
+                  minimizeButton:setSprite(sprite_normal)
                end 
             end
          end)
-         minimize_button:setAnchor(1,0,1,0):setDimensions(-24,3,-17,10)
+         minimizeButton:setAnchor(1,0,1,0):setDimensions(-24,3,-17,10)
       end,
    },
-   container = {
+   Container = {
       ---@param container GNUI.Container
       window_border_drag = function (container)
          local sprite_border_normal = gnui.newSprite():setTexture(texture):setUV(1,29,1,29)

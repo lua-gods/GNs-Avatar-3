@@ -5,13 +5,15 @@ local gnui = require("libraries.gnui")
 local themes = require("libraries.gnui.modules.themes")
 local button = require("libraries.gnui.modules.elements.button")
 
----@class GNUI.TextButton : GNUI.Button
+---@class GNUI.TextInputButton : GNUI.Button
+---@field Text string?
+---@field PlaceholderText string?
 ---@field label GNUI.Label
 local TextButton = {}
 TextButton.__index = function (t,i)
    return rawget(t,i) or TextButton[i] or button[i] or gnui.Container[i] or gnui.Element[i]
 end
-TextButton.__type = "GNUI.Element.Container.Button.TextButton"
+TextButton.__type = "GNUI.Element.Container.Button.TextInputButton"
 
 ---Creates a new button.
 ---@return GNUI.TextButton

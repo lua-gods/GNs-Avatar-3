@@ -12,39 +12,39 @@ allowing me to put as much as I want without worrying about storage space.
 ---@class GNUI
 local api = {}
 
----@alias GNUI.any GNUI.element|GNUI.Container|GNUI.label|GNUI.anchorPoint|GNUI.canvas
+---@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.AnchorPoint|GNUI.Canvas
 
-local utils = require("libraries.gnui.utils")
-local label = require("libraries.gnui.primitives.label")
-local sprite = require("libraries.gnui.spriteLib")
-local canvas = require("libraries.gnui.primitives.canvas")
-local element = require("libraries.gnui.primitives.element")
-local container = require("libraries.gnui.primitives.container")
-local anchor = require("libraries.gnui.primitives.anchor")
+local u = require("libraries.gnui.utils")
+local l = require("libraries.gnui.primitives.label")
+local s = require("libraries.gnui.spriteLib")
+local ca = require("libraries.gnui.primitives.canvas")
+local e = require("libraries.gnui.primitives.element")
+local co = require("libraries.gnui.primitives.container")
+local a = require("libraries.gnui.primitives.anchor")
 
-api.newPointAnchor = function ()return anchor.new()end
-api.newContainer = function ()return container.new() end
-api.newCanvas = function ()return canvas.new() end
-api.newLabel = function ()return label.new() end
+api.newPointAnchor = function ()return a.new()end
+api.newContainer = function ()return co.new() end
+api.newCanvas = function ()return ca.new() end
+api.newLabel = function ()return l.new() end
 
 ---@param texture Texture?
 ---@return Sprite
 api.newSprite = function (texture)
-  return sprite.new()
+  return s.new()
 end
 
-api.utils = utils
+api.utils = u
 
-api.Container = container
-api.Anchor = anchor
-api.Element = element
-api.Canvas = canvas
-api.Sprite = sprite
-api.Label = label
+api.Container = co
+api.Anchor = a
+api.Element = e
+api.Canvas = ca
+api.Sprite = s
+api.Label = l
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.
----@return GNUI.canvas
+---@return GNUI.Canvas
 function api.getScreenCanvas()
   if not screenCanvas then
     screenCanvas = api.newCanvas()

@@ -30,7 +30,7 @@ end
 ---| "OUTLINE"
 ---| "SHADOW"
 
----@class GNUI.label : GNUI.Container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
+---@class GNUI.Label : GNUI.Container # A special type of container that can do text rendering, separated into its own class to avoid massive lag spikes when making too many contaiers.
 ---@field Text string|table               # The text that will be displayed on the label, for raw json, pass a table instead of a string json.
 ---@field TextData table                  # Baked data of the text.
 ---@field TextEffect TextEffect           # Determins the effects applied to the label.
@@ -47,12 +47,12 @@ local label = {}
 label.__index = function (t,i)
    return rawget(t,i) or label[i] or container[i] or element[i]
 end
-label.__type = "GNUI.element.container.label"
+label.__type = "GNUI.Element.Container.Label"
 
 ---Creates a new label, which is just a container but can render text, separated into its own class for optimization.
----@return GNUI.label
+---@return GNUI.Label
 function label.new()
-   ---@type GNUI.label
+   ---@type GNUI.Label
    local new = container.new()
    new.Text = ""
    new.TextEffect = "NONE"

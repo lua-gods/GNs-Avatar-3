@@ -2,7 +2,7 @@ local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 
 local element_next_free = 0
----@class GNUI.element # The base element of every GNUI element.
+---@class GNUI.Element # The base element of every GNUI element.
 ---@field name string                 # An optional property used to get the element by a name.
 ---@field id integer                  # A unique integer for this element. (next-free based).
 ---@field Visible boolean             # `true` to see.
@@ -17,7 +17,7 @@ local element_next_free = 0
 ---@field cache table
 local Element = {}
 Element.__index = Element
-Element.__type = "GNUI.element"
+Element.__type = "GNUI.Element"
 
 ---Creates a new basic element.
 ---@generic self
@@ -46,7 +46,7 @@ end
 ---@param self self
 ---@return self
 function Element:setVisible(visible)
-   ---@cast self GNUI.element
+   ---@cast self GNUI.Element
    if self.Visible ~= visible then
       self.Visible = visible
       self.VISIBILITY_CHANGED:invoke(visible)
@@ -75,7 +75,7 @@ end
 ---@param self self
 ---@return self
 function Element:setName(name)
-   ---@cast self GNUI.element
+   ---@cast self GNUI.Element
    self.name = name
    return self
 end
@@ -105,7 +105,7 @@ end
 ---@param self self
 ---@return self
 function Element:updateChildrenOrder()
-   ---@cast self GNUI.element
+   ---@cast self GNUI.Element
    for i, c in pairs(self.Children) do
       c.ChildIndex = i
    end
@@ -121,7 +121,7 @@ end
 function Element:addChild(child,index)
    ---@cast self GNUI.Container
    if not child then return self end
-   if not type(child):find("^GNUI.element") then
+   if not type(child):find("^GNUI.Element") then
       error("invalid child given, recived: "..type(child),2)
    end
    if child.Parent then return self end
@@ -137,7 +137,7 @@ function Element:addChild(child,index)
 end
 
 ---Abandons the child into the street.
----@param child GNUI.element
+---@param child GNUI.Element
 ---@generic self
 ---@param self self
 ---@return self
@@ -157,7 +157,7 @@ function Element:removeChild(child)
    return self
 end
 
----@return table<integer, GNUI.Container|GNUI.element>
+---@return table<integer, GNUI.Container|GNUI.Element>
 function Element:getChildren()
    return self.Children
 end
@@ -166,7 +166,7 @@ end
 ---@param self self
 ---@return self
 function Element:updateChildrenIndex()
-   ---@cast self GNUI.element
+   ---@cast self GNUI.Element
    for i = 1, #self.Children, 1 do
       local child = self.Children[i]
       child.ChildIndex = i

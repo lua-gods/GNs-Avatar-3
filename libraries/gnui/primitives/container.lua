@@ -15,7 +15,7 @@ events.WORLD_RENDER:register(function (delta)
    WORLD_RENDER:invoke()
 end)
 
----@class GNUI.Container : GNUI.element    # A container is a Rectangle that represents the building block of GNUI
+---@class GNUI.Container : GNUI.Element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
 ---@field Z number                         # Offsets the container forward(+) or backward(-) if Z fighting is occuring, also affects its children.
 ---@field ContainmentRect Vector4          # The final output dimensions with anchors applied. incredibly handy piece of data.
@@ -43,14 +43,14 @@ end)
 ---@field SystemMinimumSize Vector2        # The minimum size that the container can use, set by the container itself.
 ---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
 ---@field cache table                      # Contains data to optimize the process.
----@field Canvas GNUI.canvas               # The canvas that the container is attached to.
+---@field Canvas GNUI.Canvas               # The canvas that the container is attached to.
 ---@field StackDistance integer            # The layer of parent recursion of this container to root canvas. 0 when orphan, 1 or more when attached to a parent.
 ---@field ZSquish number
 local Container = {}
 Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
 end
-Container.__type = "GNUI.element.container"
+Container.__type = "GNUI.Element.Container"
 local root_containe_count = 0
 ---Creates a new container.
 ---@return self
@@ -141,7 +141,7 @@ function Container.new()
                error("Alabama family tree detected! avoid making infinite loop family trees.")
             end
          end
-         if type(canvas) == "GNUI.element.container.canvas" then
+         if type(canvas) == "GNUI.Element.Container.Canvas" then
             new.Canvas = canvas
          end
          new.StackDistance = stack

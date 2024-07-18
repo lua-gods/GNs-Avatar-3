@@ -11,7 +11,7 @@ local Button = {}
 Button.__index = function (t,i)
    return rawget(t,i) or Button[i] or gnui.Container[i] or gnui.Element[i]
 end
-Button.__type = "GNUI.element.container.button"
+Button.__type = "GNUI.Element.Container.Button"
 
 ---Creates a new button.
 ---@return GNUI.Button

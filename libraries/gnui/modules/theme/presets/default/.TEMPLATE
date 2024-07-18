@@ -2,7 +2,7 @@ local gnui = require("libraries.gnui")
 
 return {
    element_name = {
-      ---@param container GNUI.button
+      ---@param container GNUI.Button
       element_variant = function (container)
       end
    }

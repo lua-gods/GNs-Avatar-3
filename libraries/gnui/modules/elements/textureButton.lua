@@ -12,7 +12,7 @@ local TextureButton = {}
 TextureButton.__index = function (t,i)
    return rawget(t,i) or TextureButton[i] or button[i] or gnui.Container[i] or gnui.Element[i]
 end
-TextureButton.__type = "GNUI.element.container.button.text_button"
+TextureButton.__type = "GNUI.Element.Container.Button.TextButton"
 
 ---Creates a new button.
 ---@param normal Sprite?

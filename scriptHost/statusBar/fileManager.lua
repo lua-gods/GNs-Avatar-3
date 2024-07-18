@@ -21,6 +21,10 @@ local function newFileDialog(type)
    
    if type == "OPEN" then
       fd:setTitle("File Dialog (Open a File)")
+   elseif type == "OPEN_MULTIPLE" then
+      fd:setTitle("File Dialog (Open Files)")
+   elseif type == "SAVE" then
+      fd:setTitle("File Dialog (Save a File)")
    end
    
    screen:addChild(fd)

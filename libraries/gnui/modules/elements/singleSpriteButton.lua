@@ -10,7 +10,7 @@ local SSB = {}
 SSB.__index = function (t,i)
    return rawget(t,i) or SSB[i] or button[i] or gnui.Container[i] or gnui.Element[i]
 end
-SSB.__type = "GNUI.element.container.button.text_button"
+SSB.__type = "GNUI.Element.Container.Button.SingleSpriteButton"
 
 local setSprite = gnui.Container.setSprite
 

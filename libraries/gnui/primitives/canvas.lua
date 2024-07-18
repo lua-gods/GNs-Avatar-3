@@ -12,6 +12,7 @@ local Element = require("libraries.gnui.primitives.element")
 ---@field ctrl boolean
 ---@field shift boolean
 ---@field alt boolean
+---@field isHandled boolean
 
 ---@class GNUI.InputEventMouseMotion
 ---@field pos Vector2 # local position 
@@ -41,7 +42,7 @@ local mousemap = {
 
 for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 
----@class GNUI.canvas : GNUI.Container # A special type of container that handles all the inputs
+---@class GNUI.Canvas : GNUI.Container # A special type of container that handles all the inputs
 ---@field MousePosition Vector2 # the position of the mouse
 ---@field HoveredElement GNUI.any? # the element the mouse is currently hovering over
 ---@field PressedElement GNUI.any? # the last pressed element, used to unpress buttons that have been unhovered.
@@ -51,13 +52,14 @@ for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 ---@field captureInputs boolean # true when the canvas should capture the inputs
 ---@field hasCustomCursorSetter boolean # true when the setCursor is called, while false, the canvas will use the screen cursor.
 ---@field INPUT eventLib # serves as the handler for all inputs within the boundaries of the canvas. called with the first argument being an input event
+---@field UNHANDLED_INPUT eventLib # triggers when an input is not handled by the children of the canvas.
 local Canvas = {}
 Canvas.__index = function (t,i)
    return rawget(t,i) or Canvas[i] or Container[i] or Element[i]
 end
-Canvas.__type = "GNUI.element.container.canvas"
+Canvas.__type = "GNUI.Element.Container.Canvas"
 
----@type GNUI.canvas[]
+---@type GNUI.Canvas[]
 local canvases = {}
 
 local _shift,_ctrl,_alt = false,false,false
@@ -101,13 +103,14 @@ events.MOUSE_PRESS:register(function (button, state)
 end)
 
 ---Creates a new canvas.
----@return GNUI.canvas
+---@return GNUI.Canvas
 function Canvas.new()
    local new = Container.new()
    new.MousePosition = vec(0,0)
    new.isActive = true
    new.MOUSE_POSITION_CHANGED = eventLib.new()
    new.INPUT = eventLib.new()
+   new.UNHANDLED_INPUT = eventLib.new()
    new.unlockCursorWhenActive = true
    new.captureKeyInputs = true
    canvases[#canvases+1] = new
@@ -125,7 +128,7 @@ end
 ---@param self self
 ---@return self
 function Canvas:setMousePos(x,y,keep_auto)
-   ---@cast self GNUI.canvas
+   ---@cast self GNUI.Canvas
    local mpos = utils.figureOutVec2(x,y)
    local relative = mpos - self.MousePosition
    if relative.x ~= 0 or relative.y ~= 0 then   
@@ -180,7 +183,10 @@ end
 local function parseInputEventOnElement(element,event)
    local statuses = element.INPUT:invoke(event)
    for j = 1, #statuses, 1 do
-      if statuses[j] then return true end
+      if statuses[j] then 
+         event.isHandled = true
+         return true
+      end
    end
 end
 
@@ -208,16 +214,17 @@ end
 ---@param shift boolean
 function Canvas:parseInputEvent(key,status,shift,ctrl,alt)
    ---@type GNUI.InputEvent
-   local key_event = {
+   local event = {
       key = key,
       isPressed = status ~= 0,
       status = status,
       ctrl = ctrl,
       alt = alt,
-      shift = shift
+      shift = shift,
+      isHandled = false,
    }
-   local captured = false
-   local statuses = self.INPUT:invoke(key_event)
+   local captured = false -- if somehow the canvas itself captured the inputs
+   local statuses = self.INPUT:invoke(event)
    for i = 1, #statuses, 1 do
       if statuses[i] then
          captured = true
@@ -225,10 +232,13 @@ function Canvas:parseInputEvent(key,status,shift,ctrl,alt)
       end
    end
    if not captured then
-      parseInputEventToChildren(self,key_event,self.MousePosition)
+      parseInputEventToChildren(self,event,self.MousePosition)
       if self.PressedElement and status == 0 and self.PressedElement ~= self.HoveredElement then -- QOL fix for buttons that have been unhovered but still pressed
-         parseInputEventOnElement(self.PressedElement,key_event)
+         parseInputEventOnElement(self.PressedElement,event)
       end
+   end
+   if not event.isHandled then
+      self.UNHANDLED_INPUT:invoke(event)
    end
    return self
 end
@@ -239,7 +249,7 @@ end
 ---@param self self
 ---@return self
 function Canvas:setCaptureMouseMovement(toggle)
----@cast self GNUI.canvas
+---@cast self GNUI.Canvas
    self.captureCursorMovement = toggle
    return self
 end
@@ -250,7 +260,7 @@ end
 ---@param self self
 ---@return self
 function Canvas:setCaptureInputs(toggle)
----@cast self GNUI.canvas
+---@cast self GNUI.Canvas
    self.captureInputs = toggle
    return self
 end

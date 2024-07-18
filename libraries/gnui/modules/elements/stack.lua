@@ -12,7 +12,7 @@ local Stack = {}
 Stack.__index = function (t,i)
    return rawget(t,"parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Stack[i] or container[i] or element[i]
 end
-Stack.__type = "GNUI.element.container.stack"
+Stack.__type = "GNUI.Element.Container.Stack"
 
 function Stack.new()
    ---@type GNUI.stack

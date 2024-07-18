@@ -39,7 +39,7 @@ end
 
 ---@class GNUI.window : GNUI.Container
 ---@field Theme GNUI.theme
----@field TitleLabel GNUI.label
+---@field TitleLabel GNUI.Label
 ---@field Title string
 ---@field Titlebar GNUI.Container
 ---@field CloseButton GNUI.Button
@@ -54,7 +54,7 @@ local Window = {}
 Window.__index = function (t,i)
    return rawget(t,i) or Window[i] or gnui.Container[i] or gnui.Element[i]
 end
-Window.__type = "GNUI.element.container.window"
+Window.__type = "GNUI.Element.Container.Window"
 function Window.new()
    ---@type GNUI.window
    local new = gnui.newContainer()
@@ -193,7 +193,7 @@ function Window.new()
    setActive(false)
    
    new.isGrabbed = false
-   local grab_canvas ---@type GNUI.canvas
+   local grab_canvas ---@type GNUI.Canvas
    ---@param event GNUI.InputEvent
    new.INPUT:register(function (event)
       if event.key == "key.mouse.left" and event.isPressed then
