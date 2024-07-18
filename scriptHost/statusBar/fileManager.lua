@@ -16,19 +16,25 @@ local button = Statusbar.newButtonSprite(icon)
 ---@return GNUI.window
 local function newFileDialog(type)
    type = type or "OPEN_MULTIPLE"
-   local fd = GNUIWindow.newWindow()
-   fd:setDimensions(64,64,256,176)
+   local window = GNUIWindow.newWindow()
+   window:setDimensions(64,64,256,176)
    
    if type == "OPEN" then
-      fd:setTitle("File Dialog (Open a File)")
+      window:setTitle("File Dialog (Open a File)")
    elseif type == "OPEN_MULTIPLE" then
-      fd:setTitle("File Dialog (Open Files)")
+      window:setTitle("File Dialog (Open Files)")
    elseif type == "SAVE" then
-      fd:setTitle("File Dialog (Save a File)")
+      window:setTitle("File Dialog (Save a File)")
    end
    
-   screen:addChild(fd)
-   return fd
+   local textInput = GNUIElements.newTextInputField()
+   
+   textInput:setDimensions(4,32,64,32)
+   
+   window:addChild(textInput)
+   
+   screen:addChild(window)
+   return window
 end
 
 newFileDialog("OPEN")

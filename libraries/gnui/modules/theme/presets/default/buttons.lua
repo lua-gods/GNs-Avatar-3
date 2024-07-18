@@ -31,7 +31,29 @@ return {
          label:setDefaultColor('black')
          label:setCanCaptureCursor(false)
          label:setAlign(0.5,0.5)
-         container.SystemMinimumSize.y = 16
+         container:setSystemMinimumSize(0,16)
       end,
    },
+   TextInputButton = {
+      ---@param container GNUI.TextInputField
+      default = function (container)
+         container.Label:setDimensions(2,2,-2,-2)
+         container:setSystemMinimumSize(8,12)
+         
+         local sprite_normal = gnui.newSprite():setTexture(texture):setUV(9,25,13,29):setBorderThickness(2,2,2,2)
+         local sprite_hovered = gnui.newSprite():setTexture(texture):setUV(15,25,19,29):setBorderThickness(2,2,2,2)
+         local sprite_pressed = gnui.newSprite():setTexture(texture):setUV(21,25,25,29):setBorderThickness(2,2,2,2)
+         
+         container:setSprite(sprite_normal)
+         container.MOUSE_PRESSENCE_CHANGED:register(function (hovered,pressed)
+            if pressed then
+               container:setSprite(sprite_pressed)
+            else
+               if hovered or container.editing then container:setSprite(sprite_hovered)
+               else container:setSprite(sprite_normal)
+               end 
+            end
+         end)
+      end
+   }
 }

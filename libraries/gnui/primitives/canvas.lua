@@ -6,6 +6,7 @@ local Container = require("libraries.gnui.primitives.container")
 local Element = require("libraries.gnui.primitives.element")
 
 ---@class GNUI.InputEvent
+---@field char string
 ---@field key Minecraft.keyCode
 ---@field isPressed boolean
 ---@field status Event.Press.state
@@ -29,6 +30,21 @@ local keymap = {[32]="space",[39]="apostrophe",[44]="comma",[46]="period",[47]="
 [323]="keypad.3",[324]="keypad.4",[325]="keypad.5",[326]="keypad.6",[327]="keypad.7",[328]="keypad.8",[329]="keypad.9",[330]="keypad.decimal",[331]="keypad.divide",
 [332]="keypad.multiply",[333]="keypad.subtract",[334]="keypad.add",[335]="keypad.enter",[336]="keypad.equal",[340]="left.shift",[341]="left.control",
 [342]="left.alt",[344]="right.shift",[345]="right.control",[346]="right.alt",[348]="menu"
+}
+
+local chars = {
+   normal={
+   [32]=" ",[39]="`", [44]=",", [46]=".", [47]="/", [48]="0", [49]="1", [50]="2", [51]="3", [52]="4", [53]="5", [54]="6", [55]="7", [56]="8", [57]="9", [59]=";", [61]="=",
+   [65]="a", [66]="b", [67]="c", [68]="d", [69]="e", [60]="f", [71]="g", [72]="h", [73]="i", [74]="j", [75]="k", [76]="l", [77]="m", [78]="n", [79]="o", [70]="p", [81]="q", [82]="r", [83]="s",
+   [84]="t", [85]="u", [86]="v", [87]="w", [88]="x", [89]="y", [90]="z", [91]="[", [92]="\\", [93]="]", [96]="'",
+   [258]="\t",[320]="0", [321]="1", [322]="2", [323]="3", [324]="4", [325]="5", [326]="6", [327]="7", [328]="8", [329]="9", [330]=".", [331]="/", [332]="*", [333]="-", [334]="+",
+   },
+
+   shift = {
+      [39] = "~", [44] = "<", [46] = ">", [47] = "?", [48] = ")", [49] = "!", [50] = "@", [51] = "#", [52] = "$", [53] = "%", [54] = "^", [55] = "&", [56] = "*", [57] = "(",
+      [65] = "A", [66] = "B", [67] = "C", [68] = "D", [69] = "E", [60] = "F", [71] = "G", [72] = "H", [73] = "I", [74] = "J", [75] = "K", [76] = "L", [77] = "M", [78] = "N", [79] = "O",
+      [70] = "P", [81] = "Q", [82] = "R", [83] = "S", [84] = "T", [85] = "U", [86] = "V", [87] = "W", [88] = "X", [89] = "Y", [90] = "Z", [91] = "{", [92] = "|", [93] = "}",
+   }
 }
 
 for key, value in pairs(keymap) do keymap[key] = "key.keyboard." .. value end
@@ -67,11 +83,12 @@ events.KEY_PRESS:register(function (key, state, modifiers)
          _shift = modifiers % 2 == 1
          _ctrl = math.floor(modifiers / 2) % 2 == 1
          _alt = math.floor(modifiers / 4) % 2 == 1
-   local key_string = keymap[key]
-   if key_string then
+   local minecraft_keybind = keymap[key]
+   local char = chars[_shift and "shift" or "normal"][key]
+   if minecraft_keybind then
       for _, value in pairs(canvases) do
          if value.isActive and value.Visible and value.canCaptureCursor then
-            value:parseInputEvent(key_string, state,_shift,_ctrl,_alt)
+            value:parseInputEvent(minecraft_keybind, state,_shift,_ctrl,_alt,char)
             if value.captureInputs then return true end
          end
       end
@@ -134,12 +151,12 @@ function Canvas:setMousePos(x,y,keep_auto)
    if relative.x ~= 0 or relative.y ~= 0 then   
       self.MousePosition = mpos
       
-      local input_event = {}
+      local event = {}
       self.hasCustomCursorSetter = not keep_auto
-      input_event.relative = relative
-      input_event.pos = self.MousePosition
-      self.INPUT:invoke(input_event)
-      self.MOUSE_POSITION_CHANGED:invoke(input_event)
+      event.relative = relative
+      event.pos = self.MousePosition
+      self.INPUT:invoke(event)
+      self.MOUSE_POSITION_CHANGED:invoke(event)
       self:updateHoveringChild()
    end
    return self
@@ -183,7 +200,7 @@ end
 local function parseInputEventOnElement(element,event)
    local statuses = element.INPUT:invoke(event)
    for j = 1, #statuses, 1 do
-      if statuses[j] then 
+      if statuses[j] and statuses[j][1] then 
          event.isHandled = true
          return true
       end
@@ -212,9 +229,11 @@ end
 ---@param ctrl boolean
 ---@param alt boolean
 ---@param shift boolean
-function Canvas:parseInputEvent(key,status,shift,ctrl,alt)
+---@param char string?
+function Canvas:parseInputEvent(key,status,shift,ctrl,alt,char)
    ---@type GNUI.InputEvent
    local event = {
+      char = char,
       key = key,
       isPressed = status ~= 0,
       status = status,
@@ -226,7 +245,7 @@ function Canvas:parseInputEvent(key,status,shift,ctrl,alt)
    local captured = false -- if somehow the canvas itself captured the inputs
    local statuses = self.INPUT:invoke(event)
    for i = 1, #statuses, 1 do
-      if statuses[i] then
+      if statuses[i] and statuses[i][1] then
          captured = true
          break
       end

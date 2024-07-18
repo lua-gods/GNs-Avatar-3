@@ -122,14 +122,14 @@ function Element:addChild(child,index)
    ---@cast self GNUI.Container
    if not child then return self end
    if not type(child):find("^GNUI.Element") then
-      error("invalid child given, recived: "..type(child),2)
+      error("invalid element given, recived: "..type(child),2)
    end
    if child.Parent then return self end
    table.insert(self.Children, index or #self.Children+1, child)
    if child.Parent ~= self then
       local old_parent = child.Parent
       child.Parent = self
-      child.PARENT_CHANGED:invoke(old_parent,self)
+      child.PARENT_CHANGED:invoke(self,old_parent)
       self.CHILDREN_ADDED:invoke(child)
    end
    self:updateChildrenIndex()
@@ -149,10 +149,12 @@ function Element:removeChild(child)
       if child.Parent then
          local old_parent = child.Parent
          child.Parent = nil
-         child.PARENT_CHANGED:invoke(old_parent,nil)
+         child.PARENT_CHANGED:invoke(nil,old_parent)
          self.CHILDREN_REMOVED:invoke(child)
       end
       self:updateChildrenIndex()
+   else
+      error("This container, is, not, the father!", 2)
    end
    return self
 end

@@ -57,4 +57,12 @@ end
 api.SingleTextureButton = single_texture_button
 
 
+
+--->====================[ TextInputButton ]====================<--
+local text_input_button = require("libraries.gnui.modules.elements.textInputField")
+---@param variant string|"default"|"nothing"?
+---@param theme string?
+---@return GNUI.TextInputField
+api.newTextInputField = function(variant,theme) return text_input_button.new(variant,theme) end
+api.TextInputField = text_input_button
 return api

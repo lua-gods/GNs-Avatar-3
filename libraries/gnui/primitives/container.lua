@@ -44,8 +44,8 @@ end)
 ---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
 ---@field cache table                      # Contains data to optimize the process.
 ---@field Canvas GNUI.Canvas               # The canvas that the container is attached to.
----@field StackDistance integer            # The layer of parent recursion of this container to root canvas. 0 when orphan, 1 or more when attached to a parent.
 ---@field ZSquish number
+---@field CANVAS_CHANGED eventLib          # Triggered when the canvas that the container is attached to has changed. first argument is the new, second is the old one.
 local Container = {}
 Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
@@ -84,6 +84,7 @@ function Container.new()
    new.GrowDirection = vec(1,1)
    new.StackDistance = 0
    new.ZSquish = 1
+   new.CANVAS_CHANGED = eventLib.new()
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
    if core.debug_visible then
@@ -126,32 +127,43 @@ function Container.new()
       end,"GNUI_root_container."..new.id)
    end
    orphan()
-   new.PARENT_CHANGED:register(function ()
+   new.PARENT_CHANGED:register(function (p)
+      if p and p.__type:find("Canvas$") then
+         new:setCanvas(p)
+      else
+         new:setCanvas(nil)
+      end
       WORLD_RENDER:remove(new.__type.."."..new.id)
       root_containe_count = root_containe_count - 1
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
-         
-         local stack = 1
-         local canvas = new
-         while canvas.Parent do
-            stack = stack + 1
-            canvas = canvas.Parent
-            if stack > 100 then
-               error("Alabama family tree detected! avoid making infinite loop family trees.")
-            end
-         end
-         if type(canvas) == "GNUI.Element.Container.Canvas" then
-            new.Canvas = canvas
-         end
-         new.StackDistance = stack
       else
+         new.CANVAS_CHANGED:invoke(nil,new.Canvas)
          new.ModelPart:getParent():removeChild(new.ModelPart)
          orphan()
       end
       new:update()
    end)
    return new
+end
+
+---rechecks where is the canvas for this container and its children.
+---@param canvas GNUI.Canvas
+---@generic self
+---@param self self
+---@return self
+function Container:setCanvas(canvas)
+   ---@cast self self
+   if self.Canvas ~= canvas then
+      local old = self.Canvas
+      self.Canvas = canvas
+      self.CANVAS_CHANGED:invoke(canvas,old)
+   end
+   for i = 1, #self.Children, 1 do
+      local child = self.Children[i]
+      child:setCanvas(canvas)
+   end
+   return self
 end
 
 ---Sets the backdrop of the container.  
