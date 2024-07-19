@@ -568,11 +568,31 @@ function Container:UVtoXY(x,y)
    )
 end
 
+---Flags this Container to be updated.
+---@generic self
+---@param self self
+---@return self
 function Container:update()
+   ---@cast self GNUI.Container
    self.UpdateQueue = true
+   return self
 end
+
+
+--- Calls the events that are most likely used by themes. ex. `MOUSE_PRESSENCE_CHANGED`
+
+---@generic self
+---@param self self
+---@return self
+function Container:updateTheming()
+   ---@cast self GNUI.Container
+   self.MOUSE_PRESSENCE_CHANGED:invoke(self.isCursorHovering,self.isPressed)
+   return self
+end
+
+
 local o = 0
-function Container:_updateDimensions()
+function Container:_update()
    local scale = (self.Parent and self.Parent.AccumulatedScaleFactor or 1) * self.ScaleFactor
    self.AccumulatedScaleFactor = scale
    self.Dimensions:scale(scale)
@@ -705,7 +725,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
 end
 
 function Container:forceUpdate()
-   self:_updateDimensions()
+   self:_update()
 end
 
 function Container:_propagateUpdateToChildren(force_all)

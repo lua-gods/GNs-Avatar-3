@@ -4,6 +4,36 @@
 local gnui = require("libraries.gnui")
 local themes = require("libraries.gnui.modules.themes")
 local Btn = require("libraries.gnui.modules.elements.button")
+local container = require("libraries.gnui.primitives.container")
+
+local is_typing = false -- a global that stops the keyboard from interacting with the world temporarily
+local chat_text = ""
+local function setIsTyping(toggle)
+   if toggle ~= is_typing then
+      is_typing = toggle
+      if toggle then
+         chat_text = host:getChatText()
+         events.WORLD_RENDER:register(function ()
+            host:setChatText("")
+         end,"gnui.textInputFieldStopper")
+         events.MOUSE_PRESS:register(function ()
+            return true
+         end,"gnui.textInputFieldStopper")
+      else
+         if chat_text then
+            host:setChatText(chat_text)
+            events.WORLD_RENDER:remove("gnui.textInputFieldStopper")
+            events.MOUSE_PRESS:remove("gnui.textInputFieldStopper")
+         end
+      end
+   end
+end
+
+events.KEY_PRESS:register(function (key,state) 
+   if is_typing then
+      return true
+   end
+end)
 
 ---@class GNUI.TextInputField : GNUI.Button
 ---@field ConfirmedText string
@@ -12,6 +42,8 @@ local Btn = require("libraries.gnui.modules.elements.button")
 ---@field editing boolean
 ---@field Label GNUI.Label
 ---@field BarCaret GNUI.Label
+---@field CursorPos integer
+---@field CursorSize integer
 local TIB = {}
 TIB.__index = function (t,i)
    return rawget(t,i) or TIB[i] or Btn[i] or gnui.Container[i] or gnui.Element[i]
@@ -41,16 +73,35 @@ function TIB.new(variant,theme)
    local inputCapture = function (cnew)
       ---@param event GNUI.InputEvent
       cnew.INPUT:register(function (event)
-         --print(new.editing, event.key, event.isPressed)
-         if new.editing and event.key and event.key:find("^key.mouse.") and event.isPressed then
-            new.editing = false
-            new.MOUSE_PRESSENCE_CHANGED:invoke(new.isCursorHovering,new.isPressed) -- TODO: janky fix, replace with an API call
-            new:update()
+         if new.editing and event.key and event.key:find("^key.mouse.") and not event.isPressed then
+            new:setConfirmedText(new.PotentialText)
          end
-         if new.editing then
-            if event.char then
-               new.PotentialText = new.PotentialText..event.char
+         if new.editing and event.isPressed then -- typing
+            if event.ctrl then
+               if event.key == "key.keyboard.v" then
+                  local clipboard = host:getClipboard()
+                  new.PotentialText = new.PotentialText..clipboard
+               elseif event.key == "key.keyboard.c" then
+                  host:setClipboard(new.PotentialText)
+               elseif event.key == "key.keyboard.x" then
+                  host:setClipboard(new.PotentialText)
+                  new.PotentialText = ""
+               elseif event.key == "key.keyboard.backspace" then
+                  local to = new.PotentialText:find("[^%s]*$")
+                  if to then
+                     new.PotentialText = new.PotentialText:sub(1,math.min(to-1,#new.PotentialText-1))
+                  end
+               end
+            else
+               if event.key:find"enter$" or event.key == "key.keyboard.escape" then
+                  new:setConfirmedText(new.PotentialText)
+               elseif event.key == "key.keyboard.backspace" then
+                  new.PotentialText = new.PotentialText:sub(1,-2)
+               elseif event.char then
+                  new.PotentialText = new.PotentialText..event.char
+               end
             end
+            new:update()
             return true
          end
       end,id)
@@ -58,8 +109,9 @@ function TIB.new(variant,theme)
    
    new.PRESSED:register(function () 
       new.editing = true
-      new.MOUSE_PRESSENCE_CHANGED:invoke(new.isCursorHovering,new.isPressed) -- TODO: janky fix, replace with an API call
-      new:update()
+      new.PotentialText = new.ConfirmedText
+      setIsTyping(true)
+      new:updateTheming()
    end)
    
    ---@param cnew GNUI.Canvas
@@ -75,6 +127,18 @@ function TIB.new(variant,theme)
    return new
 end
 
+function TIB:_update()
+   if self.editing then
+      self.Label:setText(self.PotentialText)
+      self.BarCaret:setVisible(true)
+   else
+      self.Label:setText(self.ConfirmedText)
+      self.BarCaret:setVisible(false)
+   end
+   container._update(self)
+   return self
+end
+
 ---Sets the confirmed text of this label, meaning editing will be forced to stop.
 ---@param text string|table
 ---@generic self
@@ -83,7 +147,10 @@ end
 function TIB:setConfirmedText(text)
    ---@cast self GNUI.TextInputField
    self.ConfirmedText = text
+   self.PotentialText = ""
+   setIsTyping(false)
    self.editing = false
+   self:updateTheming()
    self:update()
    return self
 end
@@ -97,6 +164,8 @@ function TIB:setPotentialText(text)
    ---@cast self GNUI.TextInputField
    if self.editing then
       self.PotentialText = text
+      setIsTyping(true)
+      self:updateTheming()
       self:update()
    end
    return self

@@ -36,7 +36,7 @@ function Stack.new()
    return new
 end
 
-function Stack:_updateDimensions()
+function Stack:_update()
    local sizes = {}
    for i, child in pairs(self.Children) do
       local min = child:getMinimumSize()
@@ -57,7 +57,7 @@ function Stack:_updateDimensions()
       end
       self:setSystemMinimumSize(0,y)
    end
-   container._updateDimensions(self)
+   container._update(self)
 end
 
 ---if given true, the stack will be horizontal. Vertical if otherwise.
