@@ -55,5 +55,12 @@ return {
             end
          end)
       end
+   },
+   Container = {
+      ---@param container GNUI.Container
+      solid = function (container)
+         local sprite = gnui.newSprite():setTexture(texture):setUV(9,25,13,29):setBorderThickness(2,2,2,4)
+         container:setSprite(sprite)
+      end
    }
 }

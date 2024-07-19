@@ -18,6 +18,8 @@ return {
          :setText("Unknown")
          :setAnchor(0,0,1,1):setDimensions(2,2,-2,-2)
          
+         container.ClientArea:setDimensions(1,12,-1,-1):setAnchor(0,0,1,1)
+         
          
          local close_button = container.CloseButton
          local sprite_close_normal = gnui.newSprite():setTexture(texture):setUV(14,1,20,7)

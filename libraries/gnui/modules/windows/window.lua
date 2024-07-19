@@ -42,6 +42,7 @@ end
 ---@field TitleLabel GNUI.Label
 ---@field Title string
 ---@field Titlebar GNUI.Container
+---@field ClientArea GNUI.Container
 ---@field CloseButton GNUI.Button
 ---@field MinimizeButton GNUI.Button
 ---@field MaximizeButton GNUI.Button
@@ -82,6 +83,9 @@ function Window.new()
    local minimizeButton = gnui_elements.newButton("nothing")
    new.MinimizeButton = minimizeButton
    new:addChild(minimizeButton)
+   
+   new.ClientArea = gnui.newContainer():setAnchor(0,0,1,1)
+   new:addChild(new.ClientArea)
    
    setmetatable(new,Window)
    themes.applyTheme(new)
@@ -249,6 +253,15 @@ end
 ---@return GNUI.window
 function Window:setTitle(text)
    self.TitleLabel:setText(text)
+   return self
+end
+
+--- Adds a child to the client area of the window.
+---@param child GNUI.any
+---@param index integer?
+---@return GNUI.window
+function Window:addElement(child,index)
+   self.ClientArea:addChild(child,index)
    return self
 end
 
