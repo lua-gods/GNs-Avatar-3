@@ -38,20 +38,21 @@ end
 ---@field WrapText boolean                # Does nothing at the moment. but should send the text to the next line once the word is over the container's boundaries
 ---@field RenderTasks table<any,TextTask> # every render task used for rendering text
 ---@field Align Vector2                   # Determins where to fall on to when displaying the text (`0`-`1`, left-right, up-down)
----@field AutoWarp boolean                # Does nothing at the moment, but should toggle the word warping option.
+---@field AutoWarp boolean                # The flag that tells if the text should auto warp to the next line
 ---@field FontScale number                # Scales the text in the container.
 ---@field DefaultColor string             # The color of the text.
+---@field clipText boolean                # The flag that tells if the tetx should clip
 ---@field private _TextChanged boolean    
 ---@field TEXT_CHANGED eventLib           # Triggered when the text is changed.
-local label = {}
-label.__index = function (t,i)
-   return rawget(t,i) or label[i] or container[i] or element[i]
+local L = {}
+L.__index = function (t,i)
+   return rawget(t,i) or L[i] or container[i] or element[i]
 end
-label.__type = "GNUI.Element.Container.Label"
+L.__type = "GNUI.Element.Container.Label"
 
 ---Creates a new label, which is just a container but can render text, separated into its own class for optimization.
 ---@return GNUI.Label
-function label.new()
+function L.new()
    ---@type GNUI.Label
    local new = container.new()
    new.Text = ""
@@ -64,6 +65,7 @@ function label.new()
    new.RenderTasks = {}
    new.FontScale = 1
    new._TextChanged = false
+   new.ClipText = false
    new.TEXT_CHANGED = eventLib.new()
    
    new.TEXT_CHANGED:register(function ()
@@ -84,7 +86,7 @@ function label.new()
       end
       new.TEXT_CHANGED:invoke(new.Text)
    end)
-   setmetatable(new,label)
+   setmetatable(new,L)
    return new
 end
 
@@ -93,7 +95,7 @@ end
 ---@param self self
 ---@param text string|table # For raw json text, use a table instead.
 ---@return self
-function label:setText(text)
+function L:setText(text)
    local t = type(text)
    if t == "table" then
       if not text[1] then -- convert to array
@@ -114,7 +116,7 @@ end
 ---@param self self
 ---@param wrap boolean
 ---@return self
-function label:setWrapText(wrap)
+function L:setWrapText(wrap)
    self.WrapText = wrap
    self:_updateRenderTasks()
    return self
@@ -127,7 +129,7 @@ end
 ---@param horizontal number? # left 0 <-> 1 right
 ---@param vertical number?   #up 0 <-> 1 down  
 ---@return self
-function label:setAlign(horizontal,vertical)
+function L:setAlign(horizontal,vertical)
    self.Align = vec(horizontal or 0,vertical or 0)
    self:_updateRenderTasks()
    return self
@@ -135,8 +137,11 @@ end
 
 ---Sets the font scale for all text thats by this container.
 ---@param scale number # defaults to `1`
+---@generic self
+---@param self self
 ---@return self
-function label:setFontScale(scale)
+function L:setFontScale(scale)
+   ---@cast self GNUI.Label
    self.FontScale = scale or 1
    self:_updateRenderTasks()
    return self
@@ -148,7 +153,7 @@ end
 ---@param self self
 ---@param effect TextEffect
 ---@return self
-function label:setTextEffect(effect)
+function L:setTextEffect(effect)
    self.TextEffect = effect
    self:_deleteRenderTasks()
    self:_buildRenderTasks()
@@ -157,13 +162,28 @@ function label:setTextEffect(effect)
 end
 
 ---Sets the default color for the label, uses the same format as raw json text.
+---@generic self
+---@param self self
+---@return self
 ---@param hex_or_name string
-function label:setDefaultColor(hex_or_name)
+function L:setDefaultColor(hex_or_name)
+   ---@cast self GNUI.Label
    self.DefaultColor = hex_or_name
    self:_deleteRenderTasks()
    self:_bakeWords()
    self:_buildRenderTasks()
    self:_updateRenderTasks()
+   return self
+end
+
+---Sets the flag if the word chunks should clip on the label or not.
+---@param toggle boolean
+---@generic self
+---@param self self
+---@return self
+function L:setClipText(toggle)
+   ---@cast self GNUI.Label
+   self.clipText = toggle
    return self
 end
 
@@ -222,7 +242,7 @@ end
 
 ---@param from string|table
 ---@return table # TextData
-function label:parseText(from)
+function L:parseText(from)
    local lines = {}
    local t = type(from)
    if t == "table" then
@@ -243,7 +263,7 @@ end
 
 
 ---@return self
-function label:_bakeWords()
+function L:_bakeWords()
    self.TextData = self:parseText(self.Text)
    self._TextChanged = true
    return self
@@ -251,7 +271,7 @@ end
 
 
 ---@return self
-function label:_buildRenderTasks()
+function L:_buildRenderTasks()
    local i = 0
    if self.TextData then
       for _, lines in pairs(self.TextData) do
@@ -276,7 +296,7 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function label:_updateRenderTasks()
+function L:_updateRenderTasks()
    local i = 0
    local size = self.ContainmentRect.xy - self.ContainmentRect.zw -- inverted for optimization
    local pos = vec(0,self.LineHeight)
@@ -291,12 +311,12 @@ function label:_updateRenderTasks()
       offset.x = (size.x / scale) * self.Align.x + line.length * self.Align.x
       for c, component in pairs(line.content) do
          i = i + 1
-         if self.WrapText and (pos.x - component.length < size.x / scale)  then
+         if self.wrapText and (pos.x - component.length < size.x / scale)  then
             pos.y = pos.y - self.LineHeight
             pos.x = 0
          end
          local task = self.RenderTasks[i]
-         if (pos.x - component.length > size.x / scale) or true then
+         if (pos.x - component.length > size.x / scale) and (pos.y > 0 and pos.y < size.y) or not self.clipText then
             task
             :setPos(pos.xy_:add(offset.x,offset.y) * scale)
             :setScale(scale,scale,scale)
@@ -311,7 +331,7 @@ function label:_updateRenderTasks()
 end
 
 ---@return self
-function label:_deleteRenderTasks()
+function L:_deleteRenderTasks()
    if self.RenderTasks then
       for key, task in pairs(self.RenderTasks) do
          self.ModelPart:removeTask(task:getName())
@@ -320,4 +340,4 @@ function label:_deleteRenderTasks()
    return self
 end
 
-return label
+return L
