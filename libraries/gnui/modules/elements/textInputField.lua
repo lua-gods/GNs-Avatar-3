@@ -5,6 +5,8 @@ local gnui = require("libraries.gnui")
 local themes = require("libraries.gnui.modules.themes")
 local Btn = require("libraries.gnui.modules.elements.button")
 local container = require("libraries.gnui.primitives.container")
+local eventLib = require("libraries.eventLib")
+
 
 local is_typing = false -- a global that stops the keyboard from interacting with the world temporarily
 local chat_text = ""
@@ -44,6 +46,9 @@ end)
 ---@field BarCaret GNUI.Label
 ---@field CursorPos integer
 ---@field CursorSize integer
+---@field TEXT_CONFIRMED eventLib
+---@field TEXT_CHANGED eventLib
+---@field TEXT_CANCELED eventLib
 local TIB = {}
 TIB.__index = function (t,i)
    return rawget(t,i) or TIB[i] or Btn[i] or gnui.Container[i] or gnui.Element[i]
@@ -61,9 +66,12 @@ function TIB.new(variant,theme)
    new.Label = label
    new.ConfirmedText = ""
    new.PotentialText = ""
-   new.BarCaret = gnui.newLabel():setText("|"):setAnchor(0,0,1,1):setAlign(0,0.5):setCanCaptureCursor(false)
+   new.BarCaret = gnui.newLabel():setText(""):setAnchor(0,0,1,1):setAlign(0,0.5):setCanCaptureCursor(false)
    new.PlaceholderText = ""
    new.editing = false
+   new.TEXT_CANCELED = eventLib.new()
+   new.TEXT_CHANGED = eventLib.new()
+   new.TEXT_CONFIRMED = eventLib.new()
    
    label:addChild(new.BarCaret)
    new:addChild(label)
@@ -77,6 +85,7 @@ function TIB.new(variant,theme)
             new:setConfirmedText(new.PotentialText)
          end
          if new.editing and event.isPressed then -- typing
+            local lastPotential = new.PotentialText
             if event.ctrl then
                if event.key == "key.keyboard.v" then
                   local clipboard = host:getClipboard()
@@ -99,6 +108,15 @@ function TIB.new(variant,theme)
                   new.PotentialText = new.PotentialText:sub(1,-2)
                elseif event.char then
                   new.PotentialText = new.PotentialText..event.char
+               end
+            end
+            if lastPotential ~= new.PotentialText then
+               local returned = new.TEXT_CHANGED:invoke(new.PotentialText)
+               for key, value in pairs(returned) do
+                  if value[1] and type(value[1]) == "string" then
+                     new.PotentialText = value[1]
+                     break
+                  end
                end
             end
             new:update()
@@ -144,12 +162,21 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function TIB:setConfirmedText(text)
+function TIB:setConfirmedText(text,cancel_event)
    ---@cast self GNUI.TextInputField
    self.ConfirmedText = text
    self.PotentialText = ""
    setIsTyping(false)
    self.editing = false
+   if not cancel_event then 
+      local returned = self.TEXT_CONFIRMED:invoke(text)
+      for key, value in pairs(returned) do
+         if value[1] and type(value[1]) == "string" then
+            self.ConfirmedText = value[1]
+            break
+         end
+      end
+   end
    self:updateTheming()
    self:update()
    return self

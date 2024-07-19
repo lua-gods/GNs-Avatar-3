@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 local eventLib = require("libraries.eventLib")
 local utils = require("libraries.gnui.utils")
 
@@ -29,6 +30,7 @@ end)
 ---@field PRESSED eventLib                 # Triggered when `setCursor` is called with the press argument set to true
 ---@field INPUT eventLib                   # Serves as the handler for all inputs within the boundaries of the container.
 ---@field canCaptureCursor boolean         # True when the container can capture the cursor. from its parent
+---@field MOUSE_MOVED eventLib             # Triggered when the mouse position changes within this container
 ---@field MOUSE_PRESSENCE_CHANGED eventLib # Triggered when the state of the mouse to container interaction changes, arguments include: (hovering: boolean, pressed: boolean)
 ---@field MOUSE_ENTERED eventLib           # Triggered once the cursor is hovering over the container
 ---@field MOUSE_EXITED eventLib            # Triggered once the cursor leaves the confinement of this container.
@@ -46,6 +48,8 @@ end)
 ---@field Canvas GNUI.Canvas               # The canvas that the container is attached to.
 ---@field ZSquish number
 ---@field CANVAS_CHANGED eventLib          # Triggered when the canvas that the container is attached to has changed. first argument is the new, second is the old one.
+---@field Shift Vector2                    # Shifts the children.
+---@field isFreed boolean                  # `true` when the container should be freed from memory.
 local Container = {}
 Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
@@ -84,7 +88,10 @@ function Container.new()
    new.GrowDirection = vec(1,1)
    new.StackDistance = 0
    new.ZSquish = 1
+   new.Shift = vec(0,0)
    new.CANVAS_CHANGED = eventLib.new()
+   new.MOUSE_MOVED = eventLib.new()
+   new.isFreed = false
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
    if core.debug_visible then
@@ -117,6 +124,11 @@ function Container.new()
    
    new.VISIBILITY_CHANGED:register(function (v)
       new:update()
+   end)
+   
+   new.ON_FREE:register(function ()
+      new.ModelPart:remove()
+      new.isFreed = true
    end)
 
    local function orphan()
@@ -261,7 +273,7 @@ end
 ---@return Vector2
 function Container:getSize()
 ---@diagnostic disable-next-line: return-type-mismatch
-   return self.cache.size or self.ContainmentRect.zw - self.ContainmentRect.xy
+   return self.ContainmentRect.zw - self.ContainmentRect.xy
 end
 
 ---Sets the top left offset from the origin anchor of its parent.
@@ -527,6 +539,22 @@ function Container:setGrowDirection(x,y)
    return self
 end
 
+---Sets the shift of the children, useful for scrollbars.
+---@overload fun(self : GNUI.Container, vec : Vector2): GNUI.Container
+---@param x number
+---@param y number
+---@generic self
+---@param self self
+---@return self
+function Container:setChildrenShift(x,y)
+   ---@cast self GNUI.Container
+   self.Shift = utils.figureOutVec2(x or 0,y or 0)
+   self.cache.final_minimum_size_changed = true
+   self:update()
+
+   return self
+end
+
 ---Gets the minimum size of the container.
 function Container:getMinimumSize()
    local smallest = vec(0,0)
@@ -594,77 +622,80 @@ end
 local o = 0
 function Container:_update()
    local scale = (self.Parent and self.Parent.AccumulatedScaleFactor or 1) * self.ScaleFactor
+   local shift = vec(0,0)
    self.AccumulatedScaleFactor = scale
    self.Dimensions:scale(scale)
    -- generate the containment rect
-   local containment_rect = self.Dimensions:copy()
+   local cr = self.Dimensions:copy():sub(self.Parent and self.Parent.Shift.xyxy or vec(0,0,0,0))
    -- adjust based on parent if this has one
    local clipping = false
    local size
    if self.Parent and self.Parent.ContainmentRect then 
       local parent_scale = 1 / self.Parent.ScaleFactor
-      local parent_containment = self.Parent.ContainmentRect - self.Parent.ContainmentRect.xyxy
-      local anchor_shift = vec(
-         math.lerp(parent_containment.x,parent_containment.z,self.Anchor.x),
-         math.lerp(parent_containment.y,parent_containment.w,self.Anchor.y),
-         math.lerp(parent_containment.x,parent_containment.z,self.Anchor.z),
-         math.lerp(parent_containment.y,parent_containment.w,self.Anchor.w)
+      local pc = self.Parent.ContainmentRect - self.Parent.ContainmentRect.xyxy
+      local as = vec(
+         math.lerp(pc.x,pc.z,self.Anchor.x),
+         math.lerp(pc.y,pc.w,self.Anchor.y),
+         math.lerp(pc.x,pc.z,self.Anchor.z),
+         math.lerp(pc.y,pc.w,self.Anchor.w)
       ) * parent_scale * self.ScaleFactor
-      containment_rect.x = containment_rect.x + anchor_shift.x
-      containment_rect.y = containment_rect.y + anchor_shift.y
-      containment_rect.z = containment_rect.z + anchor_shift.z
-      containment_rect.w = containment_rect.w + anchor_shift.w
+      cr.x = cr.x + as.x
+      cr.y = cr.y + as.y
+      cr.z = cr.z + as.z
+      cr.w = cr.w + as.w
       
       size = vec(
-         math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
-         math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
+         math.floor((cr.z - cr.x) * 100 + 0.5) / 100,
+         math.floor((cr.w - cr.y) * 100 + 0.5) / 100
       )
       if self.CustomMinimumSize or (self.SystemMinimumSize.x ~= 0 or self.SystemMinimumSize.y ~= 0) then
-         local final_minimum_size = vec(0,0)
-         local shift = vec(0,0)
+         local fms = vec(0,0)
+         
          if self.cache.final_minimum_size_changed or not self.cache.final_minimum_size then
             self.cache.final_minimum_size_changed = false
             if self.CustomMinimumSize then
-               final_minimum_size.x = math.max(final_minimum_size.x,self.CustomMinimumSize.x)
-               final_minimum_size.y = math.max(final_minimum_size.y,self.CustomMinimumSize.y)
+               fms.x = math.max(fms.x,self.CustomMinimumSize.x)
+               fms.y = math.max(fms.y,self.CustomMinimumSize.y)
             end
             if self.SystemMinimumSize then
-               final_minimum_size.x = math.max(final_minimum_size.x,self.SystemMinimumSize.x)
-               final_minimum_size.y = math.max(final_minimum_size.y,self.SystemMinimumSize.y)
+               fms.x = math.max(fms.x,self.SystemMinimumSize.x)
+               fms.y = math.max(fms.y,self.SystemMinimumSize.y)
             end
-            shift = (size - (containment_rect.zw - containment_rect.xy)) * -(self.GrowDirection  * -0.5 + 0.5)
-            self.cache.final_minimum_size = final_minimum_size
+            shift = (size - (cr.zw - cr.xy) ) * -(self.GrowDirection  * -0.5 + 0.5)
+            self.cache.final_minimum_size = fms
          else
-            final_minimum_size = self.cache.final_minimum_size
+            fms = self.cache.final_minimum_size
          end
-         containment_rect.z = math.max(containment_rect.z,containment_rect.x + final_minimum_size.x)
-         containment_rect.w = math.max(containment_rect.w,containment_rect.y + final_minimum_size.y)
+         cr.z = math.max(cr.z,cr.x + fms.x)
+         cr.w = math.max(cr.w,cr.y + fms.y)
          
          ---@diagnostic disable-next-line: param-type-mismatch
-         containment_rect:sub(shift.x,shift.y,shift.x,shift.y)
+         cr:sub(shift.x,shift.y,shift.x,shift.y)
+         local sh = self.Parent.Shift
          
          size = vec(
-         math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
-         math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
+         math.floor((cr.z - cr.x) * 100 + 0.5) / 100,
+         math.floor((cr.w - cr.y) * 100 + 0.5) / 100
          )
       end
       
       -- calculate clipping
       if self.ClipOnParent then
-         clipping = parent_containment.x > containment_rect.x
-         or parent_containment.y > containment_rect.y
-         or parent_containment.z < containment_rect.z
-         or parent_containment.w < containment_rect.w
+         clipping = 
+            pc.x-size.x > cr.x
+         or pc.y-size.y > cr.y
+         or pc.z+size.x < cr.z
+         or pc.w+size.y < cr.w
       end
    else
       size = vec(
-         math.floor((containment_rect.z - containment_rect.x) * 100 + 0.5) / 100,
-         math.floor((containment_rect.w - containment_rect.y) * 100 + 0.5) / 100
+         math.floor((cr.z - cr.x) * 100 + 0.5) / 100,
+         math.floor((cr.w - cr.y) * 100 + 0.5) / 100
       )
    end
 
    self.cache.size = size
-   self.ContainmentRect = containment_rect
+   self.ContainmentRect = cr
    self.Dimensions:scale(1 / scale)
    
    if not self.cache.last_size or self.cache.last_size ~= size then
@@ -676,18 +707,26 @@ function Container:_update()
    end
    self.DIMENSIONS_CHANGED:invoke()
 
-   local visible = self.cache.final_visible
+   local visible = self.Visible
    if self.ClipOnParent and visible then
       if clipping then
          visible = false
       end
    end
-   
-   self.ModelPart:setVisible(self.Visible)
+   self.cache.final_visible = visible
+   if self.cache.final_visible ~= self.cache.was_visible then 
+      self.cache.was_visible = self.cache.final_visible
+      self.ModelPart:setVisible(visible)
+      if visible then
+         self:updateSpriteTasks(true)
+      end
+   end
    if visible then
       self:updateSpriteTasks()
    end
 end
+
+
 function Container:updateSpriteTasks(forced_resize_sprites)
    local containment_rect = self.ContainmentRect
    local unscale_self = 1 / self.ScaleFactor
@@ -695,19 +734,21 @@ function Container:updateSpriteTasks(forced_resize_sprites)
    self.ZSquish = (self.Parent and self.Parent.ZSquish or 1) * (1 / child_count)
    local child_weight = self.ChildIndex / child_count
    --local nest = math.max(self.StackDistance,1)
-   self.ModelPart
-      :setPos(
-         -containment_rect.x * unscale_self,
-         -containment_rect.y * unscale_self,
-         -(child_weight) * core.clipping_margin * self.Z * self.ZSquish
-      )
-      if self.Sprite and self.cache.size_changed or forced_resize_sprites then
-         self.Sprite
-            :setSize(
-               (containment_rect.z - containment_rect.x) * unscale_self,
-               (containment_rect.w - containment_rect.y) * unscale_self
-            )
-      end
+   if self.cache.final_visible then
+      self.ModelPart
+         :setPos(
+            -containment_rect.x * unscale_self,
+            -containment_rect.y * unscale_self,
+            -(child_weight) * core.clipping_margin * self.Z * self.ZSquish
+         ):setVisible(true)
+         if self.Sprite and (self.cache.size_changed or forced_resize_sprites) then
+            self.Sprite
+               :setSize(
+                  (containment_rect.z - containment_rect.x) * unscale_self,
+                  (containment_rect.w - containment_rect.y) * unscale_self
+               )
+         end
+   end
       if core.debug_visible then
       ---@diagnostic disable-next-line: undefined-field
       self.debug_container
@@ -735,7 +776,13 @@ function Container:_propagateUpdateToChildren(force_all)
       self:forceUpdate()
    end
    for key, value in pairs(self.Children) do
-      value:_propagateUpdateToChildren(force_all)
+      if value.isFreed then
+         self:removeChild(value)
+      else
+         if value then
+            value:_propagateUpdateToChildren(force_all)
+         end
+      end
    end
 end
 

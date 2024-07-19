@@ -9,7 +9,6 @@ DEPENDENCIES
 ]]
 ---@diagnostic disable: assign-type-mismatch
 
-local MINIMUM_SIZE = vec(32,16)
 local BDS = 3 -- Border Drag Size
 
 local gnui = require("libraries.gnui")
@@ -22,7 +21,7 @@ local active_window
 local ACTIVE_WINDOW_CHANGED = eventLib.new()
 
 ---@param container GNUI.Container
----@param window GNUI.window
+---@param window GNUI.Window
 ---@param fun function
 local function applyDrag(container,window,fun)
    container:setZmultiplier(-0.1)
@@ -37,7 +36,7 @@ local function applyDrag(container,window,fun)
    end)
 end
 
----@class GNUI.window : GNUI.Container
+---@class GNUI.Window : GNUI.Container
 ---@field Theme GNUI.theme
 ---@field TitleLabel GNUI.Label
 ---@field Title string
@@ -57,7 +56,7 @@ Window.__index = function (t,i)
 end
 Window.__type = "GNUI.Element.Container.Window"
 function Window.new()
-   ---@type GNUI.window
+   ---@type GNUI.Window
    local new = gnui.newContainer()
    new.type = "window"
    new.Title = ""
@@ -102,7 +101,7 @@ function Window.new()
    themes.applyTheme(leftBorderDrag,"window_border_drag")
    new:addChild(leftBorderDrag)
    applyDrag(leftBorderDrag,new,function (mouse_event)
-      new:setDimensions(math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-MINIMUM_SIZE.x),new.Dimensions.y,new.Dimensions.z,new.Dimensions.w)
+      new:setDimensions(math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-new.SystemMinimumSize.x),new.Dimensions.y,new.Dimensions.z,new.Dimensions.w)
    end)
    
    local rightBorderDrag = gnui.newContainer()
@@ -110,7 +109,7 @@ function Window.new()
    themes.applyTheme(rightBorderDrag,"window_border_drag")
    new:addChild(rightBorderDrag)
    applyDrag(rightBorderDrag,new,function (mouse_event)
-      new:setDimensions(new.Dimensions.x,new.Dimensions.y,math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+MINIMUM_SIZE.x),new.Dimensions.w)
+      new:setDimensions(new.Dimensions.x,new.Dimensions.y,math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+new.SystemMinimumSize.x),new.Dimensions.w)
    end)
    
    local topBorderDrag = gnui.newContainer()
@@ -118,7 +117,7 @@ function Window.new()
    themes.applyTheme(topBorderDrag,"window_border_drag")
    new:addChild(topBorderDrag)
    applyDrag(topBorderDrag,new,function (mouse_event)
-      new:setDimensions(new.Dimensions.x,math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-MINIMUM_SIZE.y),new.Dimensions.z,new.Dimensions.w)
+      new:setDimensions(new.Dimensions.x,math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-new.SystemMinimumSize.y),new.Dimensions.z,new.Dimensions.w)
    end)
    
    local bottomBorderDrag = gnui.newContainer()
@@ -126,7 +125,7 @@ function Window.new()
    themes.applyTheme(bottomBorderDrag,"window_border_drag")
    new:addChild(bottomBorderDrag)
    applyDrag(bottomBorderDrag,new,function (mouse_event)
-      new:setDimensions(new.Dimensions.x,new.Dimensions.y,new.Dimensions.z,math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+MINIMUM_SIZE.y))
+      new:setDimensions(new.Dimensions.x,new.Dimensions.y,new.Dimensions.z,math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+new.SystemMinimumSize.y))
    end)
    
    local topRightCornerDrag = gnui.newContainer()
@@ -136,8 +135,8 @@ function Window.new()
    applyDrag(topRightCornerDrag,new,function (mouse_event)
       new:setDimensions(
          new.Dimensions.x,
-         math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-MINIMUM_SIZE.y),
-         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+MINIMUM_SIZE.x),
+         math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-new.SystemMinimumSize.y),
+         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+new.SystemMinimumSize.x),
          new.Dimensions.w)
    end)
    
@@ -149,8 +148,8 @@ function Window.new()
       new:setDimensions(
          new.Dimensions.x,
          new.Dimensions.y,
-         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+MINIMUM_SIZE.x),
-         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+MINIMUM_SIZE.y))
+         math.max(new.Dimensions.z + mouse_event.relative.x,new.Dimensions.x+new.SystemMinimumSize.x),
+         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+new.SystemMinimumSize.y))
    end)
    
    local bottomLeftCornerDrag = gnui.newContainer()
@@ -159,10 +158,10 @@ function Window.new()
    new:addChild(bottomLeftCornerDrag)
    applyDrag(bottomLeftCornerDrag,new,function (mouse_event)
       new:setDimensions(
-         math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-MINIMUM_SIZE.x),
+         math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-new.SystemMinimumSize.x),
          new.Dimensions.y,
          new.Dimensions.z,
-         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+MINIMUM_SIZE.y))
+         math.max(new.Dimensions.w + mouse_event.relative.y,new.Dimensions.y+new.SystemMinimumSize.y))
    end)
    
    local topLeftCornerDrag = gnui.newContainer()
@@ -171,8 +170,8 @@ function Window.new()
    new:addChild(topLeftCornerDrag)
    applyDrag(topLeftCornerDrag,new,function (mouse_event)
       new:setDimensions(
-         math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-MINIMUM_SIZE.x),
-         math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-MINIMUM_SIZE.y),
+         math.min(new.Dimensions.x + mouse_event.relative.x,new.Dimensions.z-new.SystemMinimumSize.x),
+         math.min(new.Dimensions.y + mouse_event.relative.y,new.Dimensions.w-new.SystemMinimumSize.y),
          new.Dimensions.z,
          new.Dimensions.w)
    end)
@@ -250,7 +249,7 @@ end
 
 ---Sets the title of the window.
 ---@param text string
----@return GNUI.window
+---@return GNUI.Window
 function Window:setTitle(text)
    self.TitleLabel:setText(text)
    return self
@@ -259,7 +258,7 @@ end
 --- Adds a child to the client area of the window.
 ---@param child GNUI.any
 ---@param index integer?
----@return GNUI.window
+---@return GNUI.Window
 function Window:addElement(child,index)
    self.ClientArea:addChild(child,index)
    return self

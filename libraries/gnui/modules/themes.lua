@@ -31,7 +31,7 @@ local api = {}
 ---@param element GNUI.any
 ---@param theme string?
 ---@param variant string|"nothing"?
-function api.applyTheme(element,variant,theme)
+function api.applyTheme(element,variant,theme,...)
    if not theme then theme = "default" end
    if not variant then variant = "default" end
    local type = element.__type:match("%.([^%.]+)$")
@@ -46,7 +46,7 @@ function api.applyTheme(element,variant,theme)
      -- error('Variant "' .. variant .. '" not found in element "' .. type .. '" in theme "' .. theme .. '"',2)
    end
    if variant == "nothing" then return end
-   theme_library[theme][type][variant](element)
+   theme_library[theme][type][variant](element,...)
 end
 
 return api

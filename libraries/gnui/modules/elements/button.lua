@@ -6,7 +6,6 @@ local eventLib = require("libraries.eventLib")
 
 
 ---@class GNUI.Button : GNUI.Container
----@field Pressed boolean
 local Button = {}
 Button.__index = function (t,i)
    return rawget(t,i) or Button[i] or gnui.Container[i] or gnui.Element[i]
@@ -23,7 +22,6 @@ function Button.new(variant,theme)
    new.PRESSED = eventLib.new()
    new.BUTTON_DOWN = eventLib.new()
    new.BUTTON_UP = eventLib.new()
-   local label = gnui.newLabel()
    setmetatable(new,Button)
    new.cache.was_pressed = false
    ---@param event GNUI.InputEvent

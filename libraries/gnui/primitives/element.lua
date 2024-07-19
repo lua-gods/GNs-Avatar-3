@@ -121,7 +121,7 @@ end
 function Element:addChild(child,index)
    ---@cast self GNUI.Container
    if not child then return self end
-   if not type(child):find("^GNUI.Element") then
+   if not type(child):find("^GNUI.") then
       error("invalid element given, recived: "..type(child),2)
    end
    if child.Parent then return self end
@@ -154,7 +154,7 @@ function Element:removeChild(child)
       end
       self:updateChildrenIndex()
    else
-      error("This container, is, not, the father!", 2)
+      error("This container, is, not, the father", 2)
    end
    return self
 end
@@ -196,7 +196,17 @@ function Element:free()
       self.Parent:removeChild(self)
    end
    self.ON_FREE:invoke()
-   self = nil
+end
+
+---Kills all the childrem, go startwars mode.
+function Element:freeAllChildren()
+   local children = {}
+   for key, value in pairs(self:getChildren()) do
+      children[key] = value
+   end
+   for key, value in pairs(children) do
+      value:free()
+   end
 end
 
 return Element

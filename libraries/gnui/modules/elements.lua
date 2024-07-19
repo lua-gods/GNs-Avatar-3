@@ -58,6 +58,7 @@ api.SingleTextureButton = single_texture_button
 
 
 
+
 --->====================[ TextInputButton ]====================<--
 local text_input_button = require("libraries.gnui.modules.elements.textInputField")
 ---@param variant string|"default"|"nothing"?
@@ -65,4 +66,16 @@ local text_input_button = require("libraries.gnui.modules.elements.textInputFiel
 ---@return GNUI.TextInputField
 api.newTextInputField = function(variant,theme) return text_input_button.new(variant,theme) end
 api.TextInputField = text_input_button
+
+
+
+
+-->====================[ ScrollbarButton ]====================<--
+local scrollbar_button = require("libraries.gnui.modules.elements.VScrollbarButton")
+---@param variant string|"default"|"nothing"?
+---@param theme string?
+---@return GNUI.ScrollbarButton
+api.newScrollbarButton = function(variant,theme) return scrollbar_button.new(variant,theme) end
+api.ScrollbarButton = scrollbar_button
+
 return api
