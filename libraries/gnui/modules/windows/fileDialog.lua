@@ -30,6 +30,7 @@ local DOUBLE_CLICK_MS = 300
 ---@field cancelButton GNUI.Button
 ---@field OptionsButton GNUI.Button
 ---@field FILE_SELECTED eventLib
+---@field AcceptedSuffixes string[]
 local FM = {}
 FM.__index = function (t,i)
    return rawget(t,i) or FM[i] or Window[i] or GNUI.Container[i] or GNUI.Element[i]
@@ -51,6 +52,7 @@ function FM.new(screen,situation)
    w:setSystemMinimumSize(128,64)
    w.TargetDirectory = ""
    w.FILE_SELECTED = eventLib.new()
+   w.AcceptedSuffixes = {}
    setmetatable(w,FM)
    
    if situation == "OPEN" then
@@ -164,7 +166,7 @@ function FM.new(screen,situation)
    okButton:setSize(38,16):setPos(-77,2):setAnchor(1,0,1,0)
    bottomRibbon:addChild(okButton)
    okButton.PRESSED:register(function () 
-      w:openFile(w.fileNameField.ConfirmedText)
+      w:openFile(fileNameField.ConfirmedText)
    end)
    w.okButton = okButton
    
@@ -244,12 +246,31 @@ function FM:updateScrollbar()
 end
 
 function FM:openFile(name)
-   local path = #self.TargetDirectory > 0 and (self.TargetDirectory .. "/") or "" .. name
-   print(path)
+   local path = (#self.TargetDirectory > 0 and (self.TargetDirectory .. "/") or "") .. name
    if file:isFile(path) then
-      self.FILE_SELECTED:invoke(path)
-      self:close()
+      local accepted = false
+      if #self.AcceptedSuffixes == 0 then
+         accepted = true
+      else
+         for key, value in pairs(self.AcceptedSuffixes) do
+            if path:sub(-#value) == value then
+               accepted = true
+               break
+            end
+         end
+      end
+      if accepted then
+         self.FILE_SELECTED:invoke(path)
+         self:close()
+      end
    end
+end
+
+--- Sets the accepted suffixes.
+---@param suffixes string[]
+function FM:setAcceptedSuffixes(suffixes)
+   self.AcceptedSuffixes = suffixes or {}
+   return self
 end
 
 return FM

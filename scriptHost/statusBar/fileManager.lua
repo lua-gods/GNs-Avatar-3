@@ -13,5 +13,3 @@ local button = Statusbar.newButtonSprite(icon)
 button.PRESSED:register(function ()
    GNUIWindow.newFileDialog(screen,"OPEN")
 end)
-
-GNUIWindow.newFileDialog(screen,"OPEN")
