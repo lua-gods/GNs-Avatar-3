@@ -296,7 +296,7 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function L:_updateRenderTasks()
+function L:_updateRenderTasks() -- NOTE: WrapText is not compatible with custom alignment yet.
    local i = 0
    local size = self.ContainmentRect.xy - self.ContainmentRect.zw -- inverted for optimization
    local pos = vec(0,self.LineHeight)
@@ -311,7 +311,7 @@ function L:_updateRenderTasks()
       offset.x = (size.x / scale) * self.Align.x + line.length * self.Align.x
       for c, component in pairs(line.content) do
          i = i + 1
-         if self.wrapText and (pos.x - component.length < size.x / scale)  then
+         if self.WrapText and (pos.x - component.length < size.x / scale)  then
             pos.y = pos.y - self.LineHeight
             pos.x = 0
          end
