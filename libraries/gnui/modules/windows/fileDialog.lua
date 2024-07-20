@@ -132,6 +132,9 @@ function FM.new(screen,situation)
    local reload = GNUIElements.newTextButton():setText("()")
    reload:setSize(16,16):setPos(50,1)
    ribbon:addChild(reload)
+   reload.PRESSED:register(function ()
+      w:refresh()
+   end)
    w.downButton = reload
    
    local filterButton = GNUIElements.newTextButton():setText("F")

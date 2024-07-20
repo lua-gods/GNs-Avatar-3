@@ -54,14 +54,16 @@ local message_filters = {
       ---@param message chatscript.post_data
       post = function (message)
          if last_message == message.plain_text then
-            spam_combo = spam_combo + 1
-            if spam_combo == 2 then
-               utils.insertPrefix(utils.getIndexComponent(history[2].post_json,1),{text = "(x"..spam_combo..") ",color="red"})
-            else
-               if history[2] then
-                  local component = utils.getIndexComponent(history[2].post_json,1)
-                  if component then
-                     component.text = "(x"..spam_combo..") "
+            if history[2] and history[2].post_json then
+               spam_combo = spam_combo + 1
+               if spam_combo == 2 then
+                  utils.insertPrefix(utils.getIndexComponent(history[2].post_json,1),{text = "(x"..spam_combo..") ",color="red"})
+               else
+                  if history[2] then
+                     local component = utils.getIndexComponent(history[2].post_json,1)
+                     if component then
+                        component.text = "(x"..spam_combo..") "
+                     end
                   end
                end
             end

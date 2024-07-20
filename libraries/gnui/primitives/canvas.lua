@@ -309,6 +309,12 @@ events.MOUSE_SCROLL:register(function (dir)
    end
 end)
 
+local WORLD_RENDER = eventLib.new()
+events.WORLD_RENDER:register(function (delta)
+   WORLD_RENDER:invoke()
+end)
+
+
 ---Creates a new canvas.
 ---@return GNUI.Canvas
 function Canvas.new()
@@ -320,6 +326,11 @@ function Canvas.new()
    new.UNHANDLED_INPUT = eventLib.new()
    new.unlockCursorWhenActive = true
    new.captureKeyInputs = true
+   
+   WORLD_RENDER:register(function ()
+      new:_propagateUpdateToChildren()
+   end,"GNUI_root_container."..new.id)
+   
    canvases[#canvases+1] = new
    setmetatable(new, Canvas)
    return new

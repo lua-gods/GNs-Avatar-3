@@ -11,10 +11,6 @@ local element = require("libraries.gnui.primitives.element")
 local sprite = require("libraries.gnui.spriteLib")
 local core = require("libraries.gnui.core")
 
-local WORLD_RENDER = eventLib.new()
-events.WORLD_RENDER:register(function (delta)
-   WORLD_RENDER:invoke()
-end)
 
 ---@class GNUI.Container : GNUI.Element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
@@ -55,7 +51,7 @@ Container.__index = function (t,i)
    return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
 end
 Container.__type = "GNUI.Element.Container"
-local root_containe_count = 0
+local root_container_count = 0
 ---Creates a new container.
 ---@return self
 function Container.new()
@@ -133,10 +129,7 @@ function Container.new()
 
    local function orphan()
       new.StackDistance = 0
-      root_containe_count = root_containe_count + 1
-      WORLD_RENDER:register(function ()
-         new:_propagateUpdateToChildren()
-      end,"GNUI_root_container."..new.id)
+      root_container_count = root_container_count + 1
    end
    orphan()
    new.PARENT_CHANGED:register(function (p)
@@ -145,8 +138,7 @@ function Container.new()
       else
          new:setCanvas(nil)
       end
-      WORLD_RENDER:remove(new.__type.."."..new.id)
-      root_containe_count = root_containe_count - 1
+      root_container_count = root_container_count - 1
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
       else
@@ -771,7 +763,7 @@ end
 
 function Container:_propagateUpdateToChildren(force_all)
    if self.UpdateQueue or force_all then
-      force_all = true
+      force_all = true -- when a container updates, make sure the children updates.
       self.UpdateQueue = false
       self:forceUpdate()
    end
