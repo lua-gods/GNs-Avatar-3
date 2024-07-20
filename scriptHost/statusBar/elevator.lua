@@ -26,27 +26,15 @@ local seqCopyElevator = sequence.new()
 :add(10,function () host:sendChatCommand("/tp 6968 6 -3568") end)
 :add(30,function () host:sendChatCommand("//copy") end)
 :add(35,function () host:sendChatCommand(("/tp %f5 %f5 %f5"):format(initialPos.x,initialPos.y,initialPos.z)) end)
-
-events.WORLD_TICK:register(function ()
-   for y = 0, 10, 1 do
-      for x = 0, -15, -1 do
-         indexPos = vec(6991+x, 0+y*6,-3553)
-         if world.getBlockState(indexPos).id == "minecraft:air" then
-            particles["end_rod"]:pos(indexPos):scale(3):spawn()
-            return
-         end
-      end
-   end
-end)
 local pasted = false
 
 local seqLinkElevator = sequence.new()
 :add(0,function () initialPos = player:getPos() host:sendChatCommand("//1 7002,4,-3563") host:sendChatCommand("//2 7002,0,-3562") host:sendChatCommand("/tp 7002 0 -3563") end)
 :add(20,function () host:sendChatCommand("//copy") end)
-:add(25,function ()
+:add(40,function ()
    for y = 0, 10, 1 do
       for x = 0, -15, -1 do
-         indexPos = vec(6991+x, 0+y*6,-3553)
+         indexPos = vec(6991+x, y*6,-3553)
          if world.getBlockState(indexPos).id == "minecraft:air" then
             host:sendChatCommand(("/tp %s %s %s"):format(indexPos.x,indexPos.y,indexPos.z-1))
             return
@@ -54,10 +42,10 @@ local seqLinkElevator = sequence.new()
       end
    end
 end)
-:add(40,function () host:sendChatCommand("//paste") end)
-:add(45,function () host:sendChatCommand("/fill ~ ~ ~ ~ ~1 ~1 air") host:sendChatCommand("/setblock ~ ~2 ~ air") end)
-:add(45,function () host:sendChatCommand(('setblock ~ ~ ~1 minecraft:chain_command_block[facing=south]{Command:"execute as @e[tag=worldElevator] at @s run tp @s ~%i ~%i ~%i",auto:1b}'):format(-elevatorPos.x,-elevatorPos.y,-elevatorPos.z)) host:sendChatCommand(('setblock ~ ~1 ~1 minecraft:chain_command_block[facing=south]{Command:"execute as @e[tag=worldElevator] at @s run tp @s ~%i ~%i ~%i",auto:1b}'):format(elevatorPos.x,elevatorPos.y,elevatorPos.z)) end)
-:add(50,function ()
+:add(50,function () host:sendChatCommand("//paste") end)
+:add(55,function () host:sendChatCommand("/fill ~ ~ ~ ~ ~1 ~1 air") host:sendChatCommand("/setblock ~ ~2 ~ air") end)
+:add(55,function () host:sendChatCommand(('setblock ~ ~ ~1 minecraft:chain_command_block[facing=south]{Command:"execute as @e[tag=worldElevator] at @s run tp @s ~%i ~%i ~%i",auto:1b}'):format(-elevatorPos.x,-elevatorPos.y,-elevatorPos.z)) host:sendChatCommand(('setblock ~ ~1 ~1 minecraft:chain_command_block[facing=south]{Command:"execute as @e[tag=worldElevator] at @s run tp @s ~%i ~%i ~%i",auto:1b}'):format(elevatorPos.x,elevatorPos.y,elevatorPos.z)) end)
+:add(60,function ()
    local split = {}
    local chunk = ""
    local chunkLength = 0
@@ -75,12 +63,12 @@ end)
    split[#split+1] = chunk
    host:sendChatCommand(([=[setblock ~ ~ ~ minecraft:cherry_wall_sign{front_text:{messages:['{"text":"%s"}','{"text":"%s"}','{"text":"%s"}','{"text":"%s"}']}}]=]):format(split[1] or "",split[2] or "",split[3] or "",split[4] or ""))
 end)
-:add(55,function ()
+:add(65,function ()
    local p = elevatorPos:copy():sub(2,-3,2)
    host:sendChatCommand(('tp %f5 %f5 %f5'):format(p.x,p.y,p.z))
 end)
-:add(70,function () host:sendChatCommand(('setblock %i %i %i air'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z)) end)
-:add(75,function ()
+:add(80,function () host:sendChatCommand(('setblock %i %i %i air'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z)) end)
+:add(85,function ()
    host:sendChatCommand(('setblock %i %i %i minecraft:command_block[facing=up]{Command:"setblock %i %i %i minecraft:redstone_block"}'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z,indexPos.x,indexPos.y+2,indexPos.z))
    initialPos = nil
    elevatorPos = nil
