@@ -27,6 +27,18 @@ local seqCopyElevator = sequence.new()
 :add(30,function () host:sendChatCommand("//copy") end)
 :add(35,function () host:sendChatCommand(("/tp %f5 %f5 %f5"):format(initialPos.x,initialPos.y,initialPos.z)) end)
 
+events.WORLD_TICK:register(function ()
+   for y = 0, 10, 1 do
+      for x = 0, -15, -1 do
+         indexPos = vec(6991+x, 0+y*6,-3553)
+         if world.getBlockState(indexPos).id == "minecraft:air" then
+            particles["end_rod"]:pos(indexPos):scale(3):spawn()
+            return
+         end
+      end
+   end
+end)
+
 
 local seqLinkElevator = sequence.new()
 :add(0,function () initialPos = player:getPos() host:sendChatCommand("//1 7002,4,-3563") host:sendChatCommand("//2 7002,0,-3562") host:sendChatCommand("/tp 7002 0 -3563") end)
@@ -116,6 +128,12 @@ local function makeWindow()
       if elevatorPos then
          seqLinkElevator:start(events.WORLD_TICK)
       end
+      initialPos = nil
+      elevatorPos = nil
+      name = ""
+      indexPos = nil
+      pasted = false
+      nameField:setConfirmedText("")
    end)
    stack:addChild(linkElevator)
    
