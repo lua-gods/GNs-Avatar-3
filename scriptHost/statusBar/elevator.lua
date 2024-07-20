@@ -38,7 +38,7 @@ events.WORLD_TICK:register(function ()
       end
    end
 end)
-
+local pasted = false
 
 local seqLinkElevator = sequence.new()
 :add(0,function () initialPos = player:getPos() host:sendChatCommand("//1 7002,4,-3563") host:sendChatCommand("//2 7002,0,-3562") host:sendChatCommand("/tp 7002 0 -3563") end)
@@ -80,9 +80,15 @@ end)
    host:sendChatCommand(('tp %f5 %f5 %f5'):format(p.x,p.y,p.z))
 end)
 :add(70,function () host:sendChatCommand(('setblock %i %i %i air'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z)) end)
-:add(75,function () host:sendChatCommand(('setblock %i %i %i minecraft:command_block[facing=up]{Command:"setblock %i %i %i minecraft:redstone_block"}'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z,indexPos.x,indexPos.y+2,indexPos.z)) end)
+:add(75,function ()
+   host:sendChatCommand(('setblock %i %i %i minecraft:command_block[facing=up]{Command:"setblock %i %i %i minecraft:redstone_block"}'):format(elevatorPos.x,elevatorPos.y+1,elevatorPos.z,indexPos.x,indexPos.y+2,indexPos.z))
+   initialPos = nil
+   elevatorPos = nil
+   name = ""
+   indexPos = nil
+   pasted = false
+end)
 
-local pasted = false
 
 local function makeWindow()
    window = GNUIWindow.newWindow():setDimensions(0,16,128,236):setTitle("Elevator Utility")
@@ -128,12 +134,6 @@ local function makeWindow()
       if elevatorPos then
          seqLinkElevator:start(events.WORLD_TICK)
       end
-      initialPos = nil
-      elevatorPos = nil
-      name = ""
-      indexPos = nil
-      pasted = false
-      nameField:setConfirmedText("")
    end)
    stack:addChild(linkElevator)
    
