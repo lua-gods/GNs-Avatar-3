@@ -25,7 +25,7 @@ local seqCopyElevator = sequence.new()
 :add(0,function () initialPos = player:getPos() host:sendChatCommand("//1 6970,10,-3568") host:sendChatCommand("//2 6966,3,-3564") end)
 :add(10,function () host:sendChatCommand("/tp 6968 6 -3568") end)
 :add(30,function () host:sendChatCommand("//copy") end)
-:add(35,function () host:sendChatCommand(("/tp f5 f5 f5"):format(initialPos.x,initialPos.y,initialPos.z)) end)
+:add(35,function () host:sendChatCommand(("/tp %f5 %f5 %f5"):format(initialPos.x,initialPos.y,initialPos.z)) end)
 
 
 local seqLinkElevator = sequence.new()
