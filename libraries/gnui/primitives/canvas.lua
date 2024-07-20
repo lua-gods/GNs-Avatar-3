@@ -278,13 +278,16 @@ events.KEY_PRESS:register(function (key, state, modifiers)
 end)
 
 events.MOUSE_MOVE:register(function (x, y)
-   local cursor_pos = client:getMousePos() / client:getGuiScale()
-   for _, c in pairs(canvases) do
-      if c.isActive and c.Visible and not c.hasCustomCursorSetter then
-         c:setMousePos(cursor_pos.x, cursor_pos.y, true)
-         if c.captureCursorMovement or c.captureInputs then return true end
-      end
-    end
+   local s = host:getScreen()
+   if not s or s == "net.minecraft.class_408" then
+      local cursor_pos = client:getMousePos() / client:getGuiScale()
+      for _, c in pairs(canvases) do
+         if c.isActive and c.Visible and not c.hasCustomCursorSetter then
+            c:setMousePos(cursor_pos.x, cursor_pos.y, true)
+            if c.captureCursorMovement or c.captureInputs then return true end
+         end
+       end
+   end
 end)
 
 events.MOUSE_PRESS:register(function (button, state)

@@ -34,7 +34,7 @@ return {
          container:setSystemMinimumSize(0,16)
       end,
    },
-   TextInputButton = {
+   TextInputField = {
       ---@param container GNUI.TextInputField
       default = function (container)
          container.Label:setDimensions(3,2,-3,-2)
@@ -52,6 +52,11 @@ return {
                if hovered or container.editing then container:setSprite(sprite_hovered)
                else container:setSprite(sprite_normal)
                end 
+            end
+            if math.max(#container.ConfirmedText,#container.PotentialText) > 0 then
+               container.Label:setDefaultColor("white")
+            else
+               container.Label:setDefaultColor("#5c5c5c")
             end
          end)
       end

@@ -53,7 +53,7 @@ local TIB = {}
 TIB.__index = function (t,i)
    return rawget(t,i) or TIB[i] or Btn[i] or gnui.Container[i] or gnui.Element[i]
 end
-TIB.__type = "GNUI.Element.Container.Button.TextInputButton"
+TIB.__type = "GNUI.Element.Container.Button.TextInputField"
 
 ---Creates a new button.
 ---@return GNUI.TextInputField
@@ -146,12 +146,22 @@ function TIB.new(variant,theme)
 end
 
 function TIB:_update()
+   local s = math.max(#self.ConfirmedText,#self.PotentialText)
+   if self.cache.confirmedTextSize ~= s then
+      self.cache.confirmedTextSize = s
+      self:updateTheming()
+   end
    if self.editing then
       self.Label:setText(self.PotentialText)
       self.BarCaret:setVisible(true)
    else
-      self.Label:setText(self.ConfirmedText)
-      self.BarCaret:setVisible(false)
+      if #self.ConfirmedText > 0 then
+         self.Label:setText(self.ConfirmedText)
+         self.BarCaret:setVisible(false)
+      else
+         self.Label:setText(self.PlaceholderText)
+         self.BarCaret:setVisible(false)
+      end
    end
    container._update(self)
    return self
@@ -195,6 +205,19 @@ function TIB:setPotentialText(text)
       self:updateTheming()
       self:update()
    end
+   return self
+end
+
+---Sets the placeholder text of this label
+---@param text string|table
+---@generic self
+---@param self self
+---@return self
+function TIB:setPlaceholderText(text)
+   ---@cast self GNUI.TextInputField
+   self.PlaceholderText = text
+   self:updateTheming()
+   self:update()
    return self
 end
 

@@ -132,9 +132,13 @@ function Container.new()
       root_container_count = root_container_count + 1
    end
    orphan()
-   new.PARENT_CHANGED:register(function (p)
-      if p and p.__type:find("Canvas$") then
-         new:setCanvas(p)
+   new.PARENT_CHANGED:register(function (parent)
+      if parent then
+         if parent.__type:find("Canvas$") then
+            new:setCanvas(parent)
+         else
+            new:setCanvas(parent.Canvas)
+         end
       else
          new:setCanvas(nil)
       end
@@ -142,7 +146,6 @@ function Container.new()
       if new.Parent then 
          new.ModelPart:moveTo(new.Parent.ModelPart)
       else
-         new.CANVAS_CHANGED:invoke(nil,new.Canvas)
          new.ModelPart:getParent():removeChild(new.ModelPart)
          orphan()
       end
@@ -162,10 +165,10 @@ function Container:setCanvas(canvas)
       local old = self.Canvas
       self.Canvas = canvas
       self.CANVAS_CHANGED:invoke(canvas,old)
-   end
-   for i = 1, #self.Children, 1 do
-      local child = self.Children[i]
-      child:setCanvas(canvas)
+      for i = 1, #self.Children, 1 do
+         local child = self.Children[i]
+         child:setCanvas(canvas)
+      end
    end
    return self
 end
