@@ -1,1 +1,3 @@
 .vscode
+scriptHost/chatAutoCorrect.lua
+scriptHost/.chatAutoCorrect.lua

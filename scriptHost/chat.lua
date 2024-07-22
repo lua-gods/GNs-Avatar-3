@@ -155,7 +155,6 @@ local message_filters = {
                      end
                   end
                   component.antiTamper = true
-                  component.color = "gray"
                end
             end)
          end

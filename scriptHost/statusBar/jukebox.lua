@@ -1,5 +1,3 @@
-if not goofy then return end -- requires the goofy plugin
-
 local GNUI = require("libraries.gnui")
 local GNUIWindow = require("libraries.gnui.modules.windows")
 local screen = GNUI.getScreenCanvas()

@@ -1,4 +1,3 @@
-if not goofy then return end -- requires the goofy plugin
 
 local GNUI = require("libraries.gnui")
 local GNUIElements = require("libraries.gnui.modules.elements")

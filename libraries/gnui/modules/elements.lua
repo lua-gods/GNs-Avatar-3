@@ -71,7 +71,7 @@ api.TextInputField = text_input_button
 
 
 -->====================[ ScrollbarButton ]====================<--
-local scrollbar_button = require("libraries.gnui.modules.elements.VScrollbarButton")
+local scrollbar_button = require("libraries.gnui.modules.elements.ScrollbarButton")
 ---@param variant string|"default"|"nothing"?
 ---@param theme string?
 ---@return GNUI.ScrollbarButton

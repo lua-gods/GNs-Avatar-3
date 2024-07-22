@@ -1,5 +1,6 @@
 ---@diagnostic disable: assign-type-mismatch
--- The Base class for all buttons. does not contain any visual elements.
+-- Scrollbar duh
+-- TODO: make horizontal version
 
 local gnui = require("libraries.gnui")
 local button = require("libraries.gnui.modules.elements.button")
@@ -16,15 +17,15 @@ local eventLib = require("libraries.eventLib")
 ---@field ON_SCROLL eventLib
 ---@field ScrollPercentage number
 ---@field package ScrollButtonRatio number
-local VSB = {}
-VSB.__index = function (t,i)
-   return rawget(t,i) or VSB[i] or gnui.Container[i] or gnui.Element[i]
+local SB = {}
+SB.__index = function (t,i)
+   return rawget(t,i) or SB[i] or gnui.Container[i] or gnui.Element[i]
 end
-VSB.__type = "GNUI.Element.Container.Button.VScrollbarButton"
+SB.__type = "GNUI.Element.Container.Button.ScrollbarButton"
 
 ---Creates a new button.
 ---@return GNUI.ScrollbarButton
-function VSB.new(variant,theme)
+function SB.new(variant,theme)
    variant = variant or "default"
    theme = theme or "default"
    
@@ -45,7 +46,7 @@ function VSB.new(variant,theme)
    new.ScrollTo = 1
    new.ON_SCROLL = eventLib.new()
    new.ScrollPercentage = 0
-   setmetatable(new,VSB)
+   setmetatable(new,SB)
    themes.applyTheme(new,variant,theme)
    
    ---@param event GNUI.InputEventMouseMotion
@@ -71,7 +72,7 @@ end
 ---@param from number
 ---@param to number
 ---@return GNUI.ScrollbarButton
-function VSB:setRange(from,to)
+function SB:setRange(from,to)
    self.ScrollFrom = from
    self.ScrollTo = math.max(from+1,to)
    self.ScrollSize = self.ScrollTo-self.ScrollFrom
@@ -80,17 +81,17 @@ function VSB:setRange(from,to)
    return self
 end
 
-function VSB:setScroll(value)
+function SB:setScroll(value)
    self.Scroll = math.clamp(value,self.ScrollFrom,self.ScrollTo)
    self.ScrollPercentage = math.clamp(math.map(self.Scroll,self.ScrollFrom,self.ScrollTo,0,1),0,1)
    self.ON_SCROLL:invoke(self.Scroll)
    self:update()
 end
 
-function VSB:_update()
+function SB:_update()
    local sp = self.ScrollPercentage
    self.Scrollbar:setAnchor(0,sp-self.ScrollButtonRatio*sp,1,sp+self.ScrollButtonRatio*(1-sp))
    gnui.Container._update(self)
 end
 
-return VSB
+return SB
