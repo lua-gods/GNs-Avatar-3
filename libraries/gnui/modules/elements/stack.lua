@@ -4,7 +4,7 @@ local gnui = require("libraries.gnui")
 local container = gnui.Container
 local element = gnui.Element
 
----@class GNUI.stack : GNUI.Container
+---@class GNUI.Stack : GNUI.Container
 ---@field is_horizontal boolean
 ---@field Margin number
 local Stack = {}
@@ -15,7 +15,7 @@ end
 Stack.__type = "GNUI.Element.Container.Stack"
 
 function Stack.new()
-   ---@type GNUI.stack
+   ---@type GNUI.Stack
    local new = container.new()
    new._parent_class = Stack
    new.is_horizontal = false
@@ -62,7 +62,7 @@ end
 
 ---if given true, the stack will be horizontal. Vertical if otherwise.
 ---@param is_horizontal boolean
----@return GNUI.stack
+---@return GNUI.Stack
 function Stack:setIsHorizontal(is_horizontal)
    if self.is_horizontal ~= is_horizontal then
       self.is_horizontal = is_horizontal

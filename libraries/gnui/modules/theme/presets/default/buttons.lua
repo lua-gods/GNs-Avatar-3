@@ -68,7 +68,7 @@ return {
          container:setSprite(sprite)
       end
    },
-   VScrollbarButton = {
+   ScrollbarButton = {
       ---@param container GNUI.ScrollbarButton
       default = function (container)
          local trackSprite = gnui.newSprite():setTexture(texture):setUV(35,18,39,22):setBorderThickness(2,2,2,2)
