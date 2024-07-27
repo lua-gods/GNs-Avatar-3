@@ -5,6 +5,8 @@
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/scriptHost/chat.lua]]
 ---@diagnostic disable: assign-type-mismatch, missing-fields
 
+-- BIG MASSIVE NOTE, THIS SHIT SUCKS
+
 ---@type chatscript.post_data[]
 local history = {}
 
@@ -23,10 +25,10 @@ local history = {}
 ---@field time number
 ---@field with table
 
-local function realizeChangesOnIndex(index)
-   if history[index] then
+local function applyChangesToIndex(i)
+   if history[i] then
       ---@diagnostic disable-next-line: param-type-mismatch
-         host:setChatMessage(index,toJson(history[index].post_json))
+         host:setChatMessage(i,toJson(history[i].post_json))
    end
 end
 
@@ -34,14 +36,14 @@ local utils = require("libraries.rawjsonUtils")
 local env = {math=math}
 
 -- Anti spam
-local last_message = ""
 local spam_combo = 1
 
 local message_filters = {
    -- Theme
    {
       ---@param message chatscript.post_data
-      post = function (message)
+      ---@param i integer
+      post = function (message,i)
          if message.translate == "chat.type.text" then
             local json = message.post_json
             json.extra[1] = ""
@@ -52,26 +54,28 @@ local message_filters = {
    -- Anti Spam
    {
       ---@param message chatscript.post_data
-      post = function (message)
-         if last_message == message.plain_text then
-            if history[2] and history[2].post_json then
+      ---@param i integer
+      post = function (message,i)
+         local next = history[i + 1]
+         if next then
+            if next.plain_text == message.plain_text then
                spam_combo = spam_combo + 1
-               if spam_combo == 2 then
-                  utils.insertPrefix(utils.getIndexComponent(history[2].post_json,1),{text = "(x"..spam_combo..") ",color="red"})
-               else
-                  if history[2] then
-                     local component = utils.getIndexComponent(history[2].post_json,1)
-                     if component then
-                        component.text = "(x"..spam_combo..") "
+               if next.post_json then
+                  if spam_combo == 2 then
+                     utils.insertPrefix(utils.getIndexComponent(next.post_json,1),{text = "(x"..spam_combo..") ",color="red"})
+                  else
+                     if next then
+                        local component = utils.getIndexComponent(next.post_json,1)
+                        if component then
+                           component.text = "(x"..spam_combo..") "
+                        end
                      end
                   end
+                  applyChangesToIndex(i+1)
                end
+            else
+               spam_combo = 1
             end
-            realizeChangesOnIndex(2)
-            return true
-         else
-            last_message = message.plain_text
-            spam_combo = 1
          end
       end,
    },
@@ -142,7 +146,7 @@ local message_filters = {
    --Calculator
    {
       ---@param message chatscript.post_data
-      post = function (message)
+      post = function (message,i)
          if message.translate == "chat.type.text" then
             ---@param component table
             utils.filterPattern(message.post_json,"[%d+%-*^./ ()]+",function (component)
@@ -166,7 +170,7 @@ local recived_messages = 0
 events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
    recived_messages = recived_messages + 1
    local parsed_json = parseJson(json)
-   local predata = {
+   local data = {
       plain_text = message,
       translate = parsed_json.translate,
       with = parsed_json.translate and parsed_json.with or parsed_json,
@@ -174,45 +178,44 @@ events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
 
    for i = 1, #message_filters, 1 do
       if message_filters[i].pre then
-         message_filters[i].pre(predata)
+         message_filters[i].pre(data,i)
       end
    end
+   table.insert(history,1,data)
    
-   -- history
-   table.insert(history,recived_messages,predata)
+   -- cap of history
    if #history > 30 then
       for i = 30, #history, 1 do
          history[i] = nil
       end
    end
-   return toJson(predata.pre_json)
+   return toJson(data.pre_json)
 end)
 
 
 events.WORLD_RENDER:register(function ()
-   local i = 1
-   while recived_messages >= i do
-      local post_msg_data = host:getChatMessage(i)
-      if not post_msg_data then return end
-      local json = parseJson(post_msg_data.json)
+   local i = recived_messages
+   while 0 < i do
       local data = history[i]
-      data.time = post_msg_data.addedTime
-      data.post_json = json
-      local delete = false
-      for j = 1, #message_filters, 1 do
-         if message_filters[j].post then
-            delete = delete or message_filters[j].post(data)
+      if data.plain_text:sub(1,5) ~= "[lua]" then
+         local post_msg_data = host:getChatMessage(i)
+         --if not post_msg_data then return end
+         data.time = post_msg_data.addedTime
+         data.post_json = parseJson(post_msg_data.json)
+         local delete = false
+         for j = 1, #message_filters, 1 do
+            if message_filters[j].post then
+               delete = delete or message_filters[j].post(data,i)
+            end
+         end
+         if delete then
+            host:setChatMessage(i)
+            table.remove(history,i)
+         else
+            host:setChatMessage(i,toJson(data.post_json))
          end
       end
-      if delete then
-         host:setChatMessage(i)
-         table.remove(history,i)
-         recived_messages = recived_messages - 1
-      else
-         host:setChatMessage(i,toJson(data.post_json))
-         i = i + 1
-      end
+      i = i -1
    end
    recived_messages = 0
 end)
-

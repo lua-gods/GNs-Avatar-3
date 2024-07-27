@@ -11,6 +11,9 @@ DEPENDENCIES
 
 local BDS = 3 -- Border Drag Size
 
+local isAlt = false
+keybinds:newKeybind("window alt drag","key.keyboard.left.alt",true):onPress(function ()isAlt = true end):onRelease(function ()isAlt = false end)
+
 local gnui = require("libraries.gnui")
 local gnui_elements = require("libraries.gnui.modules.elements")
 local themes = require("libraries.gnui.modules.themes")
@@ -229,6 +232,24 @@ function Window.new()
          end
       end
       return true
+   end)
+   
+   -- alt controls
+   ---@param event GNUI.InputEvent
+   new.INPUT:register(function (event)
+      if isAlt then
+         if event.key == "key.mouse.left" then
+            --if event.isPressed then
+            --   new:setDimensions(new.Dimensions:copy():add(-5,-5,5,5))
+            --   gnui.playSound("minecraft:entity.item.pickup",1,1)
+            --else
+            --   new:setDimensions(new.Dimensions:copy():add(5,5,-5,-5))
+            --   gnui.playSound("minecraft:entity.item.pickup",1,1)
+            --end
+            titleBar.INPUT:invoke(event)
+         end
+         return true
+      end
    end)
    
    return new

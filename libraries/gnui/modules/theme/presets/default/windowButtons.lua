@@ -18,7 +18,7 @@ return {
          :setText("Unknown")
          :setAnchor(0,0,1,1):setDimensions(2,2,-2,-2)
          
-         container.ClientArea:setDimensions(1,12,-1,-1):setAnchor(0,0,1,1)
+         container.ClientArea:setDimensions(2,12,-2,-2):setAnchor(0,0,1,1)
          
          
          local close_button = container.CloseButton
