@@ -190,7 +190,7 @@ function FM.new(screen,situation)
          last_confirmed_path = text
          w:setDirectory(true_path)
       else
-         w:setDirectory("")
+         w:setDirectory(last_confirmed_path or "")
       end
    end)
    return w
@@ -219,7 +219,7 @@ function FM:refresh()
       end
       local isFile,isDirectory = file:isFile(path),file:isDirectory(path)
       local itemButton = GNUIElements.newTextButton("nothing"):setAnchor(0,0,1,0):setDimensions(1,(i-1)*LINE_HEIGHT,-7,i*LINE_HEIGHT):setText(name):setClipOnParent(true)
-      theme.applyTheme(itemButton,"directory",nil,isFile,isDirectory)
+      theme.applyTheme(itemButton,"directory",nil,isFile,name:match("%.[/a-zA-Z]+$"))
       local last_click_time = 0
       itemButton.PRESSED:register(function ()
          local system_time = client:getSystemTime()

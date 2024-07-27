@@ -86,10 +86,12 @@ function Gallery.new()
    local shade = false
    local shadeImageButton = GNUIElements.newSingleSpriteButton(iconShade1):setDimensions(-18,0,-9,9)
    shadeImageButton.PRESSED:register(function ()
-      shadeImageButton:setSprite(shade and iconShade1 or iconShade2)
-      if shade then self.Preview.Sprite:setRenderType("EMISSIVE_SOLID")
-      else self.Preview.Sprite:setRenderType("BLURRY") end
-      shade = not shade
+      if self.Preview.Sprite then
+         shadeImageButton:setSprite(shade and iconShade1 or iconShade2)
+         if shade then self.Preview.Sprite:setRenderType("EMISSIVE_SOLID")
+         else self.Preview.Sprite:setRenderType("BLURRY") end
+         shade = not shade
+      end
    end)
    shadeImageButton:setAnchor(1,0,1,0)
    self:addElement(shadeImageButton)

@@ -96,7 +96,7 @@ return {
    },
    TextButton = {
       ---@param container GNUI.TextButton
-      directory = function (container,isFile,isDirectory)
+      directory = function (container,isFile,type)
          local label = container.label
          
          local sprite_normal = GNUI.newSprite():setTexture(texture):setUV(13,17,13,18):setBorderThickness(0,0,0,1)
@@ -105,9 +105,15 @@ return {
          
          local sprite_icon
          if isFile then
-            sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,0,28,9)
-         elseif isDirectory then
-            sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,9,28,18)
+            if type == ".ogg" then
+               sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,18,28,27) -- music
+            elseif type == ".png" then
+               sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,28,28,37) -- image
+            else
+               sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,0,28,9) -- file
+            end
+         else
+            sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,9,28,18) -- folder
          end
          
          container:setSprite(sprite_normal)
