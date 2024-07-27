@@ -195,6 +195,4 @@ button.PRESSED:register(function ()
    Gallery.new()
 end)
 
-Gallery:openFile("images/anime3.png")
-
 return Gallery
