@@ -109,6 +109,8 @@ return {
                sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,18,28,27) -- music
             elseif type == ".png" then
                sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,28,28,37) -- image
+            elseif type == ".lua" then
+               sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,38,28,47) -- lua
             else
                sprite_icon = GNUI.newSprite():setTexture(texture):setUV(20,0,28,9) -- file
             end
