@@ -1,9 +1,12 @@
-local GNUI = require("libraries.gnui")
-local GNUIElements = require("libraries.gnui.modules.elements")
-local Window = require("libraries.gnui.modules.windows.window")
-local theme = require("libraries.gnui.modules.themes")
-local utils = require("libraries.gnui.utils")
-local eventLib = require("libraries.eventLib")
+
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+
+local GNUI = require(cfg.path.."main")
+local GNUIElements = require(cfg.path.."modules.elements")
+local Window = require(cfg.path.."modules.windows.window")
+local theme = require(cfg.path.."modules.themes")
+local utils = require(cfg.path.."utils")
+local eventLib = cfg.event
 
 
 local PATH_PREFIX = "data://"

@@ -1,11 +1,13 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with text within them
 
-local gnui = require("libraries.gnui")
-local themes = require("libraries.gnui.modules.themes")
-local Btn = require("libraries.gnui.modules.elements.button")
-local container = require("libraries.gnui.primitives.container")
-local eventLib = require("libraries.eventLib")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+
+local gnui = require(cfg.path..".main")
+local themes = require(cfg.path..".modules.themes")
+local Btn = require(cfg.path..".modules.elements.button")
+local container = require(cfg.path..".primitives.container")
+local eventLib = cfg.event
 
 
 local is_typing = false -- a global that stops the keyboard from interacting with the world temporarily

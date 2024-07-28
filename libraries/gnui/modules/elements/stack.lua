@@ -1,5 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
-local gnui = require("libraries.gnui")
+
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local gnui = require(cfg.path.."main")
 
 local container = gnui.Container
 local element = gnui.Element

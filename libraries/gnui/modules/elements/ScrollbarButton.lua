@@ -2,10 +2,11 @@
 -- Scrollbar duh
 -- TODO: make horizontal version
 
-local gnui = require("libraries.gnui")
-local button = require("libraries.gnui.modules.elements.button")
-local themes = require("libraries.gnui.modules.themes")
-local eventLib = require("libraries.eventLib")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local gnui = require(cfg.path.."main")
+local eventLib = cfg.event
+local button = require(cfg.path.."modules.elements.button")
+local themes = require(cfg.path.."modules.themes")
 
 
 ---@class GNUI.ScrollbarButton : GNUI.Button

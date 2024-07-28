@@ -1,14 +1,15 @@
 ---@diagnostic disable: assign-type-mismatch
 -- The Base class for all buttons. does not contain any visual elements.
 
-local gnui = require("libraries.gnui")
-local eventLib = require("libraries.eventLib")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local gnui = require(cfg.path.."main")
+local eventLib = cfg.event
 
 
 ---@class GNUI.Button : GNUI.Container
 local Button = {}
 Button.__index = function (t,i)
-   return rawget(t,i) or Button[i] or gnui.Container[i] or gnui.Element[i]
+   return rawget(t,i) or Button[i] or cfg.Container[i] or cfg.Element[i]
 end
 Button.__type = "GNUI.Element.Container.Button"
 

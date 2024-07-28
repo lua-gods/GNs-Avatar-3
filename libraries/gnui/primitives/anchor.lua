@@ -1,10 +1,9 @@
-local eventLib = require("libraries.eventLib")
-local utils = require("libraries.gnui.utils")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local eventLib,utils = cfg.event, cfg.utils
 
 local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vec(1,1,1)):setPixel(1,1,vec(0,0,0))
-local element = require("libraries.gnui.primitives.element")
-local sprite = require("libraries.gnui.spriteLib")
-local core = require("libraries.gnui.core")
+local element = require(cfg.path..".primitives.element")
+local sprite = require(cfg.path..".spriteLib")
 
 ---@class GNUI.AnchorPoint : GNUI.Element # A point version of a container, used to anchor ModelParts into the container.
 ---@field Offset Vector2                  # Determins the offset of each side from the final output
@@ -46,7 +45,7 @@ function container.new(preset,force_debug)
    
    -->==========[ Internals ]==========<--
    local debug_point
-   if core.debug_visible or force_debug then
+   if core.debug_mode or force_debug then
       debug_point = sprite.new():setModelpart(new.ModelPart):setTexture(debug_texture):setUV(0,0,0,0):setRenderType("EMISSIVE_SOLID"):setSize(1,1):setColor(1,1,0)
    end
 
@@ -106,7 +105,7 @@ math.lerp(parent_containment.x,parent_containment.z,new.Anchor.x),
             -new.FinalPosition.y,
             -((new.Z + new.ChildIndex / (new.Parent and #new.Parent.Children or 1) * 0.99) * core.clipping_margin)
          )
-         if core.debug_visible or force_debug then
+         if core.debug_mode or force_debug then
             local contain = new.FinalPosition
             debug_point
             :setPos(

@@ -1,9 +1,10 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with text within them
 
-local gnui = require("libraries.gnui")
-local themes = require("libraries.gnui.modules.themes")
-local button = require("libraries.gnui.modules.elements.button")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local gnui = require(cfg.path.."main")
+local themes = require(cfg.path.."modules.themes")
+local button = require(cfg.path.."modules.elements.button")
 
 ---@class GNUI.TextButton : GNUI.Button
 ---@field label GNUI.Label

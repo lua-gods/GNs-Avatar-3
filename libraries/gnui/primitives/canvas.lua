@@ -1,9 +1,8 @@
 ---@diagnostic disable: assign-type-mismatch, undefined-field, return-type-mismatch
-local eventLib = require("libraries.eventLib")
-
-local utils = require("libraries.gnui.utils")
-local Container = require("libraries.gnui.primitives.container")
-local Element = require("libraries.gnui.primitives.element")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local eventLib,utils = cfg.event, cfg.utils
+local Container = require(cfg.path..".primitives.container")
+local Element = require(cfg.path..".primitives.element")
 
 ---@class GNUI.InputEvent
 ---@field char string

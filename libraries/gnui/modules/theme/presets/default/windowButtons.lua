@@ -1,4 +1,4 @@
-local GNUI = require("libraries.gnui")
+local GNUI = require("libraries.GNUI.main")
 local texture = textures["libraries.gnui.modules.theme.textures.default_window"]
 
 return {

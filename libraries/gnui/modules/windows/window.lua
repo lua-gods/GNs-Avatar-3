@@ -14,9 +14,10 @@ local BDS = 3 -- Border Drag Size
 local isAlt = false
 keybinds:newKeybind("window alt drag","key.keyboard.left.alt",true):onPress(function ()isAlt = true end):onRelease(function ()isAlt = false end)
 
-local gnui = require("libraries.gnui")
-local gnui_elements = require("libraries.gnui.modules.elements")
-local themes = require("libraries.gnui.modules.themes")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local gnui = require(cfg.path.."main")
+local gnui_elements = require(cfg.path.."modules.elements")
+local themes = require(cfg.path.."modules.themes")
 
 local eventLib = require("libraries.eventLib")
 

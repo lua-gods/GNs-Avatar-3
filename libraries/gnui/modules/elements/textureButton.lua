@@ -1,8 +1,10 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with custom textures without having to make a theme for it.
 
-local gnui = require("libraries.gnui")
-local button = require("libraries.gnui.modules.elements.button")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+
+local gnui = require(cfg.path.."main")
+local button = require(cfg.path.."modules.elements.button")
 
 ---@class GNUI.TextureButton : GNUI.Button
 ---@field sprite_pressed Sprite

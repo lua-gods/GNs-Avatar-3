@@ -1,6 +1,10 @@
+# Clean up
+[ ] Refactor GNUI's require to be modular
+
 # Rendering
 [ ] Rewrite text rendering to be more abstract
  - text rendering is awful as of now
+[ ] Rewrite Debug mode to be its own library, somehow
 
 # Goal Love2D Compatibility Layer
 -- the following todo things are still connected to the base API of Figura. the goal is to add a wrapper in between to allow easy swap of whos using GNUI.

@@ -1,16 +1,14 @@
 ---@diagnostic disable: param-type-mismatch
-local eventLib = require("libraries.eventLib")
-local utils = require("libraries.gnui.utils")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local eventLib,utils = cfg.event, cfg.utils
 
 local debug_texture = textures['gnui_debug_outline'] or 
 textures:newTexture("gnui_debug_outline",6,6)
 :fill(0,0,6,6,vec(0,0,0,0))
 :fill(1,1,4,4,vec(1,1,1))
 :fill(2,2,2,2,vec(0,0,0,0))
-local element = require("libraries.gnui.primitives.element")
-local sprite = require("libraries.gnui.spriteLib")
-local core = require("libraries.gnui.core")
-
+local element = require(cfg.path..".primitives.element")
+local sprite = require(cfg.path..".spriteLib")
 
 ---@class GNUI.Container : GNUI.Element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
@@ -92,8 +90,8 @@ function Container.new()
    new.isFreed = false
    models:removeChild(new.ModelPart)
    -->==========[ Internals ]==========<--
-   if core.debug_visible then
-      new.debug_container  = sprite.new():setModelpart(new.ModelPart):setTexture(debug_texture):setRenderType("EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(core.debug_scale):setColor(1,1,1):excludeMiddle(true)
+   if cfg.debug_mode then
+      new.debug_container  = sprite.new():setModelpart(new.ModelPart):setTexture(debug_texture):setRenderType("EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(cfg.debug_scale):setColor(1,1,1):excludeMiddle(true)
       new.MOUSE_PRESSENCE_CHANGED:register(function (hovering,pressed)
          if pressed then
             new.debug_container:setColor(0.5,0.5,0.1)
@@ -736,7 +734,7 @@ function Container:updateSpriteTasks(forced_resize_sprites)
          :setPos(
             -containment_rect.x * unscale_self,
             -containment_rect.y * unscale_self,
-            -(child_weight) * core.clipping_margin * self.Z * self.ZSquish
+            -(child_weight) * cfg.clipping_margin * self.Z * self.ZSquish
          ):setVisible(true)
          if self.Sprite and (self.cache.size_changed or forced_resize_sprites) then
             self.Sprite
@@ -746,13 +744,13 @@ function Container:updateSpriteTasks(forced_resize_sprites)
                )
          end
    end
-      if core.debug_visible then
+      if cfg.debug_mode then
       ---@diagnostic disable-next-line: undefined-field
       self.debug_container
       :setPos(
          0,
          0,
-         -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * core.clipping_margin))
+         -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * cfg.clipping_margin))
          if self.cache.size_changed then
             ---@diagnostic disable-next-line: undefined-field
                   self.debug_container:setSize(

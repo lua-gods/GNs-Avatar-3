@@ -1,5 +1,5 @@
-local eventLib = require("libraries.eventLib")
-local utils = require("libraries.gnui.utils")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local eventLib = cfg.event
 
 local element_next_free = 0
 ---@class GNUI.Element # The base element of every GNUI element.

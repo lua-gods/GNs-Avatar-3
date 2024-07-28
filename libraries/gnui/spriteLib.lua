@@ -4,9 +4,8 @@
 / /_/ / /|  /
 \____/_/ |_/]]
 local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
-local eventLib = require("libraries.eventLib")
-local utils = require("libraries.gnui.utils")
-local core = require("libraries.gnui.core")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local eventLib,utils = cfg.event, cfg.utils
 
 local update = {}
 
@@ -65,16 +64,16 @@ function Ninepatch.new(obj)
       new:deleteRenderTasks()
       new:buildRenderTasks()
       new:update()
-   end,core.internal_events_name)
+   end,cfg.internal_events_name)
 
    new.BORDER_THICKNESS_CHANGED:register(function ()
       new:deleteRenderTasks()
       new:buildRenderTasks()
-   end,core.internal_events_name)
+   end,cfg.internal_events_name)
    
    new.DIMENSIONS_CHANGED:register(function ()
       new:update()
-   end,core.internal_events_name)
+   end,cfg.internal_events_name)
    return new
 end
 
