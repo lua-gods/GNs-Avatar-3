@@ -1,5 +1,6 @@
-local GNUI = require("libraries.GNUI.main")
-local texture = textures["libraries.gnui.modules.theme.textures.default_window"]
+local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local GNUI = require(cfg.path.."main")
+local texture = textures["libraries.GNUI.modules.theme.textures.default_window"]
 
 return {
    Window = {

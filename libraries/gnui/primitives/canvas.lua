@@ -200,30 +200,7 @@ local chars = {
 [321]="!",[322]="@",[323]="#",[324]="$",[325]="%",
 [326]="^",[327]="&",[328]="*",[329]="(",[330]=":",[331]="+",
 [332]="_",[333]="-",[334]="+",[336]="+",
-   },
-name = {
-[32] ="Space",[39]="Apostraphe",[44]=",",[45]="-",[46]=".",[47]="/",[48]="0",
-[49]="1",[50]="2",[51]="3",[52]="4",[53]="5",[54]="6",[55]="7",
-[56]="8",[57]="9",[59]=";",[61]="=",[65]="A",[66]="B",[67]="C",
-[68]="D",[69]="E",[70]="F",[71]="G",[72]="H",[73]="I",[74]="J",
-[75]="K",[76]="L",[77]="M",[78]="N",[79]="O",[80]="P",[81]="Q",
-[82]="R",[83]="S",[84]="T",[85]="U",[86]="V",[87]="W",[88]="X",
-[89]="Y",[90]="Z",[91]="[",[92]="\\",[93]="]",[96]="Apostraphe",
-[161]="World 1",[162]="World 2",[256]="Esc",[257]="Enter",
-[258]="Tab",[259]="Backspace",[260]="Ins",[261]="Delete",
-[262]="Right",[263]="Left",[264]="Down",[265]="Up",[266]="Page Up",
-[267]="Page Down",[280]="Caps Lock",[281]="Scroll Lock",[282]="Num Lock",
-[290]="F1",[291]="F2",[292]="F3",[293]="F4",[294]="F5",[295]="F6",
-[296]="F7",[297]="F8",[298]="F9",[299]="F10",[300]="F11",[301]="F12",
-[303]="F14",[304]="F15",[305]="F16",[307]="F18",[308]="F19",
-[309]="F20",[311]="F22",[312]="F23",[314]="F25",[320]="Key Pad 0",
-[321]="Key Pad 1",[322]="Key Pad 2",[323]="Key Pad 3",[324]="Key Pad 4",
-[325]="Key Pad 5",[326]="Key Pad 6",[327]="Key Pad 7",[328]="Key Pad 8",
-[329]="Key Pad 9",[330]="Key Pad .",[331]="Key Pad /",[332]="Key Pad *",
-[333]="Key Pad -",[334]="Key Pad +",[335]="Key Pad Enter",
-[336]="Key Pad =",[340]="Shift",[341]="Ctrl",[342]="Alt",[343]="Super",
-[345]="Right Alt",[348]="Menu"
-},
+   }
 }
 
 for key, value in pairs(keymap) do keymap[key] = "key.keyboard." .. value end
@@ -244,7 +221,7 @@ for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 ---@field HoveredElement GNUI.any? # the element the mouse is currently hovering over
 ---@field PressedElement GNUI.any? # the last pressed element, used to unpress buttons that have been unhovered.
 ---@field MOUSE_POSITION_CHANGED eventLib # called when the mouse position changes
----@field isActive boolean # determins whether the canvas could capture input events
+---@field reciveInputs boolean # determins whether the canvas could capture input events
 ---@field captureCursorMovement boolean # true when the canvas should capture mouse movement, stopping the vanilla mouse movement, not the cursor itself
 ---@field captureInputs boolean # true when the canvas should capture the inputs
 ---@field hasCustomCursorSetter boolean # true when the setCursor is called, while false, the canvas will use the screen cursor.
@@ -268,7 +245,7 @@ events.KEY_PRESS:register(function (key, state, modifiers)
    local char = chars[_shift and "shift" or "normal"][key]
    if minecraft_keybind then
       for _, value in pairs(canvases) do
-         if value.isActive and value.Visible and value.canCaptureCursor then
+         if value.reciveInputs and value.Visible and value.canCaptureCursor then
             value:parseInputEvent(minecraft_keybind, state,_shift,_ctrl,_alt,char)
             if value.captureInputs then return true end
          end
@@ -281,7 +258,7 @@ events.MOUSE_MOVE:register(function (x, y)
    if not s or s == "net.minecraft.class_408" then
       local cursor_pos = client:getMousePos() / client:getGuiScale()
       for _, c in pairs(canvases) do
-         if c.isActive and c.Visible and not c.hasCustomCursorSetter then
+         if c.reciveInputs and c.Visible and not c.hasCustomCursorSetter then
             c:setMousePos(cursor_pos.x, cursor_pos.y, true)
             if c.captureCursorMovement or c.captureInputs then return true end
          end
@@ -292,7 +269,7 @@ end)
 events.MOUSE_PRESS:register(function (button, state)
    if mousemap[button] then
       for _, c in pairs(canvases) do
-         if c.isActive and c.Visible then
+         if c.reciveInputs and c.Visible then
             c:parseInputEvent(mousemap[button],state,_shift,_ctrl,_alt)
             if state ~= 0 then
                c.PressedElement = c.HoveredElement
@@ -305,7 +282,7 @@ end)
 
 events.MOUSE_SCROLL:register(function (dir) 
    for _, c in pairs(canvases) do
-      if c.isActive and c.Visible then
+      if c.reciveInputs and c.Visible then
          c:parseInputEvent(mousemap[8],1,_shift,_ctrl,_alt,nil,dir)
       end
    end
@@ -316,24 +293,26 @@ events.WORLD_RENDER:register(function (delta)
    WORLD_RENDER:invoke()
 end)
 
+-->====================[ Canvas Class ]====================<--
 
 ---Creates a new canvas.
+---@param screenInputs boolean # if true, the canvas will capture input events
 ---@return GNUI.Canvas
-function Canvas.new()
+function Canvas.new(screenInputs)
    local new = Container.new()
    new.MousePosition = vec(0,0)
-   new.isActive = true
+   new.reciveInputs = true
    new.MOUSE_POSITION_CHANGED = eventLib.new()
    new.INPUT = eventLib.new()
    new.UNHANDLED_INPUT = eventLib.new()
-   new.unlockCursorWhenActive = true
-   new.captureKeyInputs = true
    
    WORLD_RENDER:register(function ()
       new:_propagateUpdateToChildren()
    end,"GNUI_root_container."..new.id)
    
-   canvases[#canvases+1] = new
+   if screenInputs then
+      canvases[#canvases+1] = new
+   end
    setmetatable(new, Canvas)
    return new
 end

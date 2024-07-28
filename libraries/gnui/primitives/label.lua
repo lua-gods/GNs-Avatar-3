@@ -1,5 +1,6 @@
 ---@diagnostic disable: assign-type-mismatch, undefined-field
 local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local evnt = cfg.event
 
 local container = require(cfg.path.."primitives.container")
 local element = require(cfg.path.."primitives.element")
@@ -65,7 +66,7 @@ function L.new()
    new.FontScale = 1
    new._TextChanged = false
    new.ClipText = false
-   new.TEXT_CHANGED = eventLib.new()
+   new.TEXT_CHANGED = evnt.new()
    
    new.TEXT_CHANGED:register(function ()
       new

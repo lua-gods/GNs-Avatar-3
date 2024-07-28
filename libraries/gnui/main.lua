@@ -25,7 +25,10 @@ local a = require(cfg.path.."/primitives/anchor")
 
 api.newPointAnchor = function ()return a.new()end
 api.newContainer = function ()return co.new() end
-api.newCanvas = function ()return ca.new() end
+
+---@param autoInputs boolean # true when the canvas should capture the inputs from the screen.
+---@return unknown
+api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 api.newLabel = function ()return l.new() end
 
 ---@param texture Texture?
@@ -48,7 +51,7 @@ local screenCanvas
 ---@return GNUI.Canvas
 function api.getScreenCanvas()
   if not screenCanvas then
-    screenCanvas = api.newCanvas()
+    screenCanvas = api.newCanvas(true)
     models:addChild(screenCanvas.ModelPart)
     screenCanvas.ModelPart:setParentType("HUD")
   
