@@ -319,7 +319,6 @@ end)
 screen.SIZE_CHANGED:register(function (screenSize,lastScreenSize)
    if lastScreenSize then
       local screenDiff = screenSize - lastScreenSize
-      print(screenDiff)
       ---@param w GNUI.Window
       for _, w in pairs(windows) do
          local center = w.ContainmentRect.xy + w.Size / 2
