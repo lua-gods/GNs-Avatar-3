@@ -58,14 +58,17 @@ require = function (modname)
    if modified then
       if preloaded[symlinkDir] then return table.unpack(preloaded[symlinkDir]) end -- already loaded, return the same values
       
-      local buffer = data:createBuffer() -- loading the script
-      buffer:readFromStream(file:openReadStream(symlinkDir..".lua"))
+      local buffer = data:createBuffer()
+      local stream = file:openReadStream(symlinkDir..'.lua')
+      buffer:readFromStream(stream)
       buffer:setPosition(0)
       local content = buffer:readByteArray()
+      buffer:close()
+      stream:close()
       local func = load(content)
-      local status = {pcall(func,avatarDir,fileName)}
-      if not status[1] then error(status[2],2) end
-      table.remove(status,1) -- remove the error status
+      local status = {pcall(func, avatarDir, fileName)}
+      if not status[1] then error(status[2], 2) end
+      table.remove(status, 1) -- remove the error status
       preloaded[symlinkDir] = status
       return table.unpack(status)
    end
