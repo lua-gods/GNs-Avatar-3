@@ -14,7 +14,7 @@ if file:isFile(symlinkPath) then
       end
    end
 else
-   printJson('{"text":"File \\"'..symlinkPath..'\\" not found. Create this file with the path to this avatar from the figura/data folder; using a symlink\n","color":"yellow"}')
+   printJson('{"text":"File \\"figura/data/'..symlinkPath..'\\" not found in the. Create this file with the path to this avatar from the figura/data folder; using a hard symlink, aka a Junction\n","color":"yellow"}')
 end
 
 if not SYMLINK_AVATAR_PATH then 
