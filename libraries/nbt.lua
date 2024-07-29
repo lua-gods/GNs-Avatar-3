@@ -1,6 +1,6 @@
 --[[______   __
   / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
- / / __/  |/ / A library that makes it easier to deal with Minecraft's NBT format.
+ / / __/  |/ / A library that reads NBT.
 / /_/ / /|  / 
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/nbt.lua]]
 --BIG Thankyou to the NBT wiki: https://wiki.vg/NBT

@@ -694,7 +694,7 @@ function Container:_update()
    self.Dimensions:scale(1 / scale)
    self.Size = size
    if not self.cache.last_size or self.cache.last_size ~= size then
-      self.SIZE_CHANGED:invoke(size)
+      self.SIZE_CHANGED:invoke(size,self.cache.last_size)
       self.cache.last_size = size
       self.cache.size_changed = true
    else

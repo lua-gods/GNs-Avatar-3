@@ -1,7 +1,6 @@
 local zlib = require("libraries.compression.zzlib")
 local base64 = require("libraries.base64")
 local nbt = require("libraries.nbt")
-
 --local output = nbt.readFile("bigtest.nbt")
 --[[
 package = base64.encode(package)

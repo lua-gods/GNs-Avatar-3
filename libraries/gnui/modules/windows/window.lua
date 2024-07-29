@@ -9,17 +9,22 @@ DEPENDENCIES
 ]]
 ---@diagnostic disable: assign-type-mismatch
 
-local BDS = 3 -- Border Drag Size
+
 
 local isAlt = false
 keybinds:newKeybind("window alt drag","key.keyboard.left.alt",true):onPress(function ()isAlt = true end):onRelease(function ()isAlt = false end)
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
-local gnui = require(cfg.path.."main")
-local gnui_elements = require(cfg.path.."modules.elements")
-local themes = require(cfg.path.."modules.themes")
+local cfg = require((...):match("^(.*.GNUI).*$").."/config") ---@module "libraries.GNUI.config"
+local gnui = require(cfg.path.."main")                       ---@module "libraries.GNUI.main"
+local gnui_elements = require(cfg.path.."modules.elements")  ---@module "libraries.GNUI.modules.elements"
+local themes = require(cfg.path.."modules.themes")           ---@module "libraries.GNUI.modules.themes"
 
 local eventLib = require("libraries.eventLib")
+
+
+local BDS = 3 -- Border Drag Size
+local screen = gnui.getScreenCanvas()
+
 
 local active_window
 local ACTIVE_WINDOW_CHANGED = eventLib.new()
@@ -40,6 +45,8 @@ local function applyDrag(container,window,fun)
    end)
 end
 
+local windows = {}
+
 ---@class GNUI.Window : GNUI.Container
 ---@field Theme GNUI.theme
 ---@field TitleLabel GNUI.Label
@@ -59,6 +66,9 @@ Window.__index = function (t,i)
    return rawget(t,i) or Window[i] or gnui.Container[i] or gnui.Element[i]
 end
 Window.__type = "GNUI.Element.Container.Window"
+Window.ACTIVE_WINDOW_CHANGED = ACTIVE_WINDOW_CHANGED
+
+
 function Window.new()
    ---@type GNUI.Window
    local new = gnui.newContainer()
@@ -223,13 +233,6 @@ function Window.new()
             if grab_canvas then
                grab_canvas.MOUSE_POSITION_CHANGED:remove("window_drag"..new.id)
             end
-            
-            -- convert dimensions to anchor
-            local shift = (new.Dimensions.zw - new.Dimensions.xy) * (vec(1-new.Anchor.x,new.Anchor.y)) ---@type Vector2
-            local pos = new.Dimensions.xy + new.Parent:UVtoXY(new.Anchor.xy)
-            local pos_uv = new.Parent:XYtoUV(pos + shift)
-            new:setAnchor(pos_uv.x,pos_uv.y)
-            new:setPos(-shift.x,-shift.y)
          end
       end
       return true
@@ -252,6 +255,8 @@ function Window.new()
          return true
       end
    end)
+   
+   windows[#windows+1] = new
    
    return new
 end
@@ -291,5 +296,38 @@ end
 function Window:close()
    self:free()
 end
+
+
+function Window.clearActiveWindow()
+   if active_window then
+      active_window.isActive = false
+   end
+   ACTIVE_WINDOW_CHANGED:invoke(active_window,nil)
+   active_window = nil
+end
+
+
+-->====================[ QOL Stuffs ]====================<--
+
+---@param event GNUI.InputEvent
+screen.INPUT:register(function (event)
+   if event.key == "key.mouse.left" and event.isPressed then
+      Window.clearActiveWindow()
+   end
+end)
+
+screen.SIZE_CHANGED:register(function (screenSize,lastScreenSize)
+   if lastScreenSize then
+      local screenDiff = screenSize - lastScreenSize
+      print(screenDiff)
+      ---@param w GNUI.Window
+      for _, w in pairs(windows) do
+         local center = w.ContainmentRect.xy + w.Size / 2
+         local anchor = (center / lastScreenSize * 3):floor() / 2
+         w:setTitle(tostring(anchor))
+         w:setPos(w.ContainmentRect.xy + screenDiff * anchor)
+      end
+   end
+end)
 
 return Window
