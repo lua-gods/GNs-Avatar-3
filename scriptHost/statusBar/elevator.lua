@@ -1,7 +1,7 @@
 
-local GNUI = require("hostLibraries.GNUI.main")
-local GNUIElements = require(".hostLibraries.GNUI.modules.elements")
-local GNUIWindow = require(".hostLibraries.GNUI.modules.windows")
+local GNUI = require("libraries.GNUI.main")
+local GNUIElements = require("libraries.GNUI.modules.elements")
+local GNUIWindow = require("libraries.GNUI.modules.windows")
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
 local sequence = require("libraries.sequence")

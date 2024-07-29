@@ -1,5 +1,5 @@
-local GNUI = require("hostLibraries.GNUI.main")
-local GNUIWindow = require(".hostLibraries.GNUI.modules.windows")
+local GNUI = require("libraries.GNUI.main")
+local GNUIWindow = require("libraries.GNUI.modules.windows")
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
 

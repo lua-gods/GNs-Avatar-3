@@ -3,7 +3,7 @@ local eventLib = cfg.event
 
 local element_next_free = 0
 ---@class GNUI.Element # The base element of every GNUI element.
----@field name string                # An optional property used to get the element by a name.
+---@field name string                 # An optional property used to get the element by a name.
 ---@field id integer                  # A unique integer for this element. (next-free based).
 ---@field Visible boolean             # `true` to see.
 ---@field Parent GNUI.any             # the element's parents.
