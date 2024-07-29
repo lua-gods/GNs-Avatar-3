@@ -1,6 +1,6 @@
-local GNUI = require("libraries.GNUI.main")
-local gnui_extras = require("libraries.GNUI.modules.elements")
-local gnui_window = require("libraries.GNUI.modules.windows")
+local GNUI = require("hostLibraries.GNUI.main")
+local gnui_extras = require(".hostLibraries.GNUI.modules.elements")
+local gnui_window = require(".hostLibraries.GNUI.modules.windows")
 
 local screen = GNUI.getScreenCanvas()
 
