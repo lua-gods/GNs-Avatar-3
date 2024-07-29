@@ -1,3 +1,5 @@
-.vscode
+.vscode/docs
+.vscode/lua.code-snippets
+.vscode/avatar.schema.json
 scriptHost/chatAutoCorrect.lua
 scriptHost/.chatAutoCorrect.lua
