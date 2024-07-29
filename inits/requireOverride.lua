@@ -1,6 +1,24 @@
-local SYMLINK_AVATAR_PATH = "avatars/A/on GNUI"
-if not file:isDirectory(SYMLINK_AVATAR_PATH) then 
-   printJson('{"text":"Invalid symlink Avatar path. Host only scripts will not load.\n","color":"yellow"}')
+
+local symlinkPath = "GN Avatar Path.txt"
+
+local SYMLINK_AVATAR_PATH
+if file:isFile(symlinkPath) then
+   local buffah = data:createBuffer()
+   buffah:readFromStream(file:openReadStream(symlinkPath))
+   buffah:setPosition(0)
+   local path = buffah:readString()
+   buffah:close()
+   if file:isPathAllowed(path) then
+      if file:isDirectory(path) then
+         SYMLINK_AVATAR_PATH = path
+      end
+   end
+else
+   printJson('{"text":"File \\"'..symlinkPath..'\\" not found. Create this file with the path to this avatar from the figura/data folder; using a symlink\n","color":"yellow"}')
+end
+
+if not SYMLINK_AVATAR_PATH then 
+   printJson('{"text":"No symlink Avatar path. Host only scripts will not load.\n","color":"yellow"}')
 end
 
 local req = require
