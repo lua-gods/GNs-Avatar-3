@@ -1,11 +1,11 @@
 
 local cfg = require("GNUI/config")
 
-local GNUI = require(cfg.path.."main")
-local GNUIElements = require(cfg.path.."modules.elements")
-local Window = require(cfg.path.."modules.windows.window")
-local theme = require(cfg.path.."modules.themes")
-local utils = require(cfg.path.."utils")
+local GNUI = require("GNUI.main")
+local GNUIElements = require("GNUI.modules.elements")
+local Window = require("GNUI.modules.windows.window")
+local theme = require("GNUI.modules.themes")
+local utils = require("GNUI.utils")
 local eventLib = cfg.event
 
 

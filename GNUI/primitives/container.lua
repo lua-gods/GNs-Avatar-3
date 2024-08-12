@@ -7,8 +7,8 @@ textures:newTexture("gnui_debug_outline",6,6)
 :fill(0,0,6,6,vec(0,0,0,0))
 :fill(1,1,4,4,vec(1,1,1))
 :fill(2,2,2,2,vec(0,0,0,0))
-local element = require(cfg.path..".primitives.element")
-local sprite = require(cfg.path..".spriteLib")
+local element = require("GNUI.primitives.element")
+local sprite = require("GNUI.spriteLib")
 
 ---@class GNUI.Container : GNUI.Element    # A container is a Rectangle that represents the building block of GNUI
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output

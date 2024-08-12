@@ -3,8 +3,8 @@
 
 local cfg = require("GNUI/config")
 
-local gnui = require(cfg.path.."main")
-local button = require(cfg.path.."modules.elements.button")
+local gnui = require("GNUI.main")
+local button = require("GNUI.modules.elements.button")
 
 ---@class GNUI.TextureButton : GNUI.Button
 ---@field sprite_pressed Sprite

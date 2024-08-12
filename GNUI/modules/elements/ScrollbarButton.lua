@@ -3,10 +3,10 @@
 -- TODO: make horizontal version
 
 local cfg = require("GNUI/config")
-local gnui = require(cfg.path.."main")
+local gnui = require("GNUI.main")
 local eventLib = cfg.event
-local button = require(cfg.path.."modules.elements.button")
-local themes = require(cfg.path.."modules.themes")
+local button = require("GNUI.modules.elements.button")
+local themes = require("GNUI.modules.themes")
 
 
 ---@class GNUI.ScrollbarButton : GNUI.Button

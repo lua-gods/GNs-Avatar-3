@@ -15,13 +15,13 @@ local cfg = require(....."/config")
 local api = {path = cfg.path}
 ---@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.AnchorPoint|GNUI.Canvas
 
-local u = require(cfg.path.."/utils")
-local l = require(cfg.path.."/primitives.label")
-local s = require(cfg.path.."/spriteLib")
-local ca = require(cfg.path.."/primitives/canvas")
-local e = require(cfg.path.."/primitives/element")
-local co = require(cfg.path.."/primitives/container")
-local a = require(cfg.path.."/primitives/anchor")
+local u = require("GNUI/utils")
+local l = require("GNUI/primitives.label")
+local s = require("GNUI/spriteLib")
+local ca = require("GNUI/primitives/canvas")
+local e = require("GNUI/primitives/element")
+local co = require("GNUI/primitives/container")
+local a = require("GNUI/primitives/anchor")
 
 api.newPointAnchor = function ()return a.new()end
 api.newContainer = function ()return co.new() end

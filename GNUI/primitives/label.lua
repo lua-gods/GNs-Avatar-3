@@ -2,8 +2,8 @@
 local cfg = require("GNUI/config")
 local evnt = cfg.event
 
-local container = require(cfg.path.."primitives.container")
-local element = require(cfg.path.."primitives.element")
+local container = require("GNUI.primitives.container")
+local element = require("GNUI.primitives.element")
 
 local dot = "."
 local dot_length = client.getTextWidth(dot)

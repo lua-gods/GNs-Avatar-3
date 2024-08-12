@@ -2,9 +2,9 @@
 -- Serves as a way to create buttons with text within them
 
 local cfg = require("GNUI/config")
-local gnui = require(cfg.path.."main")
-local themes = require(cfg.path.."modules.themes")
-local button = require(cfg.path.."modules.elements.button")
+local gnui = require("GNUI.main")
+local themes = require("GNUI.modules.themes")
+local button = require("GNUI.modules.elements.button")
 
 ---@class GNUI.TextButton : GNUI.Button
 ---@field label GNUI.Label

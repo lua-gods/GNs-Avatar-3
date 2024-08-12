@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 
 local cfg = require("GNUI/config")
-local gnui = require(cfg.path.."main")
+local gnui = require("GNUI.main")
 
 local container = gnui.Container
 local element = gnui.Element

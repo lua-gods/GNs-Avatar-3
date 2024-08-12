@@ -1,5 +1,5 @@
 local cfg = require("GNUI/config")
-local GNUI = require(cfg.path.."main")
+local GNUI = require("GNUI.main")
 local texture = textures["GNUI.modules.theme.textures.default_window"]
 
 return {

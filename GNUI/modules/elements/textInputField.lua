@@ -3,10 +3,10 @@
 
 local cfg = require("GNUI/config")
 
-local gnui = require(cfg.path..".main")
-local themes = require(cfg.path..".modules.themes")
-local Btn = require(cfg.path..".modules.elements.button")
-local container = require(cfg.path..".primitives.container")
+local gnui = require("GNUI.main")
+local themes = require("GNUI.modules.themes")
+local Btn = require("GNUI.modules.elements.button")
+local container = require("GNUI.primitives.container")
 local eventLib = cfg.event
 
 

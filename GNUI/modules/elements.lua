@@ -4,7 +4,7 @@ local api = {}
 local cfg = require("GNUI/config")
 
 -->====================[ Button ]====================<--
-local button = require(cfg.path.."modules.elements.button")
+local button = require("GNUI.modules.elements.button")
 ---@param variant string|"default"|"nothing"?
 ---@param theme string?
 ---@return GNUI.Button
@@ -15,7 +15,7 @@ api.Button = button
 
 
 -->====================[ Stack ]====================<--
-local stack = require(cfg.path.."modules.elements.stack")
+local stack = require("GNUI.modules.elements.stack")
 api.newStack = function() return stack.new() end
 api.Stack = stack
 
@@ -23,7 +23,7 @@ api.Stack = stack
 
 
 -->====================[ TextButton ]====================<--
-local text_button = require(cfg.path.."modules.elements.textButton")
+local text_button = require("GNUI.modules.elements.textButton")
 ---@param variant string|"default"|"nothing"?
 ---@param theme string?
 ---@return GNUI.TextButton
@@ -34,7 +34,7 @@ api.TextButton = text_button
 
 
 -->====================[ TextureButton ]====================<--
-local texture_button = require(cfg.path.."modules.elements.textureButton")
+local texture_button = require("GNUI.modules.elements.textureButton")
 ---@param normal Sprite?
 ---@param pressed Sprite?
 ---@param hovered Sprite?
@@ -48,7 +48,7 @@ api.TextureButton = texture_button
 
 
 -->====================[ SingleSpriteButton ]====================<--
-local single_texture_button = require(cfg.path.."modules.elements.singleSpriteButton")
+local single_texture_button = require("GNUI.modules.elements.singleSpriteButton")
 ---@param sprite Sprite?
 ---@return GNUI.SingleSpriteButton
 api.newSingleSpriteButton = function(sprite)
@@ -60,7 +60,7 @@ api.SingleTextureButton = single_texture_button
 
 
 --->====================[ TextInputButton ]====================<--
-local text_input_button = require(cfg.path.."modules.elements.textInputField")
+local text_input_button = require("GNUI.modules.elements.textInputField")
 ---@param variant string|"default"|"nothing"?
 ---@param theme string?
 ---@return GNUI.TextInputField
@@ -71,7 +71,7 @@ api.TextInputField = text_input_button
 
 
 -->====================[ ScrollbarButton ]====================<--
-local scrollbar_button = require(cfg.path.."modules.elements.ScrollbarButton")
+local scrollbar_button = require("GNUI.modules.elements.ScrollbarButton")
 ---@param variant string|"default"|"nothing"?
 ---@param theme string?
 ---@return GNUI.ScrollbarButton

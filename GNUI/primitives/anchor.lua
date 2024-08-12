@@ -2,8 +2,8 @@ local cfg = require("GNUI/config")
 local eventLib,utils = cfg.event, cfg.utils
 
 local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vec(1,1,1)):setPixel(1,1,vec(0,0,0))
-local element = require(cfg.path..".primitives.element")
-local sprite = require(cfg.path..".spriteLib")
+local element = require("GNUI.primitives.element")
+local sprite = require("GNUI.spriteLib")
 
 ---@class GNUI.AnchorPoint : GNUI.Element # A point version of a container, used to anchor ModelParts into the container.
 ---@field Offset Vector2                  # Determins the offset of each side from the final output

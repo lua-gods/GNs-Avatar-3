@@ -2,8 +2,8 @@ local api = {}
 
 local cfg = require("GNUI/config")
 
-local window = require(cfg.path.."modules.windows.window")
-local fileDialog = require(cfg.path.."modules.windows.fileDialog")
+local window = require("GNUI.modules.windows.window")
+local fileDialog = require("GNUI.modules.windows.fileDialog")
 api.Window = window
 ---@return GNUI.Window
 function api.newWindow() return window.new() end
