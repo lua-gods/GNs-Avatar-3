@@ -1,5 +1,5 @@
-local GNUI = require("libraries.GNUI.main")
-local GNUIWindow = require("libraries.GNUI.modules.windows")
+local GNUI = require("GNUI.main")
+local GNUIWindow = require("GNUI.modules.windows")
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
 
@@ -17,6 +17,7 @@ button.PRESSED:register(function ()
       local ok,result = pcall(f.readByteArray,f,path)
       if ok then
          local data = base64.encode("jukebox;"..(result))
+         compare(#result,#data)
          local text = 'minecraft:player_head{SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"'..data..'"}]}}}'
          if #text < 65536 then
             host:setSlot("hotbar.0",text)

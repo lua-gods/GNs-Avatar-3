@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with custom textures without having to make a theme for it.
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 
 local gnui = require(cfg.path.."main")
 local button = require(cfg.path.."modules.elements.button")

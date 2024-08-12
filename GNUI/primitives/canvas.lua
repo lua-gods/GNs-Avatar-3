@@ -1,5 +1,5 @@
 ---@diagnostic disable: assign-type-mismatch, undefined-field, return-type-mismatch
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 local eventLib,utils = cfg.event, cfg.utils
 local Container = require(cfg.path..".primitives.container")
 local Element = require(cfg.path..".primitives.element")

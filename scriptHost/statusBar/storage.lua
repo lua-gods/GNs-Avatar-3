@@ -6,6 +6,8 @@ local GNUIThemes = require("GNUI.modules.themes")
 -- Screen Stuffs
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
-local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(1,1,13,13)
+local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(28,28,41,41)
 
 local button = Statusbar.newButtonSprite(icon)
+
+GNUIWindow.newWindow()

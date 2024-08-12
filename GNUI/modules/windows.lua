@@ -1,6 +1,6 @@
 local api = {}
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 
 local window = require(cfg.path.."modules.windows.window")
 local fileDialog = require(cfg.path.."modules.windows.fileDialog")

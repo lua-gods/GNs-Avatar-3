@@ -1,5 +1,5 @@
-local gnui = require("libraries.GNUI.main")
-local texture = textures["libraries.GNUI.modules.theme.textures.element_default"]
+local gnui = require("GNUI.main")
+local texture = textures["GNUI.modules.theme.textures.element_default"]
 
 ---@type GNUI.theme
 return {

@@ -36,12 +36,12 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
    local situation = 0
    if ctx == "BLOCK" then situation = 1 end
    if ctx == "HEAD" then situation = 2 end
-   if entity and entity:getType() == "minecraft:armor_stand" then situation = 3 end
+   --if entity and entity:getType() == "minecraft:armor_stand" then situation = 3 end
    
    if situation == 2 then
       local vars = avatarVars[entity:getUUID()] or {}
       local color = vars.color or "#5ac54f"
-      local height = vars.hat_height and tonumber(vars.hat_height) or 7
+      local height = 7 --vars.hat_height and tonumber(vars.hat_height) or 7
       if type(color) == "string" then
          color = vectors.hexToRGB(color)
       end

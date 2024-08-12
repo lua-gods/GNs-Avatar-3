@@ -2,7 +2,7 @@
 -- Scrollbar duh
 -- TODO: make horizontal version
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 local gnui = require(cfg.path.."main")
 local eventLib = cfg.event
 local button = require(cfg.path.."modules.elements.button")

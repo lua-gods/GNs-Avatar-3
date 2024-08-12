@@ -1,5 +1,5 @@
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 
 local GNUI = require(cfg.path.."main")
 local GNUIElements = require(cfg.path.."modules.elements")

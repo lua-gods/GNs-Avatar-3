@@ -15,7 +15,7 @@ local base64 = require("libraries.base64") -- Required
 ---|  1 # TAG_Byte
 ---|  2 # TAG_Short
 ---|  3 # TAG_Int
----|  4 # TAG_Long
+---|  4 # TAG_Long 
 ---|  5 # TAG_Float
 ---|  6 # TAG_Double
 ---|  7 # TAG_Byte_Array

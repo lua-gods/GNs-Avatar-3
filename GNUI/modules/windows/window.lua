@@ -14,10 +14,10 @@ DEPENDENCIES
 local isAlt = false
 keybinds:newKeybind("window alt drag","key.keyboard.left.alt",true):onPress(function ()isAlt = true end):onRelease(function ()isAlt = false end)
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config") ---@module "libraries.GNUI.config"
-local gnui = require(cfg.path.."main")                       ---@module "libraries.GNUI.main"
-local gnui_elements = require(cfg.path.."modules.elements")  ---@module "libraries.GNUI.modules.elements"
-local themes = require(cfg.path.."modules.themes")           ---@module "libraries.GNUI.modules.themes"
+local cfg = require("GNUI/config") ---@module "GNUI.config"
+local gnui = require(cfg.path.."main")                       ---@module "GNUI.main"
+local gnui_elements = require(cfg.path.."modules.elements")  ---@module "GNUI.modules.elements"
+local themes = require(cfg.path.."modules.themes")           ---@module "GNUI.modules.themes"
 
 local eventLib = require("libraries.eventLib")
 

@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with text within them
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 local gnui = require(cfg.path.."main")
 local themes = require(cfg.path.."modules.themes")
 local button = require(cfg.path.."modules.elements.button")

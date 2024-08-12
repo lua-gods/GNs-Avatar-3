@@ -1,5 +1,5 @@
-local GNUI = require("libraries.GNUI.main")
-local GNUIElements = require("libraries.GNUI.modules.elements")
+local GNUI = require("GNUI.main")
+local GNUIElements = require("GNUI.modules.elements")
 local screen = GNUI.getScreenCanvas()
 
 local statusbar = GNUIElements.newStack():setIsHorizontal(true)

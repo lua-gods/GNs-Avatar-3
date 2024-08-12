@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 local eventLib,utils = cfg.event, cfg.utils
 
 local debug_texture = textures['gnui_debug_outline'] or 

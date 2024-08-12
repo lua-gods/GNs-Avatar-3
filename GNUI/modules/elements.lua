@@ -1,7 +1,7 @@
 local api = {}
 -- Toggle each chunk of snippet depending on which you remove from the module folder
 
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 
 -->====================[ Button ]====================<--
 local button = require(cfg.path.."modules.elements.button")

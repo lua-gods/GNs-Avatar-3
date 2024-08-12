@@ -1,4 +1,4 @@
-local cfg = require((...):match("^(.*.GNUI).*$").."/config")
+local cfg = require("GNUI/config")
 local eventLib = cfg.event
 
 local element_next_free = 0
