@@ -26,9 +26,9 @@ local function setIsTyping(toggle)
       else
          if chat_text then
             host:setChatText(chat_text)
-            events.WORLD_RENDER:remove("gnui.textInputFieldStopper")
-            events.MOUSE_PRESS:remove("gnui.textInputFieldStopper")
          end
+         events.WORLD_RENDER:remove("gnui.textInputFieldStopper")
+         events.MOUSE_PRESS:remove("gnui.textInputFieldStopper")
       end
    end
 end

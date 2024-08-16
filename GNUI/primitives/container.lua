@@ -1,4 +1,4 @@
----@diagnostic disable: param-type-mismatch
+---@diagnostic disable: param-type-mismatch, return-type-mismatch
 local cfg = require("GNUI.config")
 local eventLib,utils = cfg.event, cfg.utils
 
@@ -589,6 +589,43 @@ function Container:UVtoXY(x,y)
       math.map(pos.x,0,1,self.Dimensions.x,self.Dimensions.z),
       math.map(pos.y,0,1,self.Dimensions.y,self.Dimensions.w)
    )
+end
+
+---returns the global position of the given local position.
+---@overload fun(self : GNUI.any, pos : Vector2): Vector2
+---@param x number
+---@param y number
+---@return Vector2
+function Container:toGlobal(x,y)
+   local pos = utils.figureOutVec2(x,y)
+   local parent = self
+   local i = 0
+   while parent do
+      i = i + 1
+      if i > 100 then break end
+      pos = pos + parent.Shift + parent.ContainmentRect.xy
+      parent = parent.Parent
+   end
+   return pos
+end
+
+
+---returns the local position of the given global position.
+---@overload fun(self : GNUI.any, pos : Vector2): Vector2
+---@param x number
+---@param y number
+---@return Vector2
+function Container:toLocal(x,y)
+   local pos = utils.figureOutVec2(x,y)
+   local parent = self
+   local i = 0
+   while parent do
+      i = i + 1
+      if i > 100 then break end
+      pos = pos - parent.Shift - parent.ContainmentRect.xy
+      parent = parent.Parent
+   end
+   return pos
 end
 
 ---Flags this Container to be updated.

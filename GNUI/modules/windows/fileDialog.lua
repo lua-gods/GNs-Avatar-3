@@ -42,13 +42,13 @@ end
 FM.__type = "GNUI.Window.FileManager"
 
 
----@alias fileManagerType "OPEN"|"OPEN_MULTIPLE"|"SAVE"
+---@alias fileManagerType "OPEN"|"STANDARD"|"SAVE"
 
 ---@param screen GNUI.Container|GNUI.Canvas
----@param situation fileManagerType?
+---@param mode fileManagerType?
 ---@return GNUI.Window.FileManager
-function FM.new(screen,situation)
-   situation = situation or "OPEN_MULTIPLE"
+function FM.new(screen,mode)
+   mode = mode or "STANDARD"
    ---@type GNUI.Window.FileManager
    local w = Window.new()
    w:setPos(16,16):setSize((screen.Dimensions.zw-screen.Dimensions.xy):sub(128,48))
@@ -58,11 +58,11 @@ function FM.new(screen,situation)
    w.AcceptedSuffixes = {}
    setmetatable(w,FM)
    
-   if situation == "OPEN" then
+   if mode == "STANDARD" then
+      w:setTitle("File Explorer")
+   elseif mode == "OPEN" then
       w:setTitle("File Dialog (Open a File)")
-   elseif situation == "OPEN_MULTIPLE" then
-      w:setTitle("File Dialog (Open Files)")
-   elseif situation == "SAVE" then
+   elseif mode == "SAVE" then
       w:setTitle("File Dialog (Save a File)")
    end
    
@@ -99,7 +99,7 @@ function FM.new(screen,situation)
    
    local sidebar = GNUI.newContainer()
    theme.applyTheme(sidebar,"solid")
-   sidebar:setAnchor(0,0,0,1):setDimensions(2,18,66,-19)
+   sidebar:setAnchor(0,0,0,1):setDimensions(2,18,66,-2)
    w:addElement(sidebar)
    w.sidebar = sidebar
    
@@ -153,36 +153,42 @@ function FM.new(screen,situation)
    -->==========[ Bottom Ribbon ]==========<--
    
    local bottomRibbon = GNUI.newContainer()
-   bottomRibbon:setAnchor(0,0,1,0):setDimensions(0,-20,0,0):setAnchor(0,1,1,1)
+   bottomRibbon:setAnchor(0,0,1,0):setDimensions(66,-20,0,0):setAnchor(0,1,1,1)
    w:addElement(bottomRibbon)
    w.bottomRibbon = bottomRibbon
    
    local fileNameField = GNUIElements.newTextInputField()
-   fileNameField:setSize(-93,16):setPos(17,2):setAnchor(0,0,1,0)
+   fileNameField:setDimensions(2,2,-2,-2):setAnchor(0,0,1,1)
    bottomRibbon:addChild(fileNameField)
    w.fileNameField = fileNameField
    
-   local cancelButton = GNUIElements.newTextButton():setText("Cancel")
-   cancelButton:setSize(38,16):setPos(-40,2):setAnchor(1,0,1,0)
-   cancelButton.PRESSED:register(function () w:close() end)
-   bottomRibbon:addChild(cancelButton)
-   w.cancelButton = cancelButton
+   if mode ~= "STANDARD" then
+      local cancelButton = GNUIElements.newTextButton():setText("Cancel")
+      cancelButton:setDimensions(0,-34,0,-15):setAnchor(0,1,1,1)
+      cancelButton.PRESSED:register(function () w:close() end)
+      sidebar:addChild(cancelButton)
+      w.cancelButton = cancelButton
+      
+      local okButton = GNUIElements.newTextButton()
+      okButton:setDimensions(0,-18,0,0):setAnchor(0,1,1,1)
+      sidebar:addChild(okButton)
+      
+      if mode == "SAVE" then
+         okButton:setText("Save")
+      elseif mode == "OPEN" then
+         okButton:setText("Open")
+      end
+      
+      okButton.PRESSED:register(function () 
+         w:openFile(fileNameField.ConfirmedText)
+      end)
+      w.okButton = okButton
+   end
    
-   local okButton = GNUIElements.newTextButton():setText("Open")
-   okButton:setSize(38,16):setPos(-77,2):setAnchor(1,0,1,0)
-   bottomRibbon:addChild(okButton)
-   okButton.PRESSED:register(function () 
-      w:openFile(fileNameField.ConfirmedText)
-   end)
-   w.okButton = okButton
-   
-   local OptionsButton = GNUIElements.newTextButton():setText("=")
-   OptionsButton:setSize(16,16):setPos(2,2):setAnchor(0,0,0,0)
-   bottomRibbon:addChild(OptionsButton)
-   w.OptionsButton = OptionsButton
    
    screen:addChild(w)
    w:refresh()
+   w:updateScrollbar()
    w.DIMENSIONS_CHANGED:register(function ()
       w:updateScrollbar()
    end)

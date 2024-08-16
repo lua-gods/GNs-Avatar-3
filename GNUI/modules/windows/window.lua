@@ -61,6 +61,7 @@ local windows = {}
 ---@field isMaximized boolean
 ---@field isGrabbed boolean
 ---@field CLOSE_REQUESTED eventLib
+---@field FOCUS_CHANGED eventLib
 local Window = {}
 Window.__index = function (t,i)
    return rawget(t,i) or Window[i] or gnui.Container[i] or gnui.Element[i]
@@ -78,6 +79,7 @@ function Window.new(manualClosing)
    new.Title = ""
    new.isActive = false
    new.CLOSE_REQUESTED = eventLib.new()
+   new.FOCUS_CHANGED = eventLib.new()
    
    local titleBar = gnui.newContainer()
    new.Titlebar = titleBar
@@ -195,6 +197,7 @@ function Window.new(manualClosing)
    end)
    
    local function setActive(a)
+      new.FOCUS_CHANGED:invoke(new.isActive)
       leftBorderDrag:setVisible(a)
       rightBorderDrag:setVisible(a)
       topBorderDrag:setVisible(a)
@@ -210,8 +213,7 @@ function Window.new(manualClosing)
       if new.isActive then
          new:setChildIndex(999)
       end
-   end)
-   setActive(false)
+   end,"window"..new.id)
    
    new.isGrabbed = false
    local grab_canvas ---@type GNUI.Canvas
@@ -273,7 +275,7 @@ function Window:setAsActiveWindow()
       end
       active_window = self
       self.isActive = true
-      ACTIVE_WINDOW_CHANGED:invoke(old,self)
+      ACTIVE_WINDOW_CHANGED:invoke(self,old)
    end
 end
 
@@ -298,6 +300,7 @@ end
 
 ---Deletes the window.
 function Window:close()
+   ACTIVE_WINDOW_CHANGED:remove("window"..self.id)
    self:free()
 end
 
@@ -314,7 +317,7 @@ end
 -->====================[ QOL Stuffs ]====================<--
 
 ---@param event GNUI.InputEvent
-screen.INPUT:register(function (event)
+screen.UNHANDLED_INPUT:register(function (event)
    if event.key == "key.mouse.left" and event.isPressed then
       Window.clearActiveWindow()
    end

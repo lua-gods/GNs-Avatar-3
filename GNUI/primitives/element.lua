@@ -187,6 +187,7 @@ function Element:setChildIndex(i)
       table.remove(self.Parent.Children, self.ChildIndex)
       table.insert(self.Parent.Children, i, self)
       self.Parent:updateChildrenIndex()
+      self.Parent:update()
    end
 end
 
@@ -198,11 +199,25 @@ function Element:free()
    self.ON_FREE:invoke()
 end
 
----Kills all the childrem, go startwars mode.
+---Kills all the children, go startwars mode.
 function Element:purgeAllChildren()
    local children = {}
    for key, value in pairs(self:getChildren()) do
       children[key] = value
+   end
+   for key, value in pairs(children) do
+      value:free()
+   end
+   self.Children = {}
+end
+
+---Kills all the children in the given number range.
+---@param ifrom any
+---@param ito any
+function Element:purgeChildrenRange(ifrom,ito)
+   local children = {}
+   for i = math.max(ifrom,1), math.min(ito, #self.Children), 1 do
+      children[i] = self.Children[i]
    end
    for key, value in pairs(children) do
       value:free()

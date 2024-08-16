@@ -10,7 +10,7 @@ local sprite_idle = GNUI.newSprite():setTexture(texture):setUV(1,1,13,13)
 local sprite_alert = GNUI.newSprite():setTexture(texture):setUV(15,1,27,13)
 
 
-local button = Statusbar.newButtonSprite(sprite_idle)
+local button = Statusbar.newButtonSprite("Toggle Chat",sprite_idle)
 local hide = false
 
 events.CHAT_RECEIVE_MESSAGE:register(function ()

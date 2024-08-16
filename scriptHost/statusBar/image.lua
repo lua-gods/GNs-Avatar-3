@@ -9,7 +9,7 @@ local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
 local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(0,28,13,41)
 
-local button = Statusbar.newButtonSprite(icon)
+local button = Statusbar.newButtonSprite("Gallery",icon)
 
 local activeGalleries = 0
 ---@class GNUI.Window.Gallery : GNUI.Window
@@ -91,7 +91,7 @@ function Gallery.new()
    local iconShade1 = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(18,42,26,50)
    local iconShade2 = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(27,42,35,50)
    local shade = false
-   local shadeImageButton = Elements.newSingleSpriteButton(iconShade1):setDimensions(-18,0,-9,9)
+   local shadeImageButton = Elements.newSingleSpriteButton(iconShade1):setDimensions(-9,0,0,9)
    shadeImageButton.PRESSED:register(function ()
       if self.Preview.Sprite then
          shadeImageButton:setSprite(shade and iconShade1 or iconShade2)
@@ -109,7 +109,7 @@ function Gallery.new()
    self:addElement(zoomImageButton)
    self.ZoomButton = zoomImageButton
    
-   local zoomLabel = GNUI.newLabel()
+   local zoomLabel = GNUI.newLabel():setText("100%")
    :setDimensions(-18,1,9,10)
    :setAnchor(.5,0,.5,0)
    :setAlign(1,0)

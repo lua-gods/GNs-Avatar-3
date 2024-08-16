@@ -77,4 +77,17 @@ function Stack:setIsHorizontal(is_horizontal)
    return self
 end
 
+
+---set the margin between children.
+---@generic self
+---@param self self
+---@return self
+---@param margin number
+function Stack:setMargin(margin)
+   ---@cast self GNUI.Stack
+   self.Margin = margin
+   self:update()
+   return self
+end
+
 return Stack

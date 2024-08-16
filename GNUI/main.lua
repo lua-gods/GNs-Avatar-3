@@ -13,7 +13,7 @@ local cfg = require("GNUI.config")
 ---@class GNUI
 
 local api = {path = cfg.path}
----@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.AnchorPoint|GNUI.Canvas
+---@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.Canvas
 
 local u = require("GNUI.utils")
 local l = require("GNUI.primitives.label")
@@ -21,9 +21,7 @@ local s = require("GNUI.spriteLib")
 local ca = require("GNUI.primitives.canvas")
 local e = require("GNUI.primitives.element")
 local co = require("GNUI.primitives.container")
-local a = require("GNUI.primitives.anchor")
 
-api.newPointAnchor = function ()return a.new()end
 api.newContainer = function ()return co.new() end
 
 ---@param autoInputs boolean # true when the canvas should capture the inputs from the screen.
@@ -40,7 +38,6 @@ end
 api.utils = u
 
 api.Container = co
-api.Anchor = a
 api.Element = e
 api.Canvas = ca
 api.Sprite = s
@@ -71,8 +68,8 @@ function api.getScreenCanvas()
 end
 
 ---@param sound Minecraft.soundID
----@param pitch number
----@param volume number
+---@param pitch number?
+---@param volume number?
 function api.playSound(sound,pitch,volume)
   sounds[sound]:pos(client:getCameraPos():add(client:getCameraDir())):pitch(pitch or 1):volume(volume or 1):attenuation(9999):play()
 end

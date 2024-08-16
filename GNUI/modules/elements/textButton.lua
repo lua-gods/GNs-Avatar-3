@@ -22,6 +22,8 @@ function TextButton.new(variant,theme)
    ---@type GNUI.TextButton
    local new = button.new()
    local label = gnui.newLabel()
+   label:setAlign(0.5,0.5):setAnchor(0,0,1,1)
+   label:setCanCaptureCursor(false)
    new.label = label
    new:addChild(label)
    setmetatable(new,TextButton)

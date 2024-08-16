@@ -7,7 +7,7 @@ local Statusbar = require("scriptHost.statusbar")
 local sequence = require("libraries.sequence")
 
 local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(42,14,55,27)
-local button = Statusbar.newButtonSprite(icon)
+local button = Statusbar.newButtonSprite("Elevator Spawner",icon)
 local window
 
 local elen = client.getTextWidth(".")

@@ -65,6 +65,7 @@ function SB.new(variant,theme)
    new.SIZE_CHANGED:register(function ()
       new:setRange(new.ScrollFrom,new.ScrollTo)
    end)
+   new:setAnchor(1,0,1,1):setDimensions(-8,0,0,0)
 ---@diagnostic disable-next-line: return-type-mismatch
    return new
 end
