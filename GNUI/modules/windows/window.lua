@@ -14,10 +14,10 @@ DEPENDENCIES
 local isAlt = false
 keybinds:newKeybind("window alt drag","key.keyboard.left.alt",true):onPress(function ()isAlt = true end):onRelease(function ()isAlt = false end)
 
-local cfg = require("GNUI/config") ---@module "GNUI.config"
-local gnui = require("GNUI.main")                       ---@module "GNUI.main"
-local gnui_elements = require("GNUI.modules.elements")  ---@module "GNUI.modules.elements"
-local themes = require("GNUI.modules.themes")           ---@module "GNUI.modules.themes"
+local cfg = require("GNUI.config")
+local gnui = require("GNUI.main")
+local gnui_elements = require("GNUI.modules.elements")
+local themes = require("GNUI.modules.themes")
 
 local eventLib = require("libraries.eventLib")
 
@@ -69,9 +69,11 @@ Window.__type = "GNUI.Element.Container.Window"
 Window.ACTIVE_WINDOW_CHANGED = ACTIVE_WINDOW_CHANGED
 
 
-function Window.new()
+---@param manualClosing boolean?
+---@return GNUI.Window
+function Window.new(manualClosing)
    ---@type GNUI.Window
-   local new = gnui.newContainer()
+   local new = gnui.newContainer():setDimensions(0,0,64,64)
    new.type = "window"
    new.Title = ""
    new.isActive = false
@@ -106,9 +108,11 @@ function Window.new()
    closeButton.PRESSED:register(function ()
       new.CLOSE_REQUESTED:invoke()
    end)
-   new.CLOSE_REQUESTED:register(function ()
-      new:close()
-   end)
+   if not manualClosing then
+      new.CLOSE_REQUESTED:register(function ()
+         new:close()
+      end)
+   end
    
    local leftBorderDrag = gnui.newContainer()
    :setAnchor(0,0,0,1):setDimensions(0,BDS,BDS,-BDS)

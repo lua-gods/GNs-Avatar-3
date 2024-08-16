@@ -2,18 +2,21 @@ local GNUI = require("GNUI.main")
 local GNUIElements = require("GNUI.modules.elements")
 local screen = GNUI.getScreenCanvas()
 
-local statusbar = GNUIElements.newStack():setIsHorizontal(true)
-:setPos(2,2)
-:setSize(8,8)
---:setPos(2,-23)
-screen:addChild(statusbar)
+local ICON_SIZE = 12
+
+local Statusbar = GNUIElements.newStack()
+:setAnchor(0.5,0.5)
+Statusbar:setIsHorizontal(true)
+:setSize(ICON_SIZE,ICON_SIZE)
+screen:addChild(Statusbar)
 
 local api = {}
 
 local function newButton()
+   Statusbar:setPos(ICON_SIZE * -0.5 * (#Statusbar.Children+1),0)
    local button = GNUIElements.newSingleSpriteButton()
-   button:setCustomMinimumSize(8,8)
-   statusbar:addChild(button)
+   button:setCustomMinimumSize(ICON_SIZE,ICON_SIZE)
+   Statusbar:addChild(button)
    return button
 end
 

@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 -- The Base class for all buttons. does not contain any visual elements.
 
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local gnui = require("GNUI.main")
 local eventLib = cfg.event
 

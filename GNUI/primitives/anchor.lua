@@ -1,4 +1,4 @@
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local eventLib,utils = cfg.event, cfg.utils
 
 local debug_texture = textures['gnui_debug_outline'] or textures:newTexture("gnui_debug_outline",3,3):fill(0,0,3,3,vec(1,1,1)):setPixel(1,1,vec(0,0,0))

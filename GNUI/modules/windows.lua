@@ -1,12 +1,13 @@
 local api = {}
 
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 
 local window = require("GNUI.modules.windows.window")
 local fileDialog = require("GNUI.modules.windows.fileDialog")
 api.Window = window
+---@param manualClosing boolean?
 ---@return GNUI.Window
-function api.newWindow() return window.new() end
+function api.newWindow(manualClosing) return window.new(manualClosing) end
 
 api.fileDialog = fileDialog
 ---@param screen GNUI.Container|GNUI.Canvas

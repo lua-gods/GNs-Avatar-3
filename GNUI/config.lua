@@ -16,8 +16,7 @@ internal_events_name = "__a",
 
 
 -->==========[ System ]==========<--
-path = (....."/"), -- the root path of GNUI
-utils = require(....."/utils"),
+utils = require("GNUI.utils"),
 
 -->==========[ External Libraries ]==========<--
 event = require("libraries.eventLib"),

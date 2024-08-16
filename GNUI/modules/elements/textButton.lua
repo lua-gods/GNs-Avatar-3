@@ -1,7 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 -- Serves as a way to create buttons with text within them
 
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local gnui = require("GNUI.main")
 local themes = require("GNUI.modules.themes")
 local button = require("GNUI.modules.elements.button")

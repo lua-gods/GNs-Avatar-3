@@ -1,6 +1,6 @@
 ---@diagnostic disable: assign-type-mismatch
 
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local gnui = require("GNUI.main")
 
 local container = gnui.Container
@@ -16,6 +16,7 @@ Stack.__index = function (t,i)
 end
 Stack.__type = "GNUI.Element.Container.Stack"
 
+---@return GNUI.Stack
 function Stack.new()
    ---@type GNUI.Stack
    local new = container.new()
@@ -63,9 +64,12 @@ function Stack:_update()
 end
 
 ---if given true, the stack will be horizontal. Vertical if otherwise.
+---@generic self
+---@param self self
+---@return self
 ---@param is_horizontal boolean
----@return GNUI.Stack
 function Stack:setIsHorizontal(is_horizontal)
+   ---@cast self GNUI.Stack
    if self.is_horizontal ~= is_horizontal then
       self.is_horizontal = is_horizontal
       self:update()

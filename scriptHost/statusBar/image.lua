@@ -1,9 +1,9 @@
 
 local GNUI = require("GNUI.main")
 -- GNUI Modules
-local GNUIElements = require("GNUI.modules.elements")
-local GNUIWindow = require("GNUI.modules.windows")
-local GNUIThemes = require("GNUI.modules.themes")
+local Elements = require("GNUI.modules.elements")
+local Window = require("GNUI.modules.windows")
+local Themes = require("GNUI.modules.themes")
 -- Screen Stuffs
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
@@ -16,6 +16,7 @@ local activeGalleries = 0
 ---@field Ribbon GNUI.Stack
 ---@field RibbonBG GNUI.Container
 ---@field Preview GNUI.Container
+---@field StatusLabel GNUI.Label
 ---@field CameraPos Vector2
 ---@field Zoom number
 ---@field Image Texture
@@ -28,14 +29,14 @@ local activeGalleries = 0
 ---@field ZoomLabel GNUI.Label
 local Gallery = {}
 Gallery.__index = function (t,i)
-   return rawget(t,i) or Gallery[i] or GNUIWindow.Window[i] or GNUI.Container[i] or GNUI.Element[i]
+   return rawget(t,i) or Gallery[i] or Window.Window[i] or GNUI.Container[i] or GNUI.Element[i]
 end
 Gallery.__type = "GNUI.Window.Gallery"
 
 function Gallery.new()
    activeGalleries = activeGalleries + 1
    ---@type GNUI.Window.Gallery
-   local self = GNUIWindow.newWindow()
+   local self = Window.newWindow()
    :setSize(200,200)
    :setPos(16,16)
    :setTitle("Gallery")
@@ -50,41 +51,47 @@ function Gallery.new()
    
    self.ClientArea.SIZE_CHANGED:register(function ()self:updateCamera()end)
    
-   local Ribbon = GNUIElements.newStack():setIsHorizontal(true)
+   local Ribbon = Elements.newStack():setIsHorizontal(true)
    :setAnchor(0,0,1,1):setDimensions(2,1,-2,-2)
    self.Ribbon = Ribbon
    
    local RibbonBG = GNUI.newContainer():setAnchor(0,0,1,0)
    :setDimensions(-1,-1,1,10)
-   GNUIThemes.applyTheme(RibbonBG,"solid")
+   Themes.applyTheme(RibbonBG,"solid")
    self.RibbonBG = RibbonBG
    
    RibbonBG:addChild(Ribbon)
    self:addElement(RibbonBG)
    
-   local openImageButton = GNUIElements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(0,42,8,50))
+   -- Open image button
+   local openImageButton = Elements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(0,42,8,50))
    :setCustomMinimumSize(9,9)
    openImageButton.PRESSED:register(function ()
       if self.fileDialog then
          self.fileDialog:close()
       end
-      self.fileDialog = GNUIWindow.newFileDialog(screen,"OPEN")
+      self.fileDialog = Window.newFileDialog(screen,"OPEN")
       self.fileDialog.ON_FREE:register(function () self.fileDialog = nil end)
       self.fileDialog.FILE_SELECTED:register(function (path) if path:find("%.png$") then self:openFile(path) end end)
    end)
+   
    Ribbon:addChild(openImageButton)
    screen:addChild(self)
    self.OpenButton = openImageButton
    
-   local infoImageButton = GNUIElements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(9,42,17,50))
-   :setDimensions(-9,0,0,9):setAnchor(1,0,1,0)
-   self:addElement(infoImageButton)
-   self.InfoButton = infoImageButton
+   local statusLabel = GNUI.newLabel()
+   :setAnchor(0,1)
+   :setText("Open an Image...")
+   :setPos(2,-9)
+   self:addElement(statusLabel)
+   statusLabel:setTextEffect("OUTLINE")
+   self.StatusLabel = statusLabel
    
+   -- shade mode button
    local iconShade1 = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(18,42,26,50)
    local iconShade2 = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(27,42,35,50)
    local shade = false
-   local shadeImageButton = GNUIElements.newSingleSpriteButton(iconShade1):setDimensions(-18,0,-9,9)
+   local shadeImageButton = Elements.newSingleSpriteButton(iconShade1):setDimensions(-18,0,-9,9)
    shadeImageButton.PRESSED:register(function ()
       if self.Preview.Sprite then
          shadeImageButton:setSprite(shade and iconShade1 or iconShade2)
@@ -97,7 +104,7 @@ function Gallery.new()
    self:addElement(shadeImageButton)
    self.ShadeButton = shadeImageButton
    
-   local zoomImageButton = GNUIElements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(36,42,44,50))
+   local zoomImageButton = Elements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(36,42,44,50))
    :setDimensions(18,0,9,9):setAnchor(.5,0,.5,0)
    self:addElement(zoomImageButton)
    self.ZoomButton = zoomImageButton
@@ -177,7 +184,8 @@ function Gallery:openFile(path)
       local dataBuffer = data:createBuffer()
       dataBuffer:readFromStream(file:openReadStream(path))
       dataBuffer:setPosition(0)
-      local OK,result = pcall(textures.read,textures,"GNWindowImagePreview"..self.Slot,dataBuffer:readBase64())
+      local data = dataBuffer:readBase64()
+      local OK,result = pcall(textures.read,textures,"GNWindowImagePreview"..self.Slot,data)
       if OK then
          local dim = result:getDimensions()
          local sprite = GNUI.newSprite():setTexture(result)
@@ -186,6 +194,7 @@ function Gallery:openFile(path)
          self.Zoom = 1
          self.Resolution = dim
          self.Image = result
+         self.StatusLabel:setText(dim.x .. "x" .. dim.y.." | Size: "..(math.floor(#data/1024 * 100) / 100).."KB")
          self:updateCamera()
          self:setTitle("Gallery - " .. path)
       end

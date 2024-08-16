@@ -1,4 +1,4 @@
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local eventLib = cfg.event
 
 local element_next_free = 0
@@ -199,7 +199,7 @@ function Element:free()
 end
 
 ---Kills all the childrem, go startwars mode.
-function Element:freeAllChildren()
+function Element:purgeAllChildren()
    local children = {}
    for key, value in pairs(self:getChildren()) do
       children[key] = value

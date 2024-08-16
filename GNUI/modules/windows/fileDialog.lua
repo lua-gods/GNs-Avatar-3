@@ -1,5 +1,5 @@
 
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 
 local GNUI = require("GNUI.main")
 local GNUIElements = require("GNUI.modules.elements")
@@ -211,7 +211,7 @@ end
 
 function FM:refresh()
    local dirs = file:list(self.TargetDirectory)
-   self.outliner:freeAllChildren()
+   self.outliner:purgeAllChildren()
    for i = 1, #dirs, 1 do
       local name = dirs[i]
       local path

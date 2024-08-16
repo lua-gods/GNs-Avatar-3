@@ -9,19 +9,19 @@ Everything is in one file to make sure it is possible to load this script from a
 allowing me to put as much as I want without worrying about storage space.
 ]]
 
-local cfg = require(....."/config")
+local cfg = require("GNUI.config")
 ---@class GNUI
 
 local api = {path = cfg.path}
 ---@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.AnchorPoint|GNUI.Canvas
 
-local u = require("GNUI/utils")
-local l = require("GNUI/primitives.label")
-local s = require("GNUI/spriteLib")
-local ca = require("GNUI/primitives/canvas")
-local e = require("GNUI/primitives/element")
-local co = require("GNUI/primitives/container")
-local a = require("GNUI/primitives/anchor")
+local u = require("GNUI.utils")
+local l = require("GNUI.primitives.label")
+local s = require("GNUI.spriteLib")
+local ca = require("GNUI.primitives.canvas")
+local e = require("GNUI.primitives.element")
+local co = require("GNUI.primitives.container")
+local a = require("GNUI.primitives.anchor")
 
 api.newPointAnchor = function ()return a.new()end
 api.newContainer = function ()return co.new() end

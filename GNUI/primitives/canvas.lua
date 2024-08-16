@@ -1,5 +1,5 @@
 ---@diagnostic disable: assign-type-mismatch, undefined-field, return-type-mismatch
-local cfg = require("GNUI/config")
+local cfg = require("GNUI.config")
 local eventLib,utils = cfg.event, cfg.utils
 local Container = require("GNUI.primitives.container")
 local Element = require("GNUI.primitives.element")
