@@ -160,6 +160,7 @@ end)
 ---@param selected fun(selected:integer)
 local function newSwatchWindow(x,y,selected)
    local swatchWindow = Window.newWindow()
+   swatchWindow.isPopup = true
    swatchWindow:setPos(x,y):setTitle("Color"):setSize(63,73)
    local i = 0
    for z = 1, 4, 1 do
@@ -191,6 +192,7 @@ end
 ---@param selected fun(selected:integer)
 local function newPatternWindow(x,y,control,selected)
    local pwin = Window.newWindow()
+   pwin.isPopup = true
    pwin:setPos(x,y):setTitle("Select Pattern"):setSize(192,112)
    pwin.FOCUS_CHANGED:register(function (focus)
       if not focus then

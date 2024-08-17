@@ -66,8 +66,14 @@ local function generateName()
    nameplate.CHAT:setText(toJson(final))
    
    if statusSince and status then
+      local seconds = math.floor((client:getSystemTime()-statusSince)/1000)
+      local minutes = math.floor(seconds/60)
       final[#final+1] = {text="\n"}
-      final[#final+1] = {text=status .. " : "..math.floor((client:getSystemTime()-statusSince)/1000),color="gray"}
+      final[#final+1] = {text="Playing: "..status,color="gray"}
+      --if minutes > 0 then
+      --   final[#final+1] = {text=minutes..":",color="gray"}
+      --end
+      --final[#final+1] = {text=seconds,color="gray"}
    end
    
    final = toJson(final)

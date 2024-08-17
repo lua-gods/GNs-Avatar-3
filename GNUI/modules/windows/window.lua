@@ -284,6 +284,7 @@ end
 ---@param text string
 ---@return GNUI.Window
 function Window:setTitle(text)
+   self.Title = text
    self.TitleLabel:setText(text)
    return self
 end
@@ -300,6 +301,10 @@ end
 
 ---Deletes the window.
 function Window:close()
+   if active_window == self then
+      active_window = nil
+      ACTIVE_WINDOW_CHANGED:invoke(nil,nil)
+   end
    ACTIVE_WINDOW_CHANGED:remove("window"..self.id)
    self:free()
 end
