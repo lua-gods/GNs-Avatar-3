@@ -149,6 +149,11 @@ outliner:setAnchor(0,0,1,1):setDimensions(0,0,-7,0)
 outliner:setMargin(-1)
 propertiesPanel:addChild(outliner)
 
+slider.ON_SCROLL:register(function (p)
+   local y = p * 40
+   outliner:setChildrenShift(0,y)
+end)
+
 
 ---@param x number
 ---@param y number

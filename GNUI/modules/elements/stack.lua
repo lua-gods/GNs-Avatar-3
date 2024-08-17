@@ -7,7 +7,8 @@ local container = gnui.Container
 local element = gnui.Element
 
 ---@class GNUI.Stack : GNUI.Container
----@field is_horizontal boolean
+---@field isHorizontal boolean
+---@field containChildren boolean
 ---@field Margin number
 local Stack = {}
 
@@ -21,7 +22,8 @@ function Stack.new()
    ---@type GNUI.Stack
    local new = container.new()
    new._parent_class = Stack
-   new.is_horizontal = false
+   new.isHorizontal = false
+   new.containChildren = true
    new.Margin = 1
    ---@param child GNUI.any
    new.CHILDREN_ADDED:register(function (child)
@@ -45,20 +47,28 @@ function Stack:_update()
       local min = child:getMinimumSize()
       sizes[i] = min
    end
-   if self.is_horizontal then
+   if self.isHorizontal then
       local x = 0
       for i, child in pairs(self.Children) do
          child:setDimensions(x,0,x+sizes[i].x,0):setAnchor(0,0,0,1)
          x = x + sizes[i].x + self.Margin
       end
-      self:setSystemMinimumSize(x,0)
+      if self.containChildren then
+         self:setSystemMinimumSize(x,0)
+      else
+         self:setSystemMinimumSize(0,0)
+      end
    else
       local y = 0
       for i, child in pairs(self.Children) do
          child:setDimensions(0,y,0,y+sizes[i].y):setAnchor(0,0,1,0)
          y = y + sizes[i].y + self.Margin
       end
-      self:setSystemMinimumSize(0,y)
+      if self.containChildren then
+         self:setSystemMinimumSize(0,y)
+      else
+         self:setSystemMinimumSize(0,0)
+      end
    end
    container._update(self)
 end
@@ -70,8 +80,8 @@ end
 ---@param is_horizontal boolean
 function Stack:setIsHorizontal(is_horizontal)
    ---@cast self GNUI.Stack
-   if self.is_horizontal ~= is_horizontal then
-      self.is_horizontal = is_horizontal
+   if self.isHorizontal ~= is_horizontal then
+      self.isHorizontal = is_horizontal
       self:update()
    end
    return self
@@ -88,6 +98,13 @@ function Stack:setMargin(margin)
    self.Margin = margin
    self:update()
    return self
+end
+
+---if true, this stack will resize to make the elements fit
+---@param contain boolean
+function Stack:setContainChildren(contain)
+   self.containChildren = contain
+   self:update()
 end
 
 return Stack

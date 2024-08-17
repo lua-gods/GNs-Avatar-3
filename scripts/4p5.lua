@@ -1,0 +1,1 @@
+--avatar:store("net_prompter", function() world.avatarVars()["584fb77d-5c02-468b-a5ba-4d62ce8eabe2"].net_acceptor(net) end)

@@ -33,3 +33,9 @@ esc:onPress(function ()
       return true
    end
 end)
+
+events.MOUSE_SCROLL:register(function (dir) 
+   if unlocked then
+      return true
+   end
+end)

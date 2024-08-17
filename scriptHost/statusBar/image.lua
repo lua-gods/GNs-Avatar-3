@@ -9,6 +9,8 @@ local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
 local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(0,28,13,41)
 
+local base64 = require("libraries.base64")
+
 local button = Statusbar.newButtonSprite("Gallery",icon)
 
 local activeGalleries = 0
@@ -20,6 +22,7 @@ local activeGalleries = 0
 ---@field CameraPos Vector2
 ---@field Zoom number
 ---@field Image Texture
+---@field Path string
 ---@field Resolution Vector2
 ---@field PixelScale number
 ---@field OpenButton GNUI.Button
@@ -120,6 +123,26 @@ function Gallery.new()
       activeGalleries = activeGalleries - 1
    end)
    
+   local exportButton = Elements.newSingleSpriteButton(GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(36,42,44,50))
+   exportButton:setAnchor(1,1):setDimensions(-8,-8,0,0)
+   exportButton.PRESSED:register(function ()
+      local file = require("libraries.file")
+      local f = file.new(self.Path)
+      local ok,result = pcall(f.readByteArray,f,self.Path)
+      if ok then
+         local data = base64.encode("images;"..(result))
+         compare(#result,#data)
+         local item = 'minecraft:player_head{SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"'..data..'"}]}}}'
+         if #item < 65536 then
+            give(item)
+            print("Generated ("..#item.." < 65536)")
+         else
+            print("Exceeded byte limit ("..#item.." > 65536)")
+         end
+      end
+   end)
+   self:addElement(exportButton)
+   
    local pan = false
    
    ---@param event GNUI.InputEvent
@@ -181,6 +204,7 @@ function Gallery:openFile(path)
       self = Gallery.new()
    end
    if file:isFile(path) then
+      self.Path = path
       local dataBuffer = data:createBuffer()
       dataBuffer:readFromStream(file:openReadStream(path))
       dataBuffer:setPosition(0)

@@ -603,7 +603,7 @@ function Container:toGlobal(x,y)
    while parent do
       i = i + 1
       if i > 100 then break end
-      pos = pos + parent.Shift + parent.ContainmentRect.xy
+      pos = pos + parent.ContainmentRect.xy
       parent = parent.Parent
    end
    return pos
@@ -622,7 +622,7 @@ function Container:toLocal(x,y)
    while parent do
       i = i + 1
       if i > 100 then break end
-      pos = pos - parent.Shift - parent.ContainmentRect.xy
+      pos = pos - parent.ContainmentRect.xy
       parent = parent.Parent
    end
    return pos
