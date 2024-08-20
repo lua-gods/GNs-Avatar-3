@@ -8,7 +8,7 @@
 - you can take ANYTHING in this Avatar as your own, and follow my LICENSE.
 - tl;dr you can take whatever you want from here, but keep my thing at the top of scripts (figura trims them off automatically so they wont take storage). and specify your changes in your own copy of the files in question.
 ### Can I use your avatar?
-- you are allowed to use it locally, but you are NOT allowed to upload it into Figura's cloud nor impersonate me without my consent.
+- you are allowed to use it locally, but you are NOT allowed to upload it into Figura's cloud nor impersonate me without my knowledge.
 
 in that note, enjoy digging though my scripts and use them as your own.
 

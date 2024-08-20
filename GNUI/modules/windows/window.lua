@@ -303,7 +303,7 @@ end
 function Window:close()
    if active_window == self then
       active_window = nil
-      ACTIVE_WINDOW_CHANGED:invoke(nil,nil)
+      ACTIVE_WINDOW_CHANGED:invoke()
    end
    ACTIVE_WINDOW_CHANGED:remove("window"..self.id)
    self:free()

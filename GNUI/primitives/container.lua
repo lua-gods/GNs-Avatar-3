@@ -714,10 +714,10 @@ function Container:_update()
       -- calculate clipping
       if self.ClipOnParent then
          clipping = 
-            pc.x-size.x > cr.x
-         or pc.y-size.y > cr.y
-         or pc.z+size.x < cr.z
-         or pc.w+size.y < cr.w
+            pc.x > cr.x
+         or pc.y > cr.y
+         or pc.z < cr.z
+         or pc.w < cr.w
       end
    else
       size = vec(

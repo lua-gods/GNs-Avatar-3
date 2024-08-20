@@ -48,7 +48,6 @@ end
 
 function setStatus(text)
    status = text
-   statusSince = client:getSystemTime()
 end
 
 -- Generates a json text for minecraft to interpret as gradient text.
@@ -65,15 +64,8 @@ local function generateName()
    end
    nameplate.CHAT:setText(toJson(final))
    
-   if statusSince and status then
-      local seconds = math.floor((client:getSystemTime()-statusSince)/1000)
-      local minutes = math.floor(seconds/60)
-      final[#final+1] = {text="\n"}
-      final[#final+1] = {text="Playing: "..status,color="gray"}
-      --if minutes > 0 then
-      --   final[#final+1] = {text=minutes..":",color="gray"}
-      --end
-      --final[#final+1] = {text=seconds,color="gray"}
+   if status then
+      final[#final+1] = {text="\nPlaying: "..status,color="gray"}
    end
    
    final = toJson(final)
@@ -82,10 +74,11 @@ local function generateName()
    
 end
 
-function pings.syncName(name,ss,...)
-   statusSince = ss
+function pings.syncName(name,s,...)
+   if not host:isHost() then
+      status = s
+   end
    colors = {...}
-   statusSince = ss
    generateName()
 end
 
@@ -93,7 +86,7 @@ end
 -- Host only things that will sync data to non host view of this avatar.
 if not host:isHost() then return end
 local OK,command = pcall(require, config.gn_command_handler_library)
-pings.syncName(username,statusSince,table.unpack(colors))
+pings.syncName(username,status,table.unpack(colors))
 
 
 -- every config.sync_wait_time, the timer triggers to sync the name to everyone
@@ -102,6 +95,6 @@ events.TICK:register(function ()
    timer = timer - 1
    if timer < 0 then
       timer = config.sync_wait_time
-      pings.syncName(username,statusSince,table.unpack(colors))
+      pings.syncName(username,status,table.unpack(colors))
    end
 end)

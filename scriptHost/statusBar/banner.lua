@@ -147,6 +147,7 @@ propertiesPanel:addChild(slider)
 local outliner = Elements.newStack()
 outliner:setAnchor(0,0,1,1):setDimensions(0,0,-7,0)
 outliner:setMargin(-1)
+outliner:setContainChildren(false)
 propertiesPanel:addChild(outliner)
 
 slider.ON_SCROLL:register(function (p)
@@ -297,6 +298,7 @@ local control = GNUI.newContainer()
 control:setCustomMinimumSize(0,16)
 Themes.applyTheme(control,"solid")
 outliner:addChild(control)
+control:setClipOnParent(true)
 
 for i = 1, #swatches, 1 do
    local swatch = Elements.newButton()
@@ -317,7 +319,7 @@ end
 
 local newLayerButton = Elements.newTextButton("nothing")
 newLayerButton:setText("+ New Layer"):setCustomMinimumSize(0,16)
-outliner:addChild(newLayerButton)
+outliner:addChild(newLayerButton:setClipOnParent(true))
 newLayerButton.PRESSED:register(function () newLayer() end)
 
 
