@@ -41,17 +41,21 @@ macro.tick = function ()
                property = "["..property:sub(1,-2).."]"
                host:swingArm()
                local ok = pcall(world.newBlock,block.id..property)
+               
+               -- block changed directions atleast
                if ok and block.properties.facing ~= dir2side[tostring(new)] then
+                  -- block entity detection
                   local e = block:getEntityData() or {}
                   e.OutputSignal = nil
-                  e = #tostring(printTable(e,0,true)) > 15
+                  e = #printTable(e,1,true) > 15
+                  
                   if e then
                      host:sendChatCommand("/data modify storage gn:storage storage set value '1'")
                      host:sendChatCommand(("/data modify storage gn:storage storage set from block %i %i %i"):format(p.x,p.y,p.z,block.id..property))
-                     host:sendChatCommand(("/data modify block %i %i %i {} merge from storage gn:storage storage"):format(p.x,p.y,p.z))
                   end
                   host:sendChatCommand(("/setblock %i %i %i %s"):format(p.x,p.y,p.z,block.id..property))
                   if e then
+                     host:sendChatCommand(("/data merge block %i %i %i {balls:true}"):format(p.x,p.y,p.z))
                      host:sendChatCommand(("/data modify block %i %i %i {} merge from storage gn:storage storage"):format(p.x,p.y,p.z))
                   end
                   host:sendChatCommand(("/playsound minecraft:block.wooden_trapdoor.open master @a %i %i %i"):format(p.x,p.y,p.z))
