@@ -7,7 +7,7 @@ local Themes = require("GNUI.modules.themes")
 -- Screen Stuffs
 local screen = GNUI.getScreenCanvas()
 local Statusbar = require("scriptHost.statusbar")
-local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(82,42,97,55)
+local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(83,42,97,55)
 
 local button = Statusbar.newButtonSprite("Macros",icon)
 
@@ -16,7 +16,7 @@ window.CLOSE_REQUESTED:register(function ()window:setVisible(false)end)
 button.PRESSED:register(function ()window:setVisible(true) end)
 window:setTitle("Macros")
 
-window:setPos(16,16):setSize(150,200)
+window:setPos(16,16):setSize(200,200)
 
 local slider = Elements.newScrollbarButton()
 slider:setAnchor(1,0,1,1):setDimensions(-8,0,0,0)
