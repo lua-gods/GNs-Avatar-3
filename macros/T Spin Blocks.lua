@@ -23,7 +23,7 @@ end
 
 macro.tick = function ()
    if player:isSneaking() then
-      if player:getPermissionLevel() >= 2 and interacted then
+      if player:getPermissionLevel() >= 2 and interacted and player:getHeldItem().id == "minecraft:golden_hoe" then
          interacted = false
          local block, hitPos, side = player:getTargetedBlock()
          if block.properties.facing then
@@ -39,8 +39,11 @@ macro.tick = function ()
             end
             property = "["..property:sub(1,-2).."]"
             host:swingArm()
-            host:sendChatCommand(("/setblock %i %i %i %s"):format(p.x,p.y,p.z,block.id..property))
-            host:sendChatCommand(("/playsound minecraft:block.wooden_trapdoor.open master @a  %i %i %i"):format(p.x,p.y,p.z))
+            local ok = pcall(world.newBlock,block.id..property)
+            if ok and block.properties.facing ~= dir2side[tostring(new)] then
+               host:sendChatCommand(("/setblock %i %i %i %s"):format(p.x,p.y,p.z,block.id..property))
+               host:sendChatCommand(("/playsound minecraft:block.wooden_trapdoor.open master @a  %i %i %i"):format(p.x,p.y,p.z))
+            end
          end
       end
    end
