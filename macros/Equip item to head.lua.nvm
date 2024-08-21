@@ -1,0 +1,9 @@
+
+macro.mouse_press = function (button, state, modifiers)
+   local held = player:getHeldItem()
+   if button == 1 and state == 1 and player:isLoaded() and player:isSneaking() and player:getTargetedBlock(false,5).id == "minecraft:air" then
+      
+      host:swingArm()
+      return true
+   end
+end

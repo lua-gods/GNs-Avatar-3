@@ -338,7 +338,11 @@ importButton.PRESSED:register(function ()
    local item = player:getHeldItem()
    if item and item.id:find("banner$") then
       data[1].clr = ibanners[item.id] - 1
-      local p = item:getTag().BlockEntityTag.Patterns
+      local p = item:getTag()
+      if not p.BlockEntityTag or p.BlockEntityTag.Patterns then
+         return
+      end
+      p = p.BlockEntityTag.Patterns
       outliner:purgeChildrenRange(2,#outliner.Children-1)
       for i = 1, #p, 1 do
          local layer = newLayer()

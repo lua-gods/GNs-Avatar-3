@@ -18,7 +18,8 @@ button.PRESSED:register(function ()
       if ok then
          local data = base64.encode("jukebox;"..(result))
          compare(#result,#data)
-         local item = 'minecraft:player_head{SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"'..data..'"}]}}}'
+         local name = ("/"..path):match("([^/]+)$"):sub(1,-5)
+         local item = ([=[minecraft:player_head{display:{Name:'{"text":"%s","italic":false}'},SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"%s"}]}}}]=]):format(name,data)
          if #item < 65536 then
             give(item)
             print("Generated ("..#item.." < 65536)")

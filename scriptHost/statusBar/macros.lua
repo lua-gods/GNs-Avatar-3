@@ -1,4 +1,4 @@
----@diagnostic disable: lowercase-global
+---@diagnostic disable: lowercase-global, missing-fields
 local GNUI = require("GNUI.main")
 -- GNUI Modules
 local Elements = require("GNUI.modules.elements")
@@ -39,7 +39,15 @@ events.WORLD_RENDER:register(function ()
    lastSystemTime = systemTime
 end)
 
----@type table<string,{tick:fun(),render:fun(delta_frame:number),run:fun(),stop:fun()}>
+---@class Macro
+---@field tick fun()
+---@field render fun(delta_frame:number)
+---@field run fun()
+---@field stop fun()
+---@field key_press fun(key?: Minecraft.keyID, state?: Event.Press.state, modifiers?: Event.Press.modifiers): (cancel: boolean?)
+---@field mouse_press fun(button?: Minecraft.mouseID, state?: Event.Press.state, modifiers?: Event.Press.modifiers): (cancel: boolean?)
+
+---@type table<string,Macro>
 local macros = {}
 local count = 0
 local function newMaro(name,m)
@@ -64,12 +72,17 @@ local function newMaro(name,m)
             m.run()
          end
          if m.tick then events.WORLD_TICK:register(function () if player:isLoaded() then m.tick() end end,"macro."..name)end
+         if m.key_press then events.KEY_PRESS:register(function (key,state,modifiers) return m.key_press(key,state,modifiers) end,"macro."..name)end
+         if m.mouse_press then events.mouse_press:register(function (bt, state, modifiers) return m.mouse_press(bt, state, modifiers) end)end
          if m.render then events.WORLD_RENDER:register(function ()m.render(deltaFrame)end,"macro."..name)end
          toggle:setText({text="True",color="dark_green"})
          started = true
       else
          events.WORLD_TICK:remove("macro."..name)
+         events.KEY_PRESS:remove("macro."..name)
+         events.MOUSE_PRESS:remove("macro."..name)
          events.WORLD_RENDER:remove("macro."..name)
+         
 
          if m.stop and started then
             m.stop()
@@ -91,7 +104,7 @@ local function newMaro(name,m)
    slider:setRange(0,count)
 end
 
----@type {tick:fun(),render:fun(delta_frame:number),run:fun(),stop:fun()}
+---@type Macro
 macro = {}
 
 for _, path in pairs(listFiles("macros",false)) do

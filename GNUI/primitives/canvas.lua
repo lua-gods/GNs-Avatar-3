@@ -247,7 +247,7 @@ events.KEY_PRESS:register(function (key, state, modifiers)
       for _, value in pairs(canvases) do
          if value.reciveInputs and value.Visible and value.canCaptureCursor then
             value:parseInputEvent(minecraft_keybind, state,_shift,_ctrl,_alt,char)
-            if value.captureInputs then return true end
+            --if value.captureInputs then return true end
          end
       end
    end
