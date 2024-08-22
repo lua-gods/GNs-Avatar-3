@@ -5,7 +5,7 @@ local screen = GNUI:getScreenCanvas()
 
 local unlocked = false
 
-screen:setVisible(false)
+screen:setVisible(true)
 
 local function toggle(state)
    host:setUnlockCursor(state)

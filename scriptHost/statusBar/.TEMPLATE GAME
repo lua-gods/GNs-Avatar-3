@@ -1,0 +1,42 @@
+local GNUI = require("GNUI.main")
+-- GNUI Modules
+local Elements = require("GNUI.modules.elements")
+local Window = require("GNUI.modules.windows")
+local Themes = require("GNUI.modules.themes")
+-- Screen Stuffs
+local screen = GNUI.getScreenCanvas()
+local Statusbar = require("scriptHost.statusbar")
+local icon = GNUI.newSprite():setTexture(textures["textures.icons"]):setUV(70,42,83,55)
+
+local button = Statusbar.newButtonSprite("Pong",icon)
+
+local WINDOW_SIZE = vec(480,360) * 0.5
+
+local function newGame()
+   local w = Window.newWindow(true)
+   local ss = client:getScaledWindowSize() * 0.5
+   w:setTitle("Pong")
+   w:setPos(ss - WINDOW_SIZE * 0.5)
+   w:setSize(WINDOW_SIZE)
+   screen:addChild(w)
+   
+   local lastSystemTime = client:getSystemTime()
+   events.WORLD_RENDER:register(function ()
+      local systemTime = client:getSystemTime()
+      local delta = (systemTime - lastSystemTime) / 1000
+      
+      
+   end,"pong"..w.id)
+   
+   w.CLOSE_REQUESTED:register(function ()
+      w:close()
+      events.WORLD_RENDER:remove("pong"..w.id)
+   end)
+end
+
+newGame()
+
+
+button.PRESSED:register(function ()
+   newGame()
+end)

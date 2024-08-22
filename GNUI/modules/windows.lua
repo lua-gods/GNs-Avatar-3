@@ -7,7 +7,7 @@ local fileDialog = require("GNUI.modules.windows.fileDialog")
 api.Window = window
 ---@param manualClosing boolean?
 ---@return GNUI.Window
-function api.newWindow(manualClosing) return window.new(manualClosing) end
+function api.newWindow(manualClosing) return window.new(manualClosing,false) end
 
 api.fileDialog = fileDialog
 ---@param screen GNUI.Container|GNUI.Canvas

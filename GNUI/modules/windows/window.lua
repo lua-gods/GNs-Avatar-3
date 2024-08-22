@@ -24,7 +24,7 @@ local eventLib = require("libraries.eventLib")
 
 local BDS = 3 -- Border Drag Size
 local screen = gnui.getScreenCanvas()
-
+local WINDOW_TITLEBAR_SIZE = 20
 
 local active_window
 local ACTIVE_WINDOW_CHANGED = eventLib.new()
@@ -35,8 +35,8 @@ local ACTIVE_WINDOW_CHANGED = eventLib.new()
 local function applyDrag(container,window,fun)
    container:setZmultiplier(-0.1)
    container.INPUT:register(function (event)
-      if event.key == "key.mouse.left"then
-         if event.isPressed then
+      if event.key == "key.mouse.left" then
+         if event.isPressed and not window.LockSize then
             window.Canvas.MOUSE_POSITION_CHANGED:register(function (mouse_event)
                fun(mouse_event)
             end,"window_drag"..window.id)
@@ -58,6 +58,7 @@ local windows = {}
 ---@field MaximizeButton GNUI.Button
 ---@field Icon Sprite
 ---@field isActive boolean
+---@field LockSize boolean
 ---@field isMaximized boolean
 ---@field isGrabbed boolean
 ---@field CLOSE_REQUESTED eventLib
@@ -71,8 +72,9 @@ Window.ACTIVE_WINDOW_CHANGED = ACTIVE_WINDOW_CHANGED
 
 
 ---@param manualClosing boolean?
+---@param lockSize boolean?
 ---@return GNUI.Window
-function Window.new(manualClosing)
+function Window.new(manualClosing,lockSize)
    ---@type GNUI.Window
    local new = gnui.newContainer():setDimensions(0,0,64,64)
    new.type = "window"
@@ -80,6 +82,7 @@ function Window.new(manualClosing)
    new.isActive = false
    new.CLOSE_REQUESTED = eventLib.new()
    new.FOCUS_CHANGED = eventLib.new()
+   new.LockSize = lockSize or true
    
    local titleBar = gnui.newContainer()
    new.Titlebar = titleBar

@@ -799,6 +799,7 @@ end
 
 function Container:forceUpdate()
    self:_update()
+   self:_propagateUpdateToChildren()
 end
 
 function Container:_propagateUpdateToChildren(force_all)
