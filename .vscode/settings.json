@@ -1,18 +1,18 @@
 {
   "json.schemas": [
-    {
-      "fileMatch": ["**/avatar.json"],
-      "url": ".vscode/avatar.schema.json"
-    }
+   {
+    "fileMatch": ["**/avatar.json"],
+    "url": ".vscode/avatar.schema.json"
+   }
   ],
   "[lua]": {
-    "editor.suggest.showDeprecated": false
+   "editor.suggest.showDeprecated": false
   },
   "material-icon-theme.folders.associations":{
-    "gnui":"Layout",
-    "scriptHost":"Public",
-    "scripts":"Public",
-    "textures":"images",
+   "gnui":"Layout",
+   "scriptHost":"Public",
+   "scripts":"Public",
+   "textures":"images",
   },
   "material-icon-theme.files.associations": {
   "H.*": "H",

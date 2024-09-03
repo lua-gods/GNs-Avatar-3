@@ -22,14 +22,14 @@ screen:addChild(storageWindow)
 local i = 0
 local S = (SLOT_SIZE+SLOT_MARGIN)
 for x = 1, 9, 1 do
-   for y = 1, 6, 1 do
-      i = i + 1
-      local slot = GNUI.newContainer()
-      slot:setSize(SLOT_SIZE,SLOT_SIZE)
-      slot:setPos((x-1)*S,(y-1)*S)
-      slot:setClipOnParent(true)
-      Theme.applyTheme(slot,"solid")
-      storageWindow:addElement(slot)
-      slots[i] = slot
-   end
+  for y = 1, 6, 1 do
+    i = i + 1
+    local slot = GNUI.newContainer()
+    slot:setSize(SLOT_SIZE,SLOT_SIZE)
+    slot:setPos((x-1)*S,(y-1)*S)
+    slot:setClipOnParent(true)
+    Theme.applyTheme(slot,"solid")
+    storageWindow:addElement(slot)
+    slots[i] = slot
+  end
 end

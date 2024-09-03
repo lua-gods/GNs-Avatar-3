@@ -1,6 +1,6 @@
 --[[
 	-------------------------------
-	---       INFORMATION       ---
+	---     INFORMATION     ---
 	-------------------------------
 	
 	Written by Haoqian He
@@ -16,7 +16,7 @@
 	
 	
 	-------------------------------
-	---      DOCUMENTATION      ---
+	---    DOCUMENTATION    ---
 	-------------------------------
 	
 	Compression Methods:
@@ -96,7 +96,7 @@
 		
 		
 	-------------------------------
-	---         CREDITS         ---
+	---      CREDITS      ---
 	-------------------------------
 	
 	- LibDeflate Library: Haoqian He
@@ -135,11 +135,11 @@
 	including commercial applications, and to alter it and redistribute it
 	freely, subject to the following restrictions:
 	1. The origin of this software must not be misrepresented; you must not
-	   claim that you wrote the original software. If you use this software
-	   in a product, an acknowledgment in the product documentation would be
-	   appreciated but is not required.
+	  claim that you wrote the original software. If you use this software
+	  in a product, an acknowledgment in the product documentation would be
+	  appreciated but is not required.
 	2. Altered source versions must be plainly marked as such, and must not be
-	   misrepresented as being the original software.
+	  misrepresented as being the original software.
 	3. This notice may not be removed or altered from any source distribution.
 	License History:
 		1. GNU General Public License Version 3 in v1.0.0 and earlier versions.
@@ -327,8 +327,8 @@ local type = type
 
 -- Converts i to 2^i, (0<=i<=32)
 -- This is used to implement bit left shift and bit right shift.
--- "x >> y" in C:   "(x-x%_pow2[y])/_pow2[y]" in Lua
--- "x << y" in C:   "x*_pow2[y]" in Lua
+-- "x >> y" in C:  "(x-x%_pow2[y])/_pow2[y]" in Lua
+-- "x << y" in C:  "x*_pow2[y]" in Lua
 local _pow2 = {}
 
 -- Converts any byte to a character, (0<=byte<=255)

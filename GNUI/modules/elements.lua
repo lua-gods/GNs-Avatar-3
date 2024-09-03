@@ -40,7 +40,7 @@ local texture_button = require("GNUI.modules.elements.textureButton")
 ---@param hovered Sprite?
 ---@return GNUI.TextureButton
 api.newTextureButton = function(normal,pressed,hovered)
-   return texture_button.new(normal,pressed,hovered)
+  return texture_button.new(normal,pressed,hovered)
 end
 api.TextureButton = texture_button
 
@@ -52,7 +52,7 @@ local single_texture_button = require("GNUI.modules.elements.singleSpriteButton"
 ---@param sprite Sprite?
 ---@return GNUI.SingleSpriteButton
 api.newSingleSpriteButton = function(sprite)
-   return single_texture_button.new(sprite)
+  return single_texture_button.new(sprite)
 end
 api.SingleTextureButton = single_texture_button
 

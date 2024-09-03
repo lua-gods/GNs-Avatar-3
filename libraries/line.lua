@@ -1,4 +1,4 @@
---[[______   __
+--[[______  __
   / ____/ | / / By: GNamimates
  / / __/  |/ / GNlineLib v2.0.1
 / /_/ / /|  / Allows you to draw lines in the world at ease.
@@ -17,12 +17,12 @@ local cpos = client:getCameraPos()
 ---@param z number
 ---@return Vector3
 local function figureOutVec3(x,y,z)
-   local typa = type(x)
-   if typa == "Vector3" then
-      return x:copy()
-   elseif typa == "number" then
-      return vectors.vec3(x,y,z)
-   end
+  local typa = type(x)
+  if typa == "Vector3" then
+    return x:copy()
+  elseif typa == "number" then
+    return vectors.vec3(x,y,z)
+  end
 end
 
 ---@class line # A straight path from point A to B
@@ -47,20 +47,20 @@ line.__type = "gn.line"
 ---@param preset line?
 ---@return line
 function line.new(preset)
-   preset = preset or {}
-   local next_free = #lines+1 
-   local new = setmetatable({},line)
-   new.visible = true
-   new.a = preset.a or vectors.vec3()
-   new.b = preset.b or vectors.vec3()
-   new.width = preset.width or 0.125
-   new.width = preset.width or 0.125
-   new.color = preset.color or vectors.vec3(1,1,1)
-   new.depth = preset.depth or 1
-   new.model = default_model:newSprite("line"..next_free):setTexture(default_texture,1,1):setRenderType("EMISSIVE_SOLID"):setScale(0,0,0)
-   new.id = next_free
-   lines[next_free] = new
-   return new
+  preset = preset or {}
+  local next_free = #lines+1 
+  local new = setmetatable({},line)
+  new.visible = true
+  new.a = preset.a or vectors.vec3()
+  new.b = preset.b or vectors.vec3()
+  new.width = preset.width or 0.125
+  new.width = preset.width or 0.125
+  new.color = preset.color or vectors.vec3(1,1,1)
+  new.depth = preset.depth or 1
+  new.model = default_model:newSprite("line"..next_free):setTexture(default_texture,1,1):setRenderType("EMISSIVE_SOLID"):setScale(0,0,0)
+  new.id = next_free
+  lines[next_free] = new
+  return new
 end
 
 ---Sets both points of the line.
@@ -73,20 +73,20 @@ end
 ---@param z2 number
 ---@return line
 function line:setAB(x1,y1,z1,x2,y2,z2)
-   if type(x1) == "Vector3" and type(y1) == "Vector3" then
-      self.a = x1:copy()
-      self.b = y1:copy()
-      self.a = x1:copy()
-      self.b = y1:copy()
-   else
-      self.a = vectors.vec3(x1,y1,z1)
-      self.b = vectors.vec3(x2,y2,z2)
-      self.a = vectors.vec3(x1,y1,z1)
-      self.b = vectors.vec3(x2,y2,z2)
-   end
-   self:update()
-   self:update()
-   return self
+  if type(x1) == "Vector3" and type(y1) == "Vector3" then
+    self.a = x1:copy()
+    self.b = y1:copy()
+    self.a = x1:copy()
+    self.b = y1:copy()
+  else
+    self.a = vectors.vec3(x1,y1,z1)
+    self.b = vectors.vec3(x2,y2,z2)
+    self.a = vectors.vec3(x1,y1,z1)
+    self.b = vectors.vec3(x2,y2,z2)
+  end
+  self:update()
+  self:update()
+  return self
 end
 
 ---Sets the first point of the line.
@@ -96,9 +96,9 @@ end
 ---@param z number
 ---@return line
 function line:setA(x,y,z)
-   self.a = figureOutVec3(x,y,z)
-   self:update()
-   return self
+  self.a = figureOutVec3(x,y,z)
+  self:update()
+  return self
 end
 
 ---Sets the second point of the line.
@@ -108,9 +108,9 @@ end
 ---@param z number
 ---@return line
 function line:setB(x,y,z)
-   self.b = figureOutVec3(x,y,z)
-   self:update()
-   return self
+  self.b = figureOutVec3(x,y,z)
+  self:update()
+  return self
 end
 
 ---Sets the width of the line.  
@@ -118,9 +118,9 @@ end
 ---@param w number
 ---@return line
 function line:setWidth(w)
-   self.width = w
-   self:update()
-   return self
+  self.width = w
+  self:update()
+  return self
 end
 
 ---Sets the render type of the line.  
@@ -128,8 +128,8 @@ end
 ---@param render_type ModelPart.renderType
 ---@return line
 function line:setRenderType(render_type)
-   self.model:setRenderType(render_type)
-   return self
+  self.model:setRenderType(render_type)
+  return self
 end
 
 ---Sets the color of the line.
@@ -142,20 +142,20 @@ end
 ---@param a number
 ---@return line
 function line:setColor(r,g,b,a)
-   local rt,yt,bt = type(r),type(g),type(b)
-   if rt == "number" and yt == "number" and bt == "number" then
-      self.color = vectors.vec4(r,g,b,a or 1)
-   elseif rt == "Vector3" then
-      self.color = r:augmented()
-   elseif rt == "Vector4" then
-      self.color = r
-   elseif rt == "string" and rt:find("#%x%x%x%x%x%x") then
-      self.color = vectors.hexToRGB(r):augmented(1)
-   else
-      error("Invalid Color parameter, expected Vector3, (number, number, number) or Hexcode, instead got ("..rt..", "..yt..", "..bt..")")
-   end
-   self.model:setColor(self.color)
-   return self
+  local rt,yt,bt = type(r),type(g),type(b)
+  if rt == "number" and yt == "number" and bt == "number" then
+    self.color = vectors.vec4(r,g,b,a or 1)
+  elseif rt == "Vector3" then
+    self.color = r:augmented()
+  elseif rt == "Vector4" then
+    self.color = r
+  elseif rt == "string" and rt:find("#%x%x%x%x%x%x") then
+    self.color = vectors.hexToRGB(r):augmented(1)
+  else
+    error("Invalid Color parameter, expected Vector3, (number, number, number) or Hexcode, instead got ("..rt..", "..yt..", "..bt..")")
+  end
+  self.model:setColor(self.color)
+  return self
 end
 
 ---Sets the depth of the line.  
@@ -163,83 +163,83 @@ end
 ---@param z number
 ---@return line
 function line:setDepth(z)
-   self.depth = 1 + z
-   return self
+  self.depth = 1 + z
+  return self
 end
 
 ---Frees the line from memory.
 function line:free()
-   lines[self.id] = nil
-   self.model:remove()
-   self._queue_update = false
-   self = nil
+  lines[self.id] = nil
+  self.model:remove()
+  self._queue_update = false
+  self = nil
 end
 
 ---@param visible boolean
 ---@return line
 function line:setVisible(visible)
-   self.visible = visible
-   self.model:setVisible(visible)
-   if visible then
-      self:immediateUpdate()
-   end
-   return self
+  self.visible = visible
+  self.model:setVisible(visible)
+  if visible then
+    self:immediateUpdate()
+  end
+  return self
 end
 
 ---Queues itself to be updated in the next frame.
 ---@return line
 function line:update()
-   if not self._queue_update and self.visible then
-      queue_update[#queue_update+1] = self
-      self._queue_update = true
-   end
-   return self
+  if not self._queue_update and self.visible then
+    queue_update[#queue_update+1] = self
+    self._queue_update = true
+  end
+  return self
 end
 
 ---Immediately updates the line without queuing it.
 ---@return line
 function line:immediateUpdate()
-   local a,b = self.a,self.b
-   local offset = a - cpos
-   local dir = (b - a)
-   self.dir = dir
-   local l = dir:length()
-   self.length = l
-   local w = self.width
-   local d = dir:normalized()
-   local p = (offset - d * offset:copy():dot(d)):normalize()
-   local c = p:copy():cross(d) * w
-   local mat = matrices.mat4(
-      (p:cross(d) * w):augmented(0),
-      (-d * (l + w * 0.5)):augmented(0),
-      p:augmented(0),
-      (a + c * 0.5):augmented(1)
-   )
-   self.model:setMatrix(mat * self.depth)
-   return self
+  local a,b = self.a,self.b
+  local offset = a - cpos
+  local dir = (b - a)
+  self.dir = dir
+  local l = dir:length()
+  self.length = l
+  local w = self.width
+  local d = dir:normalized()
+  local p = (offset - d * offset:copy():dot(d)):normalize()
+  local c = p:copy():cross(d) * w
+  local mat = matrices.mat4(
+    (p:cross(d) * w):augmented(0),
+    (-d * (l + w * 0.5)):augmented(0),
+    p:augmented(0),
+    (a + c * 0.5):augmented(1)
+  )
+  self.model:setMatrix(mat * self.depth)
+  return self
 end
 
 events.WORLD_RENDER:register(function ()
-   local c = client:getCameraPos()
-   if c ~= cpos then
-      cpos = c
-      for _, l in pairs(lines) do
-         l:update()
-      end
-   end
-   for i = 1, #queue_update, 1 do
-      local l = queue_update[i]
-      if l._queue_update then
-         l:immediateUpdate()
-         l._queue_update = false
-      end
-   end
-   queue_update = {}
+  local c = client:getCameraPos()
+  if c ~= cpos then
+    cpos = c
+    for _, l in pairs(lines) do
+      l:update()
+    end
+  end
+  for i = 1, #queue_update, 1 do
+    local l = queue_update[i]
+    if l._queue_update then
+      l:immediateUpdate()
+      l._queue_update = false
+    end
+  end
+  queue_update = {}
 end)
 
 return {
-   new = line.new,
-   default_model = default_model,
-   default_texture = default_texture,
-   _VERSION = "2.0.1"
+  new = line.new,
+  default_model = default_model,
+  default_texture = default_texture,
+  _VERSION = "2.0.1"
 }

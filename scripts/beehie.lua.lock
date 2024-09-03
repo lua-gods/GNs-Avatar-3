@@ -10,58 +10,58 @@ local i = 0
 local waiting = false
 local complete = false
 if true then
-   events.WORLD_TICK:register(function ()
-      local data = {}
-      if waiting then return end
-      local pos = c
-      local block = world.getBlockState(pos)
-      data[#data+1] = block.id
-      print(c-a,block.id)
-      if block.id:find("command_block") then
-         host:sendChatCommand("/data get block "..pos.x.." "..pos.y.." "..pos.z)
-         waiting = true
+  events.WORLD_TICK:register(function ()
+    local data = {}
+    if waiting then return end
+    local pos = c
+    local block = world.getBlockState(pos)
+    data[#data+1] = block.id
+    print(c-a,block.id)
+    if block.id:find("command_block") then
+      host:sendChatCommand("/data get block "..pos.x.." "..pos.y.." "..pos.z)
+      waiting = true
+    end
+    
+    if complete and not waiting then
+      events.WORLD_TICK:remove("complet")
+      config:setName("cachedeletemelmao")
+      config:save("structure",data)
+      print("finished")
+    end
+    
+    if not complete then
+      c.x = c.x + 1
+      if c.x > b.x then
+        c.x = a.x
+        c.y = c.y + 1
+        if c.y > b.y then
+          c.y = a.y
+          c.z = c.z + 1
+          if c.z > b.z then
+            complete = true
+          end
+        end
       end
-      
-      if complete and not waiting then
-         events.WORLD_TICK:remove("complet")
-         config:setName("cachedeletemelmao")
-         config:save("structure",data)
-         print("finished")
-      end
-      
-      if not complete then
-         c.x = c.x + 1
-         if c.x > b.x then
-            c.x = a.x
-            c.y = c.y + 1
-            if c.y > b.y then
-               c.y = a.y
-               c.z = c.z + 1
-               if c.z > b.z then
-                  complete = true
-               end
-            end
-         end
-      end
-   end,"complet")
+    end
+  end,"complet")
 else
-   config:setName("cachedeletemelmao")
-   local data = config:load("structure")
-   local paste_location = vec(8180063, 69, 8183342)
-   for x = paste_location.x, paste_location.x + size.x, 1 do
-      for y = paste_location.y, paste_location.y + size.y, 1 do
-         for z = paste_location.z, paste_location.z + size.z, 1 do
-            i = i + 1
-            local pos = vec(x,y,z)
-            host:sendChatCommand("setblock "..pos.x.." "..pos.y.." "..pos.z.." "..data[i])
-         end
+  config:setName("cachedeletemelmao")
+  local data = config:load("structure")
+  local paste_location = vec(8180063, 69, 8183342)
+  for x = paste_location.x, paste_location.x + size.x, 1 do
+    for y = paste_location.y, paste_location.y + size.y, 1 do
+      for z = paste_location.z, paste_location.z + size.z, 1 do
+        i = i + 1
+        local pos = vec(x,y,z)
+        host:sendChatCommand("setblock "..pos.x.." "..pos.y.." "..pos.z.." "..data[i])
       end
-   end
+    end
+  end
 end
 
 events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
-   json = parseJson(json)
-   if json.translate and json.translate == "commands.data.block.query" or message == "The target block is not a block entity" then
-      waiting = false
-   end
+  json = parseJson(json)
+  if json.translate and json.translate == "commands.data.block.query" or message == "The target block is not a block entity" then
+    waiting = false
+  end
 end)--/data get block 

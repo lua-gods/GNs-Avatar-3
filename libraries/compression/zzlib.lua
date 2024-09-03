@@ -20,26 +20,26 @@ local function arraytostr(array)
   local pos = 1
   local imax = 1
   while size > 0 do
-    local bsize = size>=2048 and 2048 or size
-    local s = string.char(un(array,pos,pos+bsize-1))
-    pos = pos + bsize
-    size = size - bsize
-    local i = 1
-    while tmp[i] do
-      s = tmp[i]..s
-      tmp[i] = nil
-      i = i + 1
-    end
-    if i > imax then
-      imax = i
-    end
-    tmp[i] = s
+   local bsize = size>=2048 and 2048 or size
+   local s = string.char(un(array,pos,pos+bsize-1))
+   pos = pos + bsize
+   size = size - bsize
+   local i = 1
+   while tmp[i] do
+    s = tmp[i]..s
+    tmp[i] = nil
+    i = i + 1
+   end
+   if i > imax then
+    imax = i
+   end
+   tmp[i] = s
   end
   local str = ""
   for i=1,imax do
-    if tmp[i] then
-      str = tmp[i]..str
-    end
+   if tmp[i] then
+    str = tmp[i]..str
+   end
   end
   return str
 end
@@ -47,34 +47,34 @@ end
 local function inflate_gzip(bs)
   local id1,id2,cm,flg = bs.buf:byte(1,4)
   if id1 ~= 31 or id2 ~= 139 then
-    error("invalid gzip header")
+   error("invalid gzip header")
   end
   if cm ~= 8 then
-    error("only deflate format is supported")
+   error("only deflate format is supported")
   end
   bs.pos=11
   if infl.band(flg,4) ~= 0 then
-    local xl1,xl2 = bs.buf.byte(bs.pos,bs.pos+1)
-    local xlen = xl2*256+xl1
-    bs.pos = bs.pos+xlen+2
+   local xl1,xl2 = bs.buf.byte(bs.pos,bs.pos+1)
+   local xlen = xl2*256+xl1
+   bs.pos = bs.pos+xlen+2
   end
   if infl.band(flg,8) ~= 0 then
-    local pos = bs.buf:find("\0",bs.pos)
-    bs.pos = pos+1
+   local pos = bs.buf:find("\0",bs.pos)
+   bs.pos = pos+1
   end
   if infl.band(flg,16) ~= 0 then
-    local pos = bs.buf:find("\0",bs.pos)
-    bs.pos = pos+1
+   local pos = bs.buf:find("\0",bs.pos)
+   bs.pos = pos+1
   end
   if infl.band(flg,2) ~= 0 then
-    -- TODO: check header CRC16
-    bs.pos = bs.pos+2
+   -- TODO: check header CRC16
+   bs.pos = bs.pos+2
   end
   local result = arraytostr(infl.main(bs))
   local crc = bs:getb(8)+256*(bs:getb(8)+256*(bs:getb(8)+256*bs:getb(8)))
   bs:close()
   if crc ~= infl.crc32(result) then
-    error("checksum verification failed")
+   error("checksum verification failed")
   end
   return result
 end
@@ -84,9 +84,9 @@ local function adler32(s)
   local s1 = 1
   local s2 = 0
   for i=1,#s do
-    local c = s:byte(i)
-    s1 = (s1+c)%65521
-    s2 = (s2+s1)%65521
+   local c = s:byte(i)
+   s1 = (s1+c)%65521
+   s2 = (s2+s1)%65521
   end
   return s2*65536+s1
 end
@@ -95,23 +95,23 @@ local function inflate_zlib(bs)
   local cmf = bs.buf:byte(1)
   local flg = bs.buf:byte(2)
   if (cmf*256+flg)%31 ~= 0 then
-    error("zlib header check bits are incorrect")
+   error("zlib header check bits are incorrect")
   end
   if infl.band(cmf,15) ~= 8 then
-    error("only deflate format is supported")
+   error("only deflate format is supported")
   end
   if infl.rshift(cmf,4) ~= 7 then
-    error("unsupported window size")
+   error("unsupported window size")
   end
   if infl.band(flg,32) ~= 0 then
-    error("preset dictionary not implemented")
+   error("preset dictionary not implemented")
   end
   bs.pos=3
   local result = arraytostr(infl.main(bs))
   local adler = ((bs:getb(8)*256+bs:getb(8))*256+bs:getb(8))*256+bs:getb(8)
   bs:close()
   if adler ~= adler32(result) then
-    error("checksum verification failed")
+   error("checksum verification failed")
   end
   return result
 end
@@ -121,7 +121,7 @@ local function inflate_raw(buf,offset,crc)
   bs.pos = offset
   local result = arraytostr(infl.main(bs))
   if crc and crc ~= infl.crc32(result) then
-    error("checksum verification failed")
+   error("checksum verification failed")
   end
   return result
 end
@@ -130,7 +130,7 @@ end
 function zzlib.gunzipf(filename)
   local file,err = io.open(filename,"rb")
   if not file then
-    return nil,err
+   return nil,err
   end
   return inflate_gzip(infl.bitstream_init(file))
 end]]
@@ -155,8 +155,8 @@ end
 
 local function nextfile(buf,p)
   if int4le(buf,p) ~= 0x02014b50 then
-    -- end of central directory list
-    return
+   -- end of central directory list
+   return
   end
   -- local flag = int2le(buf,p+8)
   local packed = int2le(buf,p+10)~=0
@@ -166,7 +166,7 @@ local function nextfile(buf,p)
   local offset = int4le(buf,p+42)+1
   p = p+46+namelen+int2le(buf,p+30)+int2le(buf,p+32)
   if int4le(buf,offset) ~= 0x04034b50 then
-    error("invalid local header signature")
+   error("invalid local header signature")
   end
   local size = int4le(buf,offset+18)
   local extlen = int2le(buf,offset+28)
@@ -177,9 +177,9 @@ end
 function zzlib.files(buf)
   local p = #buf-21
   if int4le(buf,p) ~= 0x06054b50 then
-    -- not sure there is a reliable way to locate the end of central directory record
-    -- if it has a variable sized comment field
-    error(".ZIP file comments not supported")
+   -- not sure there is a reliable way to locate the end of central directory record
+   -- if it has a variable sized comment field
+   error(".ZIP file comments not supported")
   end
   local cdoffset = int4le(buf,p+16)+1
   return nextfile,buf,cdoffset
@@ -187,23 +187,23 @@ end
 
 function zzlib.unzip(buf,arg1,arg2)
   if type(arg1) == "number" then
-    -- mode 1: unpack data from specified position in zip file
-    return inflate_raw(buf,arg1,arg2)
+   -- mode 1: unpack data from specified position in zip file
+   return inflate_raw(buf,arg1,arg2)
   end
   -- mode 2: search and unpack file from zip file
   local filename = arg1
   for _,name,offset,size,packed,crc in zzlib.files(buf) do
-    if name == filename then
-      local result
-      if not packed then
-        -- no compression
-        result = buf:sub(offset,offset+size-1)
-      else
-        -- DEFLATE compression
-        result = inflate_raw(buf,offset,crc)
-      end
-      return result
+   if name == filename then
+    local result
+    if not packed then
+      -- no compression
+      result = buf:sub(offset,offset+size-1)
+    else
+      -- DEFLATE compression
+      result = inflate_raw(buf,offset,crc)
     end
+    return result
+   end
   end
   error("file '"..filename.."' not found in ZIP archive")
 end

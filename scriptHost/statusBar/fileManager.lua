@@ -9,5 +9,5 @@ local button = Statusbar.newButtonSprite("File Explorer",icon)
 
 
 button.PRESSED:register(function ()
-   GNUIWindow.newFileDialog(screen)
+  GNUIWindow.newFileDialog(screen)
 end)

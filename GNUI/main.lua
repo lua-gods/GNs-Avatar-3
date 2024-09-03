@@ -1,4 +1,4 @@
---[[______   __
+--[[______  __
   / ____/ | / / By: GNamimates
  / / __/  |/ / GNUI v2.0.0
 / /_/ / /|  / A high level UI library for figura.
@@ -48,21 +48,21 @@ local screenCanvas
 ---@return GNUI.Canvas
 function api.getScreenCanvas()
   if not screenCanvas then
-    screenCanvas = api.newCanvas(true)
-    models:addChild(screenCanvas.ModelPart)
-    screenCanvas.ModelPart:setParentType("HUD")
+   screenCanvas = api.newCanvas(true)
+   models:addChild(screenCanvas.ModelPart)
+   screenCanvas.ModelPart:setParentType("HUD")
   
-    local lastWindowSize = vec(0,0)
-    events.WORLD_RENDER:register(function (delta)
-      local windowSize = client:getScaledWindowSize()
-      
-      if windowSize.x ~= lastWindowSize.x
-      or windowSize.y ~= lastWindowSize.y then
-        lastWindowSize = windowSize
-        screenCanvas:setDimensions(0,0,windowSize.x,windowSize.y)
-      end
-    end)
-    screenCanvas:setDimensions(0,0,client:getScaledWindowSize().x,client:getScaledWindowSize().y)
+   local lastWindowSize = vec(0,0)
+   events.WORLD_RENDER:register(function (delta)
+    local windowSize = client:getScaledWindowSize()
+    
+    if windowSize.x ~= lastWindowSize.x
+    or windowSize.y ~= lastWindowSize.y then
+      lastWindowSize = windowSize
+      screenCanvas:setDimensions(0,0,windowSize.x,windowSize.y)
+    end
+   end)
+   screenCanvas:setDimensions(0,0,client:getScaledWindowSize().x,client:getScaledWindowSize().y)
   end
   return screenCanvas
 end

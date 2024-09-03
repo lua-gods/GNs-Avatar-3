@@ -11,21 +11,21 @@ local file = require("libraries.file")
 local base64 = require("libraries.base64")
 
 button.PRESSED:register(function ()
-   local window = GNUIWindow.newFileDialog(screen,"OPEN")
-   window.FILE_SELECTED:register(function (path)
-      local f = file.new(path)
-      local ok,result = pcall(f.readByteArray,f,path)
-      if ok then
-         local data = base64.encode("jukebox;"..(result))
-         compare(#result,#data)
-         local name = ("/"..path):match("([^/]+)$"):sub(1,-5)
-         local item = ([=[minecraft:player_head{display:{Name:'{"text":"%s","italic":false}'},SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"%s"}]}}}]=]):format(name,data)
-         if #item < 65536 then
-            give(item)
-            print("Generated ("..#item.." < 65536)")
-         else
-            print("Exceeded byte limit ("..#item.." > 65536)")
-         end
+  local window = GNUIWindow.newFileDialog(screen,"OPEN")
+  window.FILE_SELECTED:register(function (path)
+    local f = file.new(path)
+    local ok,result = pcall(f.readByteArray,f,path)
+    if ok then
+      local data = base64.encode("jukebox;"..(result))
+      compare(#result,#data)
+      local name = ("/"..path):match("([^/]+)$"):sub(1,-5)
+      local item = ([=[minecraft:player_head{display:{Name:'{"text":"%s","italic":false}'},SkullOwner:{Id:[I;1481619325,1543653003,-1514517150,-829510686],Properties:{textures:[{Value:"%s"}]}}}]=]):format(name,data)
+      if #item < 65536 then
+        give(item)
+        print("Generated ("..#item.." < 65536)")
+      else
+        print("Exceeded byte limit ("..#item.." > 65536)")
       end
-   end)
+    end
+  end)
 end)

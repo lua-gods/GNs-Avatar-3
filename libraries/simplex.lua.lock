@@ -497,50 +497,50 @@ function simplex.GBlur1D(x,stdDev)
 end
 
 function simplex.FractalSum(func, iter, ...)
-    local ret = func(...)
-    for i=1,iter do
-        local power = 2^iter
-        local s = power/i
-        
-        local scaled = {}
-        for elem in ipairs({...}) do
-            table.insert(scaled, elem*s)
-        end
-        ret = ret + (i/power)*(func(unpack(scaled)))
-    end
-    return ret
+   local ret = func(...)
+   for i=1,iter do
+      local power = 2^iter
+      local s = power/i
+      
+      local scaled = {}
+      for elem in ipairs({...}) do
+        table.insert(scaled, elem*s)
+      end
+      ret = ret + (i/power)*(func(unpack(scaled)))
+   end
+   return ret
 end
 
 function simplex.FractalSumAbs(func, iter, ...)
-    local ret = math.abs(func(...))
-    for i=1,iter do
-        local power = 2^iter
-        local s = power/i
-        
-        local scaled = {}
-        for elem in ipairs({...}) do
-            table.insert(scaled, elem*s)
-        end
-        ret = ret + (i/power)*(math.abs(func(unpack(scaled))))
-    end
-    return ret
+   local ret = math.abs(func(...))
+   for i=1,iter do
+      local power = 2^iter
+      local s = power/i
+      
+      local scaled = {}
+      for elem in ipairs({...}) do
+        table.insert(scaled, elem*s)
+      end
+      ret = ret + (i/power)*(math.abs(func(unpack(scaled))))
+   end
+   return ret
 end
 
 function simplex.Turbulence(func, direction, iter, ...)
-    local ret = math.abs(func(...))
-    for i=1,iter do
-        local power = 2^iter
-        local s = power/i
-        
-        local scaled = {}
-        for elem in ipairs({...}) do
-            table.insert(scaled, elem*s)
-        end
-        ret = ret + (i/power)*(math.abs(func(unpack(scaled))))
-    end
-    local args = {...}
-    local dir_component = args[direction+1]
-    return math.sin(dir_component+ret)
+   local ret = math.abs(func(...))
+   for i=1,iter do
+      local power = 2^iter
+      local s = power/i
+      
+      local scaled = {}
+      for elem in ipairs({...}) do
+        table.insert(scaled, elem*s)
+      end
+      ret = ret + (i/power)*(math.abs(func(unpack(scaled))))
+   end
+   local args = {...}
+   local dir_component = args[direction+1]
+   return math.sin(dir_component+ret)
 end
 
 return simplex

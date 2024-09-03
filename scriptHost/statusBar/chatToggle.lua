@@ -14,13 +14,13 @@ local button = Statusbar.newButtonSprite("Toggle Chat",sprite_idle)
 local hide = false
 
 events.CHAT_RECEIVE_MESSAGE:register(function ()
-   if hide then
-      button:setSprite(sprite_alert)
-   end
+  if hide then
+    button:setSprite(sprite_alert)
+  end
 end)
 
 button.PRESSED:register(function ()
-   button:setSprite(sprite_idle)
-   hide = not hide
-   goofy:setDisableGUIElement("CHAT",hide)
+  button:setSprite(sprite_idle)
+  hide = not hide
+  goofy:setDisableGUIElement("CHAT",hide)
 end)
