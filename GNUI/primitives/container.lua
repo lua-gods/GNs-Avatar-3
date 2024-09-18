@@ -8,43 +8,57 @@ textures:newTexture("gnui_debug_outline",6,6)
 :fill(1,1,4,4,vec(1,1,1))
 :fill(2,2,2,2,vec(0,0,0,0))
 local element = require("GNUI.primitives.element")
-local sprite = require("GNUI.spriteLib")
+local sprite = require("GNUI.ninepatch")
+
+local nextID = 0
 
 ---@class GNUI.Container : GNUI.Element  # A container is a Rectangle that represents the building block of GNUI
----@field Dimensions Vector4       # Determins the offset of each side from the final output
----@field Z number            # Offsets the container forward(+) or backward(-) if Z fighting is occuring, also affects its children.
----@field ContainmentRect Vector4     # The final output dimensions with anchors applied. incredibly handy piece of data.
----@field Size Vector2          # The size of the container.
----@field DIMENSIONS_CHANGED eventLib   # Triggered when the final container dimensions has changed.
----@field SIZE_CHANGED eventLib      # Triggered when the size of the final container dimensions is different from the last tick.
----@field Anchor Vector4         # Determins where to attach to its parent, (`0`-`1`, left-right, up-down)
----@field ANCHOR_CHANGED eventLib     # Triggered when the anchors applied to the container is changed.
----@field Sprite Sprite        # the sprite that will be used for displaying textures.
----@field SPRITE_CHANGED eventLib     # Triggered when the sprite object set to this container has changed.
----@field CursorHovering boolean      # True when the cursor is hovering over the container, compared with the parent container.
----@field PRESSED eventLib        # Triggered when `setCursor` is called with the press argument set to true
----@field INPUT eventLib         # Serves as the handler for all inputs within the boundaries of the container.
----@field canCaptureCursor boolean    # True when the container can capture the cursor. from its parent
----@field MOUSE_MOVED eventLib      # Triggered when the mouse position changes within this container
+--- ============================ POSITIONING ============================
+---@field Dimensions Vector4               # Determins the offset of each side from the final output
+---@field DIMENSIONS_CHANGED eventLib      # Triggered when the final container dimensions has changed.
+---
+---@field ContainmentRect Vector4          # The final output dimensions with anchors applied. incredibly handy piece of data.
+---@field Z number                         # Offsets the container forward(+) or backward(-) if Z fighting is occuring, also affects its children.
+---@field ZSquish number                   # Multiplies how much the modelpart is positioned in the Z axis
+---@field Size Vector2                     # The size of the container.
+---@field SIZE_CHANGED eventLib            # Triggered when the size of the final container dimensions is different from the last tick.
+---
+---@field Anchor Vector4                   # Determins where to attach to its parent, (`0`-`1`, left-right, up-down)
+---@field ANCHOR_CHANGED eventLib          # Triggered when the anchors applied to the container is changed.
+---
+---@field CustomMinimumSize Vector2        # Minimum size that the container will use.
+---@field SystemMinimumSize Vector2        # The minimum size that the container can use, set by the container itself.
+---@field GrowDirection Vector2            # The direction in which the container grows into when is too small for the parent container.
+---@field Shift Vector2                    # Shifts the children.
+---
+---@field ScaleFactor number               # Scales the displayed sprites and its children based on the factor.
+---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
+--- ============================ RENDERING ============================
+---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
+---@field Sprite Sprite                    # the sprite that will be used for displaying textures.
+---@field SPRITE_CHANGED eventLib          # Triggered when the sprite object set to this container has changed.
+---
+--- ============================ INPUTS ============================
+---@field CursorHovering boolean           # True when the cursor is hovering over the container, compared with the parent container.
+---@field INPUT eventLib                   # Serves as the handler for all inputs within the boundaries of the container.
+---@field canCaptureCursor boolean         # True when the container can capture the cursor. from its parent
+---@field MOUSE_MOVED eventLib             # Triggered when the mouse position changes within this container
 ---@field MOUSE_PRESSENCE_CHANGED eventLib # Triggered when the state of the mouse to container interaction changes, arguments include: (hovering: boolean, pressed: boolean)
----@field MOUSE_ENTERED eventLib      # Triggered once the cursor is hovering over the container
----@field MOUSE_EXITED eventLib      # Triggered once the cursor leaves the confinement of this container.
+---@field MOUSE_ENTERED eventLib           # Triggered once the cursor is hovering over the container
+---@field MOUSE_EXITED eventLib            # Triggered once the cursor leaves the confinement of this container.
+---@field isPressed boolean                # `true` when the cursor is pressed over the container.
+---@field isCursorHovering boolean         # `true` when the cursor is hovering over the container.
+---
+--- ============================ CLIPPING ============================
 ---@field ClipOnParent boolean      # when `true`, the container will go invisible once touching outside the parent container.
----@field ScaleFactor number       # Scales the displayed sprites and its children based on the factor.
----@field AccumulatedScaleFactor number  # Scales the displayed sprites and its children based on the factor.
 ---@field isClipping boolean       # `true` when the container is touching outside the parent's container.
----@field isCursorHovering boolean    # `true` when the cursor is hovering over the container.
----@field isPressed boolean        # `true` when the cursor is pressed over the container.
----@field ModelPart ModelPart       # The `ModelPart` used to handle where to display debug features and the sprite.
----@field CustomMinimumSize Vector2    # Minimum size that the container will use.
----@field SystemMinimumSize Vector2    # The minimum size that the container can use, set by the container itself.
----@field GrowDirection Vector2      # The direction in which the container grows into when is too small for the parent container.
+---
+--- ============================ MISC ============================
 ---@field cache table          # Contains data to optimize the process.
+---
+--- ============================ CANVAS ============================
 ---@field Canvas GNUI.Canvas       # The canvas that the container is attached to.
----@field ZSquish number
 ---@field CANVAS_CHANGED eventLib     # Triggered when the canvas that the container is attached to has changed. first argument is the new, second is the old one.
----@field Shift Vector2          # Shifts the children.
----@field isFreed boolean        # `true` when the container should be freed from memory.
 local Container = {}
 Container.__index = function (t,i)
   return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Container[i] or element[i]
@@ -58,36 +72,47 @@ function Container.new()
 ---@diagnostic disable-next-line: assign-type-mismatch
   local new = element.new()
   setmetatable(new,Container)
+  -->====================[ Positioning ]====================<--
   new.Dimensions = vec(0,0,0,0) 
-  new.Z = 1
-  new.SIZE_CHANGED = eventLib.new()
-  new.ContainmentRect = vec(0,0,0,0) -- Dimensions but with margins and anchored applied
-  new.Size = vec(0,0)
-  new.Anchor = vec(0,0,0,0)
-  new.ModelPart = models:newPart("container"..new.id)
-  new.ClipOnParent = false
-  new.isCursorHovering = false
-  new.isPressed = false
-  new.isClipping = false
-  new.ScaleFactor = 1
-  new.canCaptureCursor = true
-  new.AccumulatedScaleFactor = 1
-  new.INPUT = eventLib.new()
   new.DIMENSIONS_CHANGED = eventLib.new()
-  new.SPRITE_CHANGED = eventLib.new()
+  
+  new.ContainmentRect = vec(0,0,0,0)
+  new.Z = 1
+  new.ZSquish = 1
+  new.Size = vec(0,0)
+  new.SIZE_CHANGED = eventLib.new()
+  
+  new.Anchor = vec(0,0,0,0)
   new.ANCHOR_CHANGED = eventLib.new()
-  new.MOUSE_ENTERED = eventLib.new()
-  new.MOUSE_PRESSENCE_CHANGED = eventLib.new()
-  new.MOUSE_EXITED = eventLib.new()
-  new.PARENT_CHANGED = eventLib.new()
+  
   new.SystemMinimumSize = vec(0,0)
   new.GrowDirection = vec(1,1)
-  new.StackDistance = 0
-  new.ZSquish = 1
   new.Shift = vec(0,0)
-  new.CANVAS_CHANGED = eventLib.new()
+  
+  new.ScaleFactor = 1
+  new.AccumulatedScaleFactor = 1
+  -->====================[ Rendering ]====================<--
+  new.ModelPart = models:newPart("container"..new.id)
+  new.SPRITE_CHANGED = eventLib.new()
+  
+  -->====================[ Inputs ]====================<--
+  new.INPUT = eventLib.new()
+  new.canCaptureCursor = true
   new.MOUSE_MOVED = eventLib.new()
-  new.isFreed = false
+  new.MOUSE_PRESSENCE_CHANGED = eventLib.new()
+  new.MOUSE_ENTERED = eventLib.new()
+  new.MOUSE_EXITED = eventLib.new()
+  new.isPressed = false
+  new.isCursorHovering = false
+  
+  -->====================[ Clipping ]====================<--
+  new.ClipOnParent = false
+  new.isClipping = false
+  -->====================[ Misc ]====================<--
+  new.cache = {}
+  -->====================[ Canvas ]====================<--
+  new.CANVAS_CHANGED = eventLib.new()
+
   models:removeChild(new.ModelPart)
   -->==========[ Internals ]==========<--
   if cfg.debug_mode then
@@ -128,7 +153,6 @@ function Container.new()
   end)
 
   local function orphan()
-   new.StackDistance = 0
    root_container_count = root_container_count + 1
   end
   orphan()
@@ -709,7 +733,6 @@ function Container:updateSpriteTasks(forced_resize_sprites)
   local child_count = self.Parent and (#self.Parent.Children) or 1
   self.ZSquish = (self.Parent and self.Parent.ZSquish or 1) * (1 / child_count)
   local child_weight = self.ChildIndex / child_count
-  --local nest = math.max(self.StackDistance,1)
   if self.cache.final_visible then
    self.ModelPart
     :setPos(

@@ -13,11 +13,10 @@ local cfg = require("GNUI.config")
 ---@class GNUI
 
 local api = {path = cfg.path}
----@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Label|GNUI.Canvas
+---@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Canvas
 
 local u = require("GNUI.utils")
-local l = require("GNUI.primitives.label")
-local s = require("GNUI.spriteLib")
+local s = require("GNUI.ninepatch")
 local ca = require("GNUI.primitives.canvas")
 local e = require("GNUI.primitives.element")
 local co = require("GNUI.primitives.container")
@@ -27,7 +26,6 @@ api.newContainer = function ()return co.new() end
 ---@param autoInputs boolean # true when the canvas should capture the inputs from the screen.
 ---@return unknown
 api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
-api.newLabel = function ()return l.new() end
 
 ---@param texture Texture?
 ---@return Sprite
@@ -41,7 +39,6 @@ api.Container = co
 api.Element = e
 api.Canvas = ca
 api.Sprite = s
-api.Label = l
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.

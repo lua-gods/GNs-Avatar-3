@@ -13,6 +13,7 @@ local element_next_free = 0
 ---@field CHILDREN_ADDED eventLib    # when a child is added. first parameter is the child added.
 ---@field CHILDREN_REMOVED eventLib  # when a child is removed. first parameter is the child removed.
 ---@field PARENT_CHANGED table      # when the parent changes.
+---@field isFreed boolean
 ---@field ON_FREE eventLib        # when the element is wiped from history.
 ---@field cache table
 local Element = {}
@@ -34,6 +35,7 @@ function Element.new(preset)
   new.CHILDREN_ADDED = eventLib.new()
   new.CHILDREN_REMOVED = eventLib.new()
   new.PARENT_CHANGED = eventLib.new()
+  new.isFreed = false
   new.ON_FREE = eventLib.new()
   setmetatable(new,Element)
   element_next_free = element_next_free + 1
