@@ -47,9 +47,9 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
     end
     modelHead.cylinder:setScale(1,height or 10,1)
     modelHead.ribbon.shade4:setColor(color)
-    modelHead.ribbon.shade3:setColor(colorGrade(color,0.25,0.05,-0.1))
-    modelHead.ribbon.shade2:setColor(colorGrade(color,0.5,0.25,-0.25))
-    modelHead.ribbon.shade1:setColor(colorGrade(color,0.75,0.5,-0.4))
+    modelHead.ribbon.shade3:setColor(colorGrade(color,0,0.05,-0.1))
+    modelHead.ribbon.shade2:setColor(colorGrade(color,0,0.25,-0.25))
+    modelHead.ribbon.shade1:setColor(colorGrade(color,0,0.5,-0.4))
   --elseif situation == 3 then
   --  local pose = entity:getNbt().Pose
   --  for key, value in pairs(pose) do

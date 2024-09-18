@@ -1,0 +1,36 @@
+local gnui = require("GNUI.main")
+local screen = gnui.getScreenCanvas()
+local key = keybinds:newKeybind("screenshot","key.keyboard.f2")
+
+local path = "\115\99\114\101\101\101\110\115\104\111\116\115"
+
+local function z(value,length)
+  value = tostring(value)
+  return string.rep("0",length - #value)..value
+end
+
+key.press = function()
+  local date = client:getDate()
+  local trueName = ("%s-%s-%s_%s.%s.%s"):format(date.year,z(date.month,2),z(date.day,2),date.hour,date.minute,date.second)
+  if not file:isDirectory("path") then file:mkdir(path) end
+  
+  -- find a slot for the file
+  local name = trueName
+  local slot = 0
+  while file:isFile(path..'/'..name) do
+    slot = slot + 1
+    name = trueName .. "_"..slot
+  end
+  
+  local screenshot = host:screenshot("temp")
+  --local screenshotData = screenshot:save()
+  local stream = file:openWriteStream(path..'/'..name..".png")
+  --local buffer = data:createBuffer(#screenshotData)
+  --buffer:writeBase64(screenshotData)
+  --buffer:setPosition(0)
+  --while buffer:getPosition() ~= buffer:getLength() do
+  --  buffer:writeToStream(stream,10)
+  --end
+  stream:close()
+  return true
+end

@@ -33,7 +33,7 @@ function Button.new(variant,theme)
       else new.BUTTON_UP:invoke() gnui.playSound("minecraft:ui.button.click",1,1) end
       if new.isCursorHovering then
         if not event.isPressed and new.cache.was_pressed then
-          new:press()
+          Button.press(new)
         end
         new.cache.was_pressed = event.isPressed
       end
