@@ -13,13 +13,12 @@ local cfg = require("GNUI.config")
 ---@class GNUI
 
 local api = {path = cfg.path}
----@alias GNUI.any GNUI.Element|GNUI.Container|GNUI.Canvas
+---@alias GNUI.any GNUI.Box|GNUI.Box|GNUI.Canvas
 
 local u = require("GNUI.utils")
 local s = require("GNUI.ninepatch")
 local ca = require("GNUI.primitives.canvas")
-local e = require("GNUI.primitives.element")
-local co = require("GNUI.primitives.container")
+local co = require("GNUI.primitives.box")
 
 api.newContainer = function ()return co.new() end
 
@@ -32,13 +31,6 @@ api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 api.newSprite = function (texture)
   return s.new()
 end
-
-api.utils = u
-
-api.Container = co
-api.Element = e
-api.Canvas = ca
-api.Sprite = s
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.

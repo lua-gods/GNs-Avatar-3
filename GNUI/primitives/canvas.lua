@@ -1,8 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch, undefined-field, return-type-mismatch
 local cfg = require("GNUI.config")
 local eventLib,utils = cfg.event, cfg.utils
-local Container = require("GNUI.primitives.container")
-local Element = require("GNUI.primitives.element")
+local Container = require("GNUI.primitives.box")
 
 ---@class GNUI.InputEvent
 ---@field char string
@@ -216,7 +215,7 @@ local mousemap = {
 
 for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 
----@class GNUI.Canvas : GNUI.Container # A special type of container that handles all the inputs
+---@class GNUI.Canvas : GNUI.Box # A special type of container that handles all the inputs
 ---@field MousePosition Vector2 # the position of the mouse
 ---@field HoveredElement GNUI.any? # the element the mouse is currently hovering over
 ---@field PressedElement GNUI.any? # the last pressed element, used to unpress buttons that have been unhovered.
@@ -229,12 +228,14 @@ for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 ---@field UNHANDLED_INPUT eventLib # triggers when an input is not handled by the children of the canvas.
 local Canvas = {}
 Canvas.__index = function (t,i)
-  return rawget(t,i) or Canvas[i] or Container[i] or Element[i]
+  return rawget(t,i) or Canvas[i] or Container[i]
 end
 Canvas.__type = "GNUI.Element.Container.Canvas"
 
 ---@type GNUI.Canvas[]
 local autoCanvases = {}
+
+-->====================[ Figura Input Handling Conections ]====================<--
 
 local _shift,_ctrl,_alt = false,false,false
 events.KEY_PRESS:register(function (key, state, modifiers)
@@ -242,7 +243,7 @@ events.KEY_PRESS:register(function (key, state, modifiers)
     _ctrl = math.floor(modifiers / 2) % 2 == 1
     _alt = math.floor(modifiers / 4) % 2 == 1
   local minecraft_keybind = keymap[key]
-  local char = chars[_shift and "shift" or "normal"][key]
+  local char = chars[_shift and "shift" or "normal"][key] or chars.normal[key]
   if minecraft_keybind then
    for _, value in pairs(autoCanvases) do
     if value.reciveInputs and value.Visible and value.canCaptureCursor then
@@ -288,10 +289,11 @@ events.MOUSE_SCROLL:register(function (dir)
   end
 end)
 
+--- Work around to having too many world render events
 local WORLD_RENDER = eventLib.new()
 events.WORLD_RENDER:register(function (delta)
   WORLD_RENDER:invoke()
-end)
+end,"GNUI")
 
 -->====================[ Canvas Class ]====================<--
 
@@ -309,7 +311,7 @@ function Canvas.new(autoScreenInputs)
   
   WORLD_RENDER:register(function ()
    new:_propagateUpdateToChildren()
-  end,"GNUI_root_container."..new.id)
+  end,"GNUI_root_box."..new.id)
   
   if autoScreenInputs then
    autoCanvases[#autoCanvases+1] = new
@@ -318,7 +320,8 @@ function Canvas.new(autoScreenInputs)
   return new
 end
 
----Sets the Mouse position relative to the canvas.
+
+---Sets the Mouse position relative to the canvas. meaning in canvas local space.
 ---@overload fun(self:self, x:number,y:number): self
 ---@overload fun(self:self, pos:Vector2): self
 ---@param x number
@@ -350,43 +353,7 @@ function Canvas:setMousePos(x,y,keep_auto)
   return self
 end
 
----@param e GNUI.any
-local function getHoveringChild(e,position)
-  position = position - e.ContainmentRect.xy
-  if e.Visible and e.canCaptureCursor then
-   for i = #e.Children, 1, -1 do
-    local child = e.Children[i]
-    if child.Visible and child.canCaptureCursor and child:isPosInside(position) then
-      return getHoveringChild(child,position)
-    end
-   end
-  end
-  return e
-end
-
----@package
----@param event GNUI.InputEventMouseMotion
-function Canvas:updateHoveringChild(event)
-  local hovered_element = getHoveringChild(self,self.MousePosition)
-  if hovered_element ~= self.HoveredElement then  
-   if self.HoveredElement then
-    self.HoveredElement:setIsCursorHovering(false)
-   end
-   if hovered_element then
-    hovered_element:setIsCursorHovering(true)
-   end
-   self.HoveredElement = hovered_element
-  end
-  return self
-end
-
----Returns which element the mouse cursor is on top of.
----@return GNUI.any
-function Canvas:getHoveredElement()
-  return self.HoveredElement
-end
-
-
+--- The function that handles the INPUT event in all boxes.
 ---@param element GNUI.any
 ---@param event GNUI.InputEvent
 ---@return boolean
@@ -404,6 +371,8 @@ local function parseInputEventOnElement(element,event)
   return false
 end
 
+---propagates the INPUT event to children, if the cursor is on top of them.  
+---if you want a box to always recive input, register a function from the canvas itself, instead of the box.
 ---@param element GNUI.any
 ---@param event GNUI.InputEvent
 local function parseInputEventToChildren(element,event,position)
@@ -420,7 +389,7 @@ end
 
 
 
----Simulates a key event into the container.
+---Simulates a boolean key event into the canvas.
 ---@param key Minecraft.keyCode
 ---@param status Event.Press.state
 ---@param ctrl boolean
@@ -461,7 +430,47 @@ function Canvas:parseInputEvent(key,status,shift,ctrl,alt,char,strength)
   return self
 end
 
----Sets whether the canvas should capture mouse movement.
+-->====================[ Child Hovering ]====================<--
+
+---@param e GNUI.any
+local function getHoveringChild(e,position)
+  position = position - e.ContainmentRect.xy
+  if e.Visible and e.canCaptureCursor then
+   for i = #e.Children, 1, -1 do
+    local child = e.Children[i]
+    if child.Visible and child.canCaptureCursor and child:isPosInside(position) then
+      return getHoveringChild(child,position)
+    end
+   end
+  end
+  return e
+end
+
+---@package
+---@param event GNUI.InputEventMouseMotion
+function Canvas:updateHoveringChild(event)
+  local hovered_element = getHoveringChild(self,self.MousePosition)
+  if hovered_element ~= self.HoveredElement then  
+   if self.HoveredElement then
+    self.HoveredElement:setIsCursorHovering(false)
+   end
+   if hovered_element then
+    hovered_element:setIsCursorHovering(true)
+   end
+   self.HoveredElement = hovered_element
+  end
+  return self
+end
+
+---Returns which element the mouse cursor is on top of.
+---@return GNUI.any
+function Canvas:getHoveredElement()
+  return self.HoveredElement
+end
+
+-->====================[ Flags ]====================<--
+
+---Sets whether the canvas should capture the mouse movement, making it not possible to move the mouse outside of the canvas.
 ---@param toggle boolean
 ---@generic self
 ---@param self self
@@ -472,7 +481,7 @@ function Canvas:setCaptureMouseMovement(toggle)
   return self
 end
 
----Sets whether the canvas should capture inputs.
+---Sets whether the canvas should capture input from the user.
 ---@param toggle boolean
 ---@generic self
 ---@param self self
