@@ -27,7 +27,7 @@ api.newContainer = function ()return co.new() end
 api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 
 ---@param texture Texture?
----@return Sprite
+---@return Ninepatch
 api.newSprite = function (texture)
   return s.new()
 end

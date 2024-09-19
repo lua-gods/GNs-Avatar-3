@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch, return-type-mismatch
-local cfg = require("GNUI.config")
+local cfg = require"GNUI.config"
 local eventLib,utils = cfg.event, cfg.utils
 
 local debugTex = textures['gnui_debug_outline'] or 
@@ -7,7 +7,7 @@ textures:newTexture("gnui_debug_outline",6,6)
 :fill(0,0,6,6,vec(0,0,0,0))
 :fill(1,1,4,4,vec(1,1,1))
 :fill(2,2,2,2,vec(0,0,0,0))
-local sprite = require("GNUI.ninepatch")
+local sprite = require"GNUI.ninepatch"
 
 local nextID = 0
 
@@ -47,7 +47,7 @@ local nextID = 0
 ---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
----@field Sprite Sprite                    # the sprite that will be used for displaying textures.
+---@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
 ---@field SPRITE_CHANGED eventLib          # Triggered when the sprite object set to this box has changed.
 ---
 --- ============================ INPUTS ============================
@@ -410,7 +410,7 @@ end
 ---Note: if the sprite given is already in use, it will overtake it.
 ---@generic self
 ---@param self self
----@param sprite_obj Sprite?
+---@param sprite_obj Ninepatch?
 ---@return self
 function Box:setSprite(sprite_obj)
   ---@cast self self

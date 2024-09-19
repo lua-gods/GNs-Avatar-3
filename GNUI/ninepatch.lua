@@ -1,6 +1,6 @@
 --[[______  __
   / ____/ | / / by: GNamimates | Discord: "@gn8." | Youtube: @GNamimates
- / / __/  |/ / Sprite Library, specifically made for GNUI and its needs.
+ / / __/  |/ / Sprite Library, specifically made for GNUI.
 / /_/ / /|  /
 \____/_/ |_/]]
 local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
@@ -9,7 +9,7 @@ local eventLib,utils = cfg.event, cfg.utils
 
 local update = {}
 
----@class Sprite
+---@class Ninepatch
 ---@field Texture Texture
 ---@field TEXTURE_CHANGED eventLib
 ---@field Modelpart ModelPart?
@@ -30,16 +30,16 @@ local update = {}
 ---@field Visible boolean
 ---@field id integer
 ---@field package _queue_update boolean
-local Ninepatch = {}
-Ninepatch.__index = Ninepatch
-Ninepatch.__type = "Sprite"
+local N = {}
+N.__index = N
+N.__type = "Sprite"
 
 local sprite_next_free = 0
----@return Sprite
-function Ninepatch.new(obj)
+---@return Ninepatch
+function N.new(obj)
   obj = obj or {}
   local new = {}
-  setmetatable(new,Ninepatch)
+  setmetatable(new,N)
   new.Texture = obj.Texture or default_texture
   new.TEXTURE_CHANGED = eventLib.new()
   new.MODELPART_CHANGED = eventLib.new()
@@ -79,8 +79,8 @@ end
 
 ---Sets the modelpart to parent to.
 ---@param part ModelPart
----@return Sprite
-function Ninepatch:setModelpart(part)
+---@return Ninepatch
+function N:setModelpart(part)
   if self.Modelpart then
     self:deleteRenderTasks()
   end
@@ -93,8 +93,8 @@ end
 
 ---Sets the displayed image texture on the sprite.
 ---@param texture Texture
----@return Sprite
-function Ninepatch:setTexture(texture)
+---@return Ninepatch
+function N:setTexture(texture)
   if type(texture) ~= "Texture" then error("Invalid texture, recived "..type(texture)..".",2) end
   self.Texture = texture
   local dim = texture:getDimensions()
@@ -106,20 +106,20 @@ end
 ---Sets the position of the Sprite, relative to its parent.
 ---@param xpos number
 ---@param y number
----@return Sprite
-function Ninepatch:setPos(xpos,y)
+---@return Ninepatch
+function N:setPos(xpos,y)
   self.Position = utils.vec2(xpos,y)
   self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
   return self
 end
 
 ---Tints the Sprite multiplicatively
----@overload fun(self : self, rgb : Vector3): Sprite
+---@overload fun(self : self, rgb : Vector3): Ninepatch
 ---@param r number
 ---@param g number
 ---@param b number
----@return Sprite
-function Ninepatch:setColor(r,g,b)
+---@return Ninepatch
+function N:setColor(r,g,b)
   self.Color = utils.figureOutVec3(r,g,b)
   self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
   return self
@@ -127,8 +127,8 @@ end
 
 
 ---@param a number
----@return Sprite
-function Ninepatch:setOpacity(a)
+---@return Ninepatch
+function N:setOpacity(a)
   self.Alpha = math.clamp(a or 1,0,1)
   self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
   return self
@@ -137,16 +137,16 @@ end
 ---Sets the size of the sprite duh.
 ---@param xpos number
 ---@param y number
----@return Sprite
-function Ninepatch:setSize(xpos,y)
+---@return Ninepatch
+function N:setSize(xpos,y)
   self.Size = utils.vec2(xpos,y)
   self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
   return self
 end
 
 ---@param scale number
----@return Sprite
-function Ninepatch:setScale(scale)
+---@return Ninepatch
+function N:setScale(scale)
   self.Scale = scale
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -156,8 +156,8 @@ end
 
 ---Sets the top border thickness.
 ---@param units number?
----@return Sprite
-function Ninepatch:setBorderThicknessTop(units)
+---@return Ninepatch
+function N:setBorderThicknessTop(units)
   self.BorderThickness.y = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -165,8 +165,8 @@ end
 
 ---Sets the left border thickness.
 ---@param units number?
----@return Sprite
-function Ninepatch:setBorderThicknessLeft(units)
+---@return Ninepatch
+function N:setBorderThicknessLeft(units)
   self.BorderThickness.x = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -174,8 +174,8 @@ end
 
 ---Sets the down border thickness.
 ---@param units number?
----@return Sprite
-function Ninepatch:setBorderThicknessDown(units)
+---@return Ninepatch
+function N:setBorderThicknessDown(units)
   self.BorderThickness.z = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -183,8 +183,8 @@ end
 
 ---Sets the right border thickness.
 ---@param units number?
----@return Sprite
-function Ninepatch:setBorderThicknessRight(units)
+---@return Ninepatch
+function N:setBorderThicknessRight(units)
   self.BorderThickness.w = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -195,8 +195,8 @@ end
 ---@param top number?
 ---@param right number?
 ---@param bottom number?
----@return Sprite
-function Ninepatch:setBorderThickness(left,top,right,bottom)
+---@return Ninepatch
+function N:setBorderThickness(left,top,right,bottom)
   self.BorderThickness.x = left  or 0
   self.BorderThickness.y = top   or 0
   self.BorderThickness.z = right  or 0
@@ -207,13 +207,13 @@ end
 
 ---Sets the UV region of the sprite.
 --- if x2 and y2 are missing, they will use x and y as a substitute
----@overload fun(self : Sprite, vec4 : Vector4): Sprite
+---@overload fun(self : Ninepatch, vec4 : Vector4): Ninepatch
 ---@param x number
 ---@param y number
 ---@param x2 number
 ---@param y2 number
----@return Sprite
-function Ninepatch:setUV(x,y,x2,y2)
+---@return Ninepatch
+function N:setUV(x,y,x2,y2)
   self.UV = utils.figureOutVec4(x,y,x2 or x,y2 or y)
   self.DIMENSIONS_CHANGED:invoke(self.BorderThickness)
   return self
@@ -221,8 +221,8 @@ end
 
 ---Sets the render type of your sprite
 ---@param renderType ModelPart.renderType
----@return Sprite
-function Ninepatch:setRenderType(renderType)
+---@return Ninepatch
+function N:setRenderType(renderType)
   self.RenderType = renderType
   self:deleteRenderTasks()
   self:buildRenderTasks()
@@ -231,13 +231,13 @@ end
 
 ---Set to true if you want a hole in the middle of your ninepatch
 ---@param toggle boolean
----@return Sprite
-function Ninepatch:excludeMiddle(toggle)
+---@return Ninepatch
+function N:excludeMiddle(toggle)
   self.ExcludeMiddle = toggle
   return self
 end
 
-function Ninepatch:copy()
+function N:copy()
   local copy = {}
   for key, value in pairs(self) do
     if type(value):find("Vector") then
@@ -245,40 +245,40 @@ function Ninepatch:copy()
     end
     copy[key] = value
   end
-  return Ninepatch.new(copy)
+  return N.new(copy)
 end
 
-function Ninepatch:setVisible(visibility)
+function N:setVisible(visibility)
   self.Visible = visibility
   self:update()
   return self
 end
 
-function Ninepatch:setDepthOffset(offset_units)
+function N:setDepthOffset(offset_units)
   self.DepthOffset = offset_units
   return self
 end
 
-function Ninepatch:update()
+function N:update()
   if not self._queue_update then
     self._queue_update = true
     update[#update+1] = self
   end
 end
 
-function Ninepatch:deleteRenderTasks()
+function N:deleteRenderTasks()
   for _, task in pairs(self.RenderTasks) do
     self.Modelpart:removeTask(task:getName())
   end
   return self
 end
 
-function Ninepatch:free()
+function N:free()
   self:deleteRenderTasks()
   return self
 end
 
-function Ninepatch:buildRenderTasks()
+function N:buildRenderTasks()
   if not self.Modelpart then return self end
   local b = self.BorderThickness
   local d = self.Texture:getDimensions()
@@ -301,7 +301,7 @@ function Ninepatch:buildRenderTasks()
   self:update()
 end
 
-function Ninepatch:updateRenderTasks()
+function N:updateRenderTasks()
   if not self.Modelpart then return self end
   local res = self.Texture:getDimensions()
   local uv = self.UV:copy():add(0,0,1,1)
@@ -492,4 +492,4 @@ events.WORLD_TICK:register(function ()
   end,"GNUI_priority-last")
 end)
 
-return Ninepatch
+return N
