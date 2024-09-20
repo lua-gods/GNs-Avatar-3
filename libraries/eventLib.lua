@@ -1,16 +1,16 @@
 -- FROM: auriafoxgirl (note: old library)
 local lib = {}
 
----@class eventLib
+---@class EventLib
 local eventMetatable = {__type = "Event", __index = {}}
 local eventsMetatable = {__index = {}}
 eventMetatable.__index = eventMetatable
 
----@return eventLib
+---@return EventLib
 function lib.new()
   return setmetatable({subscribers = {}}, eventMetatable)
 end
----@return eventLib
+---@return EventLib
 function lib.newEvent()
   return setmetatable({subscribers = {}}, eventMetatable)
 end

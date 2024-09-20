@@ -19,24 +19,24 @@ local nextID = 0
 ---@field Parent GNUI.any                  # the element's parents.
 ---@field Children table<any,GNUI.any>     # A list of the element's children.
 ---@field ChildIndex integer               # the element's place order on its parent.
----@field VISIBILITY_CHANGED eventLib      # on change of visibility.
----@field CHILDREN_ADDED eventLib          # when a child is added. first parameter is the child added.
----@field CHILDREN_REMOVED eventLib        # when a child is removed. first parameter is the child removed.
+---@field VISIBILITY_CHANGED EventLib      # on change of visibility.
+---@field CHILDREN_ADDED EventLib          # when a child is added. first parameter is the child added.
+---@field CHILDREN_REMOVED EventLib        # when a child is removed. first parameter is the child removed.
 ---@field PARENT_CHANGED table             # when the parent changes.
 ---@field isFreed boolean                  # true when the element is being freed.
----@field ON_FREE eventLib                 # when the element is wiped from history.
+---@field ON_FREE EventLib                 # when the element is wiped from history.
 --- ============================ POSITIONING ============================
 ---@field Dimensions Vector4               # Determins the offset of each side from the final output
----@field DIMENSIONS_CHANGED eventLib      # Triggered when the final box dimensions has changed.
+---@field DIMENSIONS_CHANGED EventLib      # Triggered when the final box dimensions has changed.
 ---
 ---@field ContainmentRect Vector4          # The final output dimensions with anchors applied. incredibly handy piece of data.
 ---@field Z number                         # Offsets the box forward(+) or backward(-) if Z fighting is occuring, also affects its children.
 ---@field ZSquish number                   # Multiplies how much the modelpart is positioned in the Z axis
 ---@field Size Vector2                     # The size of the container.
----@field SIZE_CHANGED eventLib            # Triggered when the size of the final box dimensions is different from the last tick.
+---@field SIZE_CHANGED EventLib            # Triggered when the size of the final box dimensions is different from the last tick.
 ---
 ---@field Anchor Vector4                   # Determins where to attach to its parent, (`0`-`1`, left-right, up-down)
----@field ANCHOR_CHANGED eventLib          # Triggered when the anchors applied to the box is changed.
+---@field ANCHOR_CHANGED EventLib          # Triggered when the anchors applied to the box is changed.
 ---
 ---@field CustomMinimumSize Vector2        # Minimum size that the box will use.
 ---@field SystemMinimumSize Vector2        # The minimum size that the box can use, set by the box itself.
@@ -53,16 +53,16 @@ local nextID = 0
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
 ---@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
----@field SPRITE_CHANGED eventLib          # Triggered when the sprite object set to this box has changed.
+---@field SPRITE_CHANGED EventLib          # Triggered when the sprite object set to this box has changed.
 ---
 --- ============================ INPUTS ============================
 ---@field CursorHovering boolean           # True when the cursor is hovering over the container, compared with the parent container.
----@field INPUT eventLib                   # Serves as the handler for all inputs within the boundaries of the container.
+---@field INPUT EventLib                   # Serves as the handler for all inputs within the boundaries of the container.
 ---@field canCaptureCursor boolean         # True when the box can capture the cursor. from its parent
----@field MOUSE_MOVED eventLib             # Triggered when the mouse position changes within this container
----@field MOUSE_PRESSENCE_CHANGED eventLib # Triggered when the state of the mouse to box interaction changes, arguments include: (hovering: boolean, pressed: boolean)
----@field MOUSE_ENTERED eventLib           # Triggered once the cursor is hovering over the container
----@field MOUSE_EXITED eventLib            # Triggered once the cursor leaves the confinement of this container.
+---@field MOUSE_MOVED EventLib             # Triggered when the mouse position changes within this container
+---@field MOUSE_PRESSENCE_CHANGED EventLib # Triggered when the state of the mouse to box interaction changes, arguments include: (hovering: boolean, pressed: boolean)
+---@field MOUSE_ENTERED EventLib           # Triggered once the cursor is hovering over the container
+---@field MOUSE_EXITED EventLib            # Triggered once the cursor leaves the confinement of this container.
 ---@field isPressed boolean                # `true` when the cursor is pressed over the container.
 ---@field isCursorHovering boolean         # `true` when the cursor is hovering over the container.
 ---
@@ -75,7 +75,7 @@ local nextID = 0
 ---
 --- ============================ CANVAS ============================
 ---@field Canvas GNUI.Canvas       # The canvas that the box is attached to.
----@field CANVAS_CHANGED eventLib     # Triggered when the canvas that the box is attached to has changed. first argument is the new, second is the old one.
+---@field CANVAS_CHANGED EventLib     # Triggered when the canvas that the box is attached to has changed. first argument is the new, second is the old one.
 local Box = {}
 Box.__index = function (t,i)
   return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Box[i]

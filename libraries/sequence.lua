@@ -10,7 +10,7 @@ local eventLib = require(... ..".eventLib")
 ---@field keyframes {time:integer,func:function}[]
 ---@field trackingKeyframe integer
 ---@field time integer
----@field ON_COMPLETE eventLib
+---@field ON_COMPLETE EventLib
 ---@field rid integer
 ---@field isActive boolean
 local Seq = {}

@@ -11,20 +11,20 @@ local update = {}
 
 ---@class Ninepatch
 ---@field Texture Texture
----@field TEXTURE_CHANGED eventLib
+---@field TEXTURE_CHANGED EventLib
 ---@field Modelpart ModelPart?
----@field MODELPART_CHANGED eventLib
+---@field MODELPART_CHANGED EventLib
 ---@field UV Vector4
 ---@field Size Vector2
 ---@field Position Vector2
 ---@field Color Vector3
 ---@field Alpha number
 ---@field Scale number
----@field DIMENSIONS_CHANGED eventLib
+---@field DIMENSIONS_CHANGED EventLib
 ---@field RenderTasks table<any,SpriteTask>
 ---@field RenderType ModelPart.renderType
 ---@field BorderThickness Vector4
----@field BORDER_THICKNESS_CHANGED eventLib
+---@field BORDER_THICKNESS_CHANGED EventLib
 ---@field ExcludeMiddle boolean
 ---@field DepthOffset number
 ---@field Visible boolean
