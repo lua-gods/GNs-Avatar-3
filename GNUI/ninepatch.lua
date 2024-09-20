@@ -157,7 +157,7 @@ end
 ---Sets the top border thickness.
 ---@param units number?
 ---@return Ninepatch
-function N:setBorderThicknessTop(units)
+function N:setBorderTop(units)
   self.BorderThickness.y = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -166,7 +166,7 @@ end
 ---Sets the left border thickness.
 ---@param units number?
 ---@return Ninepatch
-function N:setBorderThicknessLeft(units)
+function N:setBorderLeft(units)
   self.BorderThickness.x = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -175,7 +175,7 @@ end
 ---Sets the down border thickness.
 ---@param units number?
 ---@return Ninepatch
-function N:setBorderThicknessDown(units)
+function N:setBorderBottom(units)
   self.BorderThickness.z = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
@@ -184,7 +184,7 @@ end
 ---Sets the right border thickness.
 ---@param units number?
 ---@return Ninepatch
-function N:setBorderThicknessRight(units)
+function N:setBorderRight(units)
   self.BorderThickness.w = units or 0
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self

@@ -4,9 +4,9 @@ local eventLib,utils = cfg.event, cfg.utils
 
 local debugTex = textures['gnui_debug_outline'] or 
 textures:newTexture("gnui_debug_outline",6,6)
-:fill(0,0,6,6,vec(0,0,0,0))
+:fill(0,0,6,6,vec(0,0,0,1))
 :fill(1,1,4,4,vec(1,1,1))
-:fill(2,2,2,2,vec(0,0,0,0))
+:fill(2,2,2,2,vec(0,0,0,1))
 local sprite = require"GNUI.ninepatch"
 
 local nextID = 0
@@ -45,6 +45,11 @@ local nextID = 0
 ---
 ---@field ScaleFactor number               # Scales the displayed sprites and its children based on the factor.
 ---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
+--- ============================ TEXT ============================
+---@field Text table                       # The text to be displayed.
+---@field DefaultColor Vector3             # The color to be used when the text color is not specified.
+---@field TextAlign Vector2                # The alignment of the text within the box.
+---@field TextWrap boolean                 # `true` to enable text wrapping.
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
 ---@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
@@ -113,6 +118,10 @@ function Box.new()
     
     ScaleFactor = 1,
     AccumulatedScaleFactor = 1,
+    
+    -->====================[ Text ]====================<--
+    TextAlign = vec(0,0),
+    TextWrap = true,
     -->====================[ Rendering ]====================<--
     ModelPart = models:newPart("GNUIBox"..nextID),
     SPRITE_CHANGED = eventLib.new(),
@@ -140,7 +149,7 @@ function Box.new()
   
   -->==========[ Internals ]==========<--
   if cfg.debug_mode then
-   new.debug_container  = sprite.new():setModelpart(new.ModelPart):setTexture(debugTex):setRenderType("EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(cfg.debug_scale):setColor(1,1,1):excludeMiddle(true)
+   new.debug_container = sprite.new():setModelpart(new.ModelPart):setTexture(debugTex):setRenderType("CUTOUT_EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(cfg.debug_scale):excludeMiddle(true)
    new.MOUSE_PRESSENCE_CHANGED:register(function (hovering,pressed)
     if pressed then
       new.debug_container:setColor(0.5,0.5,0.1)
@@ -719,9 +728,9 @@ end
 ---@generic self
 ---@param self self
 ---@return self
-function Box:setChildrenShift(x,y)
+function Box:setChildrenOffset(x,y)
   ---@cast self GNUI.Box
-  self.Shift = utils.vec2(x or 0,y or 0)
+  self.offsetChildren = utils.vec2(x or 0,y or 0)
   self.cache.final_minimum_size_changed = true
   self:update()
 
@@ -834,7 +843,7 @@ function Box:_update()
   self.AccumulatedScaleFactor = scale
   self.Dimensions:scale(scale)
   -- generate the containment rect
-  local cr = self.Dimensions:copy():sub(self.Parent and self.Parent.Shift.xyxy or vec(0,0,0,0))
+  local cr = self.Dimensions:copy():sub(self.Parent and self.Parent.offsetChildren.xyxy or vec(0,0,0,0))
   -- adjust based on parent if this has one
   local clipping = false
   local size
@@ -879,7 +888,7 @@ function Box:_update()
     
     ---@diagnostic disable-next-line: param-type-mismatch
     cr:sub(shift.x,shift.y,shift.x,shift.y)
-    local sh = self.Parent.Shift
+    local sh = self.Parent.offsetChildren
     
     size = vec(
     math.floor((cr.z - cr.x) * 100 + 0.5) / 100,

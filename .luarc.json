@@ -339,7 +339,7 @@
   \*==============================================================================================*/
   "format": {
     // Enable formatting.
-    "enable": true,
+    "enable": false,
 
     // Formatter settings.
     "defaultConfig": {

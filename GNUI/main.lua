@@ -20,17 +20,44 @@ local s = require("GNUI.ninepatch")
 local ca = require("GNUI.primitives.canvas")
 local co = require("GNUI.primitives.box")
 
-api.newContainer = function ()return co.new() end
+
+---Creates a new Box.  
+---A canvas can be given as a parameter to automatically add child it to that
+---@param canvas GNUI.Canvas?
+---@return GNUI.Box
+api.newBox = function (canvas) 
+  local new = co.new()
+  if canvas then canvas:addChild(new) end
+  return new
+end
+
 
 ---@param autoInputs boolean # true when the canvas should capture the inputs from the screen.
 ---@return unknown
 api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 
+
 ---@param texture Texture?
+---@param borderTop number?
+---@param borderRight number?
+---@param borderBottom number?
+---@param borderLeft number?
+---@param UVx1 number?
+---@param UVy1 number?
+---@param UVx2 number?
+---@param UVy2 number?
 ---@return Ninepatch
-api.newSprite = function (texture)
-  return s.new()
+api.newNineslice = function (texture,borderTop,borderRight,borderBottom,borderLeft,UVx1,UVy1,UVx2,UVy2)
+  local new = s.new()
+  if texture then new:setTexture(texture) end
+  if borderTop then new:setBorderTop(borderTop) end
+  if borderRight then new:setBorderRight(borderRight) end
+  if borderBottom then new:setBorderBottom(borderBottom) end
+  if borderLeft then new:setBorderLeft(borderLeft) end
+  if UVx1 and UVy1 and UVx2 and UVy2 then new:setUV(UVx1,UVy1,UVx2,UVy2) end
+  return new
 end
+
 
 local screenCanvas
 ---Gets a canvas for the screen. Quick startup for putting UI elements onto the screen.
@@ -55,6 +82,7 @@ function api.getScreenCanvas()
   end
   return screenCanvas
 end
+
 
 ---@param sound Minecraft.soundID
 ---@param pitch number?
