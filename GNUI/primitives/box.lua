@@ -47,9 +47,10 @@ local nextID = 0
 ---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
 --- ============================ TEXT ============================
 ---@field Text table                       # The text to be displayed.
----@field DefaultColor Vector3             # The color to be used when the text color is not specified.
+---@field DefaultColor string              # The color to be used when the text color is not specified.
 ---@field TextAlign Vector2                # The alignment of the text within the box.
 ---@field TextWrap boolean                 # `true` to enable text wrapping.
+---@field TEXT_CHANGED EventLib            # Triggered when the text is changed.
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
 ---@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
@@ -122,6 +123,7 @@ function Box.new()
     -->====================[ Text ]====================<--
     TextAlign = vec(0,0),
     TextWrap = true,
+    TEXT_CHANGED = eventLib.new(),
     -->====================[ Rendering ]====================<--
     ModelPart = models:newPart("GNUIBox"..nextID),
     SPRITE_CHANGED = eventLib.new(),
@@ -1001,6 +1003,54 @@ function Box:_propagateUpdateToChildren(force_all)
     end
    end
   end
+end
+
+-->========================================[ Text ]=========================================<--
+
+---Sets the text to be displayed in the box. This supports raw json text
+---@generic self
+---@param self self
+---@return self
+---@param text string|table
+function Box:setText(text)
+  ---@cast self GNUI.Box
+  if type(text) == "string" then self.text = {text=text}
+  else self.text = text end
+  self.TEXT_CHANGED:invoke(self.text)
+  return self
+end
+
+---Sets the default text color
+---@param color Vector3|string
+---@generic self
+---@param self self
+---@return self
+function Box:setDefaultTextColor(color)
+  if type(color):find("Vector") then
+    self.DefaultTextColor = vectors.rgbToHex(color)
+  else
+    self.DefaultTextColor = color
+  end
+  return self
+end
+
+---Sets the text color
+---@param h number?
+---@param v number?
+function Box:setAlign(h,v)
+  self.TextAlign = vec(h or 0,v or 0)
+  return self
+end
+
+---Sets the flag if the text should wrap around when out of bounds.
+---@param wrap boolean?
+---@generic self
+---@param self self
+---@return self
+function Box:setTextWrap(wrap)
+  ---@cast self GNUI.Box
+  self.TextWrap = wrap or true
+  return self
 end
 
 return Box
