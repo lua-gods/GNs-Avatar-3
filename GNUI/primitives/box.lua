@@ -11,6 +11,18 @@ local sprite = require"GNUI.ninepatch"
 
 local nextID = 0
 
+---@alias GNUI.TextBehavior string
+---| "NONE" # Does not handle text
+---| "WRAP"  # Wraps the text
+---| "TRIM" # Truncates the text
+
+
+---@alias GNUI.TextEffect string
+---| "SHADOW"
+---| "OUTLINE"
+---| "NONE"
+
+
 ---@class GNUI.Box  # A box is a Rectangle that represents the building block of GNUI
 --- ============================ CHILD MANAGEMENT ============================
 ---@field name string                      # An optional property used to get the element by a name.
@@ -47,10 +59,15 @@ local nextID = 0
 ---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
 --- ============================ TEXT ============================
 ---@field Text table                       # The text to be displayed.
----@field DefaultColor string              # The color to be used when the text color is not specified.
+---@field TextEffect GNUI.TextEffect       # The effect to be applied to the text.
+---@field BakedText string[]               # The baked text to be displayed.
+---@field DefaultTextColor string          # The color to be used when the text color is not specified.
 ---@field TextAlign Vector2                # The alignment of the text within the box.
----@field TextWrap boolean                 # `true` to enable text wrapping.
+---@field TextBehavior GNUI.TextBehavior   # Tells the text what to do when out of bounds.
 ---@field TEXT_CHANGED EventLib            # Triggered when the text is changed.
+---@field TextLengths integer[]            # The length of each separated text
+---@field TextPart ModelPart               # The `ModelPart` used to display text.
+---@field TextTasks TextTask[]             # A list of tasks to be executed when the text is changed.
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
 ---@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
@@ -81,11 +98,15 @@ local Box = {}
 Box.__index = function (t,i)
   return rawget(t,"_parent_class") and rawget(t._parent_class,i) or rawget(t,i) or Box[i]
 end
-Box.__type = "GNUI.Element.Container"
+Box.__type = "GNUI.Box"
 local root_container_count = 0
 ---Creates a new container.
 ---@return self
 function Box.new()
+  local model = models:newPart("GNUIBox"..nextID)
+  local textModel = model:newPart("Text")
+  nextID = nextID + 1
+  models:removeChild(model)
   ---@type GNUI.Box
   local new = setmetatable({
     -->====================[ Child Management ]====================<--
@@ -122,10 +143,17 @@ function Box.new()
     
     -->====================[ Text ]====================<--
     TextAlign = vec(0,0),
-    TextWrap = true,
+    TextEffect = "NONE",
+    DefaultColor = "#FFFFFF",
+    TextHandling = true,
+    TextBehavior = "NONE",
     TEXT_CHANGED = eventLib.new(),
+    TextPart = textModel,
+    TextLengths = {},
+    TextTasks = {},
+    BakedText = {},
     -->====================[ Rendering ]====================<--
-    ModelPart = models:newPart("GNUIBox"..nextID),
+    ModelPart = model,
     SPRITE_CHANGED = eventLib.new(),
     
     -->====================[ Inputs ]====================<--
@@ -144,10 +172,6 @@ function Box.new()
     -->====================[ Canvas ]====================<--
     CANVAS_CHANGED = eventLib.new(),
   },Box)
-  
-
-  nextID = nextID + 1
-  models:removeChild(new.ModelPart)
   
   -->==========[ Internals ]==========<--
   if cfg.debug_mode then
@@ -980,7 +1004,10 @@ function Box:updateSpriteTasks(forced_resize_sprites)
           containment_rect.z - containment_rect.x,
           containment_rect.w - containment_rect.y)
     end
-   end
+  end
+  if self.Text then
+   self:repositionText()
+  end
 end
 
 function Box:forceUpdate()
@@ -1007,6 +1034,238 @@ end
 
 -->========================================[ Text ]=========================================<--
 
+---@alias Minecraft.RawJSONText.Type string
+---| "text"
+---| "translatable"
+---| "score"
+---| "selector"
+---| "keybind"
+---| "nbt"
+
+
+---@alias Minecraft.RawJSONText.Color string
+---| "black"        # changes the color to #000000
+---| "dark_blue"    # changes the color to #0000AA
+---| "dark_green"   # changes the color to #00AA00
+---| "dark_aqua"    # changes the color to #00AAAA
+---| "dark_red"     # changes the color to #AA0000
+---| "dark_purple"  # changes the color to #AA00AA
+---| "gold"         # changes the color to #FFAA00
+---| "gray"         # changes the color to #AAAAAA
+---| "dark_gray"    # changes the color to #555555
+---| "blue"         # changes the color to #5555FF
+---| "green"        # changes the color to #55FF55
+---| "aqua"         # changes the color to #55FFFF
+---| "red"          # changes the color to #FF5555
+---| "light_purple" # changes the color to #FF55FF
+---| "yellow"       # changes the color to #FFFF55
+---| "white"        # changes the color to #FFFFFF
+
+
+---@class Minecraft.RawJSONText.Component
+---@field type Minecraft.RawJSONText.Type? # Optional. Specifies the content type.
+---
+---@field translate string? # A translation identifier, corresponding to the identifiers found in loaded language files. Displayed as the corresponding text in the player's selected language. If no corresponding translation can be found, the identifier itself is used as the translated text.
+---@field fallback string? # Optional. If no corresponding translation can be found, this is used as the translated text. Ignored if  translate is not present.
+---@field with Minecraft.RawJSONText.Component[]? #Optional. A list of raw JSON text components to be inserted into slots in the translation text. Ignored if  translate is not present.
+---
+---@field score Minecraft.RawJSONText.Component.Score #Displays a score holder's current score in an objective. Displays nothing if the given score holder or the given objective do not exist, or if the score holder is not tracked in the objective. 
+---
+---@field selector string?
+---@field separator Minecraft.RawJSONText.Component?
+---
+---@field keybind Minecraft.keybind #  A keybind identifier, to be displayed as the name of the button that is currently bound to that action. For example, `{"keybind": "key.inventory"}` displays "e" if the player is using the default control scheme.
+---
+---@field text string? # A string containing plain text to display directly.
+---@field extra Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]? # A list of additional raw JSON text components to be displayed after this one. 
+---@field color Minecraft.RawJSONText.Color|string? # Optional. Changes the color to render the content in the text component object and its child objects. If not present, the parent color will be used instead. The color is specified as a color code or as a color name.
+---@field font string? # Optional. The resource location of the font for this component in the resource pack within assets/<namespace>/font. Defaults to "minecraft:default".
+---@field bold boolean? # Optional. Whether to render the content in bold.
+---@field italic boolean? # Optional. Whether to render the content in italics. Note that text that is italicized by default, such as custom item names, can be unitalicized by setting this to false.
+---@field underlined boolean? # Optional. Whether to underline the content.
+---@field strikethrough boolean? # Optional. Whether to strikethrough the content.
+---@field obfuscated boolean? # Optional. Whether to render the content obfuscated.
+---@field insertion string? # Optional. When the text is shift-clicked by a player, this string is inserted in their chat input. It does not overwrite any existing text the player was writing. This only works in chat messages.
+---@field clickEvent Minecraft.RawJSONText.ClickEvent?  # Optional. Allows for events to occur when the player clicks on text. Only work in chat messages and written books, unless specified otherwise.
+---@field hoverEvent Minecraft.RawJSONText.HoverEvent? # Optional. Allows for a tooltip to be displayed when the player hovers their mouse over text.
+---
+---@field source Minecraft.RawJSONText.Component.Source? # Optional. Allowed values are "block", "entity", and "storage", corresponding to the source of the NBT data.
+---@field nbt string? # The NBT path used for looking up NBT values from an entity, block entity, or storage. Requires one of  block,  entity, or  storage. Having more than one is allowed, but only one is used.[note 3]
+---@field interpret boolean? # Optional, defaults to false. If true, the game attempts to parse the text of each NBT value as a raw JSON text component. Ignored if  nbt is not present.
+---@field block string? # A string specifying the coordinates of the block entity from which the NBT value is obtained. The coordinates can be absolute, relative, or local. Ignored if  nbt is not present.
+---@field entity string? # A string specifying the target selector for the entity or entities from which the NBT value is obtained. Ignored if  nbt is not present.
+---@field storage string? # A string specifying the resource location of the command storage from which the NBT value is obtained. Ignored if  nbt is not present.
+
+---@class Minecraft.RawJSONText.Component.Score
+---@field name string # The name of the score holder whose score should be displayed. This can be a selector like @p or an explicit name. If the text is a selector, the selector must be guaranteed to never select more than one entity, possibly by adding limit=1. If the text is "*", it shows the reader's own score (for example, `/tellraw @a {"score":{"name":"*","objective":"obj"}}` shows every online player their own score in the "obj" objective).[
+---@field objective string # The internal name of the objective to display the player's score in.
+
+---@class Minecraft.RawJSONText.ClickEvent
+---@field action Minecraft.RawJSONText.ClickEvent.Action # The action to perform when clicked.
+---@field value string
+
+---@alias Minecraft.RawJSONText.Component.Source string
+---| "block"
+---| "entity"
+---| "storage"
+
+---@alias Minecraft.RawJSONText.ClickEvent.Action string
+---| "open_url" # Opens value as a URL in the user's default web browser.
+---| "open_file" # Opens the file at value on the user's computer. This is used in messages automatically generated by the game (e.g., on taking a screenshot) and cannot be used by players for security reasons.
+---| "run_command" # Works in signs, but only on the root text component, not on any children. Activated by using the sign. In chat and written books, this has  value entered in chat as though the player typed it themselves and pressed enter. However, this can only be used to run commands that do not send chat messages directly (like /say, /tell, and/teammsg). Since they are being run from chat, commands must be prefixed with the usual "/" slash, and player must have the required permissions. In signs, the command is run by the server at the sign's location, with the player who used the sign as the command executor (that is, the entity selected by @s). Since they are run by the server, sign commands have the same permission level as a command block instead of using the player's permission level, are not restricted by chat length limits, and do not need to be prefixed with a "/" slash.
+---| "suggest_command" # Opens chat and fills in  value. If a chat message was already being composed, it is overwritten. This does not work in books.
+---| "change_page" # Can only be used in written books. Changes to page  value if that page exists.
+---| "copy_to_clipboard" # Copies  value to the clipboard.
+
+---@class Minecraft.RawJSONText.HoverEvent
+---@field action Minecraft.RawJSONText.HoverEvent.Action # The type of tooltip to show
+---@field contents Minecraft.RawJSONText.HoverEvent.Content.ShowEntity|Minecraft.RawJSONText.HoverEvent.Content.ShowItem|Minecraft.RawJSONText.Component # The formatting of this tag varies depending on the action
+
+---@class Minecraft.RawJSONText.HoverEvent.Content.ShowEntity
+---@field id {[1]:integer,[2]:integer,[3]:integer,[4]:integer}|string # The item's resource location. Defaults to minecraft:air if invalid.
+---@field name string? # Optional. Hidden if not present. A raw JSON text that is displayed as the name of the entity.
+---@field type Minecraft.entityID # A string containing the type of the entity, as a resource location. Defaults to minecraft:pig if invalid.
+
+---@class Minecraft.RawJSONText.HoverEvent.Content.ShowItem
+---@field id Minecraft.itemID # The item's resource location. Defaults to minecraft:air if invalid.
+---@field count integer? # Optional. Size of the item stack. This typically does not change the content tooltip.
+---@field components? table # Optional. Additional information about the item. 
+
+---@alias Minecraft.RawJSONText.HoverEvent.Action string
+---| "show_text" # Another raw JSON text component. Can be any valid text component type: string, array, or object. Note that  clickEvent and  hoverEvent do not function within the tooltip.
+---| "show_item" # The item stack whose tooltip that should be displayed. 
+---| "show_entity": The entity whose tooltip should be displayed. 
+
+local function clone(tbl)
+  local output = {}
+  for k,v in pairs(tbl) do
+    output[k] = v
+  end
+  return output
+end
+
+--- flattens all nested components into one big array.
+---@param input Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
+local function flattenJsonText(input)
+  input = clone(input) ---@type Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
+  if input[1] then -- is an array
+    for i = 1, #input, 1 do
+      input[i] = flattenJsonText(input[i])
+    end
+  else -- is a component
+    if input.extra then
+      local extra ---@type Minecraft.RawJSONText.Component[]
+      if input.extra[1] then -- is an array
+        extra = input.extra
+      else
+        extra = {input.extra}
+      end
+      local output = {input}
+      input.extra = nil
+      for i = 1, #extra, 1 do
+        local ec = extra[i]
+        local ecFlat = clone(ec)
+        for key, value in pairs(input) do
+          ecFlat[key] = ec[key] or value
+        end
+        
+        ecFlat = flattenJsonText(ecFlat) -- flattens nested extra tags
+        
+        -- merges the tables into one array
+        if ecFlat[1] then -- is an array
+          for j = 1, #ecFlat, 1 do
+            output[#output+1] = ecFlat[j]
+          end
+        else output[#output+1] = ecFlat end
+      end
+      input = output
+    end
+  end
+  return input
+end
+
+
+---Splits all components by each word
+---@param input Minecraft.RawJSONText.Component[]
+local function fractureComponents(input,pattern)
+  local output = {}
+  if not input[1] then input = {input} end
+  for i = 1, #input, 1 do
+    local c = input[i]
+    for word in string.gmatch(c.text,pattern) do
+      local cc = clone(c)
+      cc.text = word
+      output[#output+1] = cc
+    end
+  end
+  return output
+end
+
+---@package
+---@generic self
+---@param self self
+---@return self
+function Box:rebuildTextTasks()
+  ---@cast self GNUI.Box
+  local part = self.TextPart
+  self.TextPart:removeTask()
+  local tasks = {}
+  for i = 1, #self.BakedText, 1 do
+    tasks[i] = part:newText(i):setText(self.BakedText[i])
+  end
+  if self.TextEffect == "SHADOW" then
+    for i = 1, #self.BakedText, 1 do
+      tasks[i]:setShadow(true)
+    end
+  end
+  if self.TextEffect == "OUTLINE" then
+    for i = 1, #self.BakedText, 1 do
+      tasks[i]:setOutline(true)
+    end
+  end
+  self.TextTasks = tasks
+  self:repositionText()
+  return self
+end
+
+function Box:repositionText()
+  local tasks = self.TextTasks
+  local textLenghts = self.TextLengths
+  local pos = vec(0,0)
+  local size = self.Size
+  
+  local lineWidth = {}
+  local poses = {}
+  
+  for i = 1, #self.BakedText, 1 do
+    
+    local len = textLenghts[i]
+    if pos.x > size.x - len and self.TextBehavior == "WRAP" then
+      lineWidth[#lineWidth+1] = {width=pos.x,poses=poses}
+      poses = {}
+      pos.x = 0
+      pos.y = pos.y - 10
+    end
+    poses[#poses+1] = pos:copy()
+    pos.x = pos.x + len
+  end
+  lineWidth[#lineWidth+1] = {width=pos.x,poses=poses}
+  
+  local align = self.TextAlign
+  local j = 0
+  local lines = #lineWidth
+  for l = 1, #lineWidth, 1 do
+    local line = lineWidth[l]
+    for i = 1, #line.poses, 1 do
+      j = j + 1
+      local p = line.poses[i]
+      tasks[j]:setPos(-(size.x*align.x+p.x-line.width*align.x),-(size.y-p.y-lines*10)*align.y+p.y*(1-align.y),0)
+    end
+  end
+end
+
+local lengthTrim = client.getTextWidth("|")*2
+
 ---Sets the text to be displayed in the box. This supports raw json text
 ---@generic self
 ---@param self self
@@ -1014,9 +1273,24 @@ end
 ---@param text string|table
 function Box:setText(text)
   ---@cast self GNUI.Box
-  if type(text) == "string" then self.text = {text=text}
-  else self.text = text end
-  self.TEXT_CHANGED:invoke(self.text)
+  if type(text) == "string" then
+    text = {text=text}
+  end
+  local t = flattenJsonText(text)
+  for _, c in pairs(t) do
+    if c.color and c.color == "default" then
+      c.color = self.DefaultTextColor
+    end
+  end
+  self.Text = text
+  local ft = fractureComponents(t,"%s*%S+%s*")
+  for i = 1, #ft, 1 do
+    local bt = ft[i]
+    self.TextLengths[i] = client.getTextWidth("|"..bt.text.."|")-lengthTrim
+    self.BakedText[i] = toJson(bt)
+  end
+  self.TEXT_CHANGED:invoke(self.Text)
+  self:rebuildTextTasks()
   return self
 end
 
@@ -1027,29 +1301,43 @@ end
 ---@return self
 function Box:setDefaultTextColor(color)
   if type(color):find("Vector") then
-    self.DefaultTextColor = vectors.rgbToHex(color)
+    self.DefaultTextColor = "#"..vectors.rgbToHex(color)
   else
     self.DefaultTextColor = color
   end
   return self
 end
 
----Sets the text color
+---Tells where to anchor the text at.  
+---`0` <-> `1`, left <-> right  
+---`0` <-> `1`, top <-> bottom  
 ---@param h number?
 ---@param v number?
-function Box:setAlign(h,v)
+function Box:setTextAlign(h,v)
   self.TextAlign = vec(h or 0,v or 0)
   return self
 end
 
 ---Sets the flag if the text should wrap around when out of bounds.
----@param wrap boolean?
+---@param behavior GNUI.TextBehavior
 ---@generic self
 ---@param self self
 ---@return self
-function Box:setTextWrap(wrap)
+function Box:setTextBehavior(behavior)
   ---@cast self GNUI.Box
-  self.TextWrap = wrap or true
+  self.TextBehavior = behavior or "NONE"
+  return self
+end
+
+
+---@generic self
+---@param self self
+---@return self
+---@param effect GNUI.TextEffect
+function Box:setTextEffect(effect)
+  ---@cast self GNUI.Box
+  self.TextEffect = effect
+  self:rebuildTextTasks()
   return self
 end
 

@@ -418,7 +418,7 @@
     "await": true,
 
     // Show virtual number indexes if it may be hard to count them.
-    "arrayIndex": "Enable",
+    "arrayIndex": "Auto",
 
     // Show a virtual semicolon to seperate statements on the same line.
     "semicolon": "Disable"

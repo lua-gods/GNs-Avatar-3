@@ -48,27 +48,6 @@ local message_filters = {
       end
     end,
   },
-  -- Copy Coordinates
-  {
-    ---@param message chatscript.post_data
-    post = function (message)
-      if message.translate == "chat.type.text" then
-        ---@param component table
-        utils.filterPattern(message.post_json,"[%d-.]+%s+[%d-.]+%s+[%d-.]+",function (component)
-          component.hoverEvent = {action = "show_text", contents = {text="Copy "..component.text.." to Clipboard"}}
-          component.clickEvent = {action = "copy_to_clipboard", value = component.text}
-          local axis = 0
-          local colors = {"red","green","blue"}
-          utils.filterPattern(component,"[%d-.]+",function (sub_component)
-            axis = axis + 1
-            sub_component.color = colors[axis]
-            sub_component.antiTamper = true
-          end)
-          component.antiTamper = true
-        end)
-      end
-    end,
-  },
   {
     ---@param message chatscript.post_data
     post = function (message)
