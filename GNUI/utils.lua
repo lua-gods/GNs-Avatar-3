@@ -1,10 +1,11 @@
+---@diagnostic disable: assign-type-mismatch
 local utils = {}
 
 ---Returns the same vector but the `X` `Y` are the **min** and `Z` `W` are the **max**.  
 ---vec4(1,2,0,-1) --> vec4(0,-1,1,2)
 ---@param vec4 Vector4
 ---@return Vector4
-function utils.vec4FixNegativeBounds(vec4)
+function utils.vec4FixNegativeSize(vec4)
   return vec(
     math.min(vec4.x,vec4.z),
     math.min(vec4.y,vec4.w),
@@ -40,7 +41,7 @@ end
 ---Gets the size of a vec4
 ---@param vec4 Vector4
 ---@return Vector2
-function utils.vec4GetSize(vec4)
+function utils.vec4Size(vec4)
   return (vec4.zw - vec4.xy) ---@type Vector2
 end
 
@@ -63,7 +64,7 @@ end
 ---@param y number?
 ---@param z number?
 ---@return Vector3
-function utils.figureOutVec3(posx,y,z)
+function utils.vec3(posx,y,z)
   local typa, typb, typc = type(posx), type(y), type(z)
   
   if typa == "Vector3" then
@@ -80,7 +81,7 @@ end
 ---@param z number?
 ---@param w number?
 ---@return Vector4
-function utils.figureOutVec4(posx,y,z,w)
+function utils.vec4(posx,y,z,w)
   local typa, typb, typc, typd = type(posx), type(y), type(z), type(w)
   
   if typa == "Vector4" then

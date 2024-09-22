@@ -120,7 +120,7 @@ end
 ---@param b number
 ---@return Ninepatch
 function N:setColor(r,g,b)
-  self.Color = utils.figureOutVec3(r,g,b)
+  self.Color = utils.vec3(r,g,b)
   self.DIMENSIONS_CHANGED:invoke(self,self.Position,self.Size)
   return self
 end
@@ -214,7 +214,7 @@ end
 ---@param y2 number
 ---@return Ninepatch
 function N:setUV(x,y,x2,y2)
-  self.UV = utils.figureOutVec4(x,y,x2 or x,y2 or y)
+  self.UV = utils.vec4(x,y,x2 or x,y2 or y)
   self.DIMENSIONS_CHANGED:invoke(self.BorderThickness)
   return self
 end

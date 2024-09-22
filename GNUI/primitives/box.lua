@@ -101,8 +101,9 @@ end
 Box.__type = "GNUI.Box"
 local root_container_count = 0
 ---Creates a new container.
+---@param parent GNUI.Box?
 ---@return self
-function Box.new()
+function Box.new(parent)
   local model = models:newPart("GNUIBox"..nextID)
   local textModel = model:newPart("Text")
   nextID = nextID + 1
@@ -215,12 +216,12 @@ function Box.new()
    root_container_count = root_container_count + 1
   end
   orphan()
-  new.PARENT_CHANGED:register(function (parent)
-   if parent then
-    if parent.__type:find("Canvas$") then
-      new:setCanvas(parent)
+  new.PARENT_CHANGED:register(function (prnt)
+   if prnt then
+    if prnt.__type:find("Canvas$") then
+      new:setCanvas(prnt)
     else
-      new:setCanvas(parent.Canvas)
+      new:setCanvas(prnt.Canvas)
     end
    else
     new:setCanvas(nil)
@@ -234,6 +235,7 @@ function Box.new()
    end
    new:update()
   end)
+  if parent then parent:addChild(new) end
   return new
 end
 
@@ -493,7 +495,7 @@ end
 ---@return self
 function Box:setDimensions(x,y,w,t)
   ---@cast self GNUI.Box
-  local new = utils.figureOutVec4(x,y,w or x,t or y)
+  local new = utils.vec4(x,y,w or x,t or y)
   self.Dimensions = new
   self:update()
   return self
@@ -661,7 +663,7 @@ end
 ---@return self
 function Box:setAnchor(left,top,right,bottom)
   ---@cast self GNUI.Box
-  self.Anchor = utils.figureOutVec4(left,top,right or left,bottom or top)
+  self.Anchor = utils.vec4(left,top,right or left,bottom or top)
   self:update()
   return self
 end
