@@ -1312,9 +1312,8 @@ function Box:setTextEffect(effect)
 end
 
 ---Sets the offset of the text.
----@overload fun(self : GNUI.Box, pos : Vector2): GNUI.Box
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@generic self
 ---@param self self
 ---@return self

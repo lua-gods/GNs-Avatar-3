@@ -322,10 +322,8 @@ end
 
 
 ---Sets the Mouse position relative to the canvas. meaning in canvas local space.
----@overload fun(self:self, x:number,y:number): self
----@overload fun(self:self, pos:Vector2): self
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@param keep_auto boolean
 ---@generic self
 ---@param self self

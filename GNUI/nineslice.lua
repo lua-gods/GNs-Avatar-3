@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 --[[______  __
   / ____/ | / / by: GNamimates | Discord: "@gn8." | Youtube: @GNamimates
  / / __/  |/ / Sprite Library, specifically made for GNUI.
@@ -124,10 +125,9 @@ function N:setPos(xpos,y)
 end
 
 ---Tints the Sprite multiplicatively
----@overload fun(self : self, rgb : Vector3): Nineslice
----@param r number
----@param g number
----@param b number
+---@param r number|Vector3
+---@param g number?
+---@param b number?
 ---@return Nineslice
 function N:setColor(r,g,b)
   self.Color = utils.vec3(r,g,b)
@@ -256,11 +256,10 @@ end
 
 ---Sets the UV region of the sprite.
 --- if x2 and y2 are missing, they will use x and y as a substitute
----@overload fun(self : Nineslice, vec4 : Vector4): Nineslice
----@param x number
----@param y number
----@param x2 number
----@param y2 number
+---@param x number|Vector2|Vector4
+---@param y number|Vector2
+---@param x2 number?
+---@param y2 number?
 ---@return Nineslice
 function N:setUV(x,y,x2,y2)
   self.UV = utils.vec4(x,y,x2 or x,y2 or y)
