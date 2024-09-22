@@ -470,13 +470,10 @@ end
 --- if Z or W is missing, they will use X and Y instead
 ---@generic self
 ---@param self self
----@overload fun(self : self, x : number, y : number, z : number, w : number): self
----@overload fun(self : self, vec : Vector4): self
----@param x number
----@param y number
----@param w number
----@param t number
----@return self
+---@param x number|Vector4
+---@param y number?
+---@param w number?
+---@param t number?
 function Box:setDimensions(x,y,w,t)
   ---@cast self GNUI.Box
   local new = utils.vec4(x,y,w or x,t or y)
@@ -488,9 +485,7 @@ end
 ---Sets the position of this container
 ---@generic self
 ---@param self self
----@overload fun(self : self, x : number, y : number): self
----@overload fun(self : self, vec : Vector2): self
----@param x number
+---@param x number|Vector4
 ---@param y number?
 ---@return self
 function Box:setPos(x,y)
@@ -504,11 +499,9 @@ end
 
 
 ---Sets the Size of this container.
----@overload fun(self : self, x : number, y : number): self
----@overload fun(self : self, vec : Vector2): self
----@param x number
----@param y number
 ---@generic self
+---@param x number|Vector2
+---@param y number?
 ---@param self self
 ---@return self
 function Box:setSize(x,y)
@@ -528,8 +521,6 @@ end
 
 
 ---Checks if the given position is inside the container, in local BBunits of this box with dimension offset considered.
----@overload fun(self : self, x : number, y : number): boolean
----@overload fun(self : self, vec : Vector2): boolean
 ---@param x number|Vector2
 ---@param y number?
 ---@return boolean
@@ -639,11 +630,8 @@ end
 --- x 0 <-> 1 = left <-> right  
 --- y 0 <-> 1 = top <-> bottom  
 ---if right and bottom are not given, they will use left and top instead.
----@overload fun(self : GNUI.Box, left : number, top : number, right : number?, bottom : number?): self
----@overload fun(self : GNUI.Box, xz : Vector2, yw : Vector2): self
----@overload fun(self : GNUI.Box, rect : Vector4): self
----@param left number
----@param top number
+---@param left number|Vector4|Vector2
+---@param top number|Vector2
 ---@param right number?
 ---@param bottom number?
 ---@generic self
@@ -676,10 +664,8 @@ function Box:setIsCursorHovering(toggle)
 end
 
 --Sets the minimum size of the container. resets to none if no arguments is given
----@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
----@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@generic self
 ---@param self self
 ---@return self
@@ -703,10 +689,8 @@ end
 -- This API is only made for libraries, use `Container:setCustomMinimumSize()` instead
 --Sets the minimum size of the container.  
 --* this does not make the box update. `Container:update()` still needs to be called.
----@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
----@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@generic self
 ---@param self self
 ---@return self
@@ -725,10 +709,8 @@ end
 --- x -1 <-> 1 = left <-> right  
 --- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
----@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
----@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@generic self
 ---@param self self
 ---@return self
@@ -741,9 +723,8 @@ function Box:setGrowDirection(x,y)
 end
 
 ---Sets the shift of the children, useful for scrollbars.
----@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@generic self
 ---@param self self
 ---@return self
@@ -772,10 +753,8 @@ function Box:getMinimumSize()
 end
 
 --- Converts a point from BBunits to UV units.
----@overload fun(self : GNUI.any, pos : Vector2): Vector2
----@overload fun(self : GNUI.any, pos : Vector2): Vector2
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@return Vector2
 function Box:XYtoUV(x,y)
   local pos = utils.vec2(x,y)
@@ -786,9 +765,8 @@ function Box:XYtoUV(x,y)
 end
 
 --- Converts a point from UV units to BB units.
----@overload fun(self : GNUI.any, pos : Vector2): Vector2
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@return Vector2
 function Box:UVtoXY(x,y)
   local pos = utils.vec2(x,y)
@@ -799,9 +777,8 @@ function Box:UVtoXY(x,y)
 end
 
 ---returns the global position of the given local position.
----@overload fun(self : GNUI.any, pos : Vector2): Vector2
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@return Vector2
 function Box:toGlobal(x,y)
   local pos = utils.vec2(x,y)
@@ -818,9 +795,8 @@ end
 
 
 ---returns the local position of the given global position.
----@overload fun(self : GNUI.any, pos : Vector2): Vector2
----@param x number
----@param y number
+---@param x number|Vector2
+---@param y number?
 ---@return Vector2
 function Box:toLocal(x,y)
   local pos = utils.vec2(x,y)
