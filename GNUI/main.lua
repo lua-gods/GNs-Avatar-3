@@ -46,8 +46,12 @@ api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 ---@param UVy1 number?
 ---@param UVx2 number?
 ---@param UVy2 number?
+---@param expandTop number?
+---@param expandRight number?
+---@param expandBottom number?
+---@param expandLeft number?
 ---@return Nineslice
-api.newNineslice = function (texture,borderLeft,borderTop,borderRight,borderBottom,UVx1,UVy1,UVx2,UVy2)
+api.newNineslice = function (texture,borderLeft,borderTop,borderRight,borderBottom,UVx1,UVy1,UVx2,UVy2,expandTop,expandRight,expandBottom,expandLeft)
   local new = s.new()
   if texture then new:setTexture(texture) end
   if borderLeft then new:setBorderLeft(borderLeft) end
@@ -55,6 +59,10 @@ api.newNineslice = function (texture,borderLeft,borderTop,borderRight,borderBott
   if borderRight then new:setBorderRight(borderRight) end
   if borderBottom then new:setBorderBottom(borderBottom) end
   if UVx1 and UVy1 and UVx2 and UVy2 then new:setUV(UVx1,UVy1,UVx2,UVy2) end
+  if expandTop then new:setExpandTop(expandTop) end
+  if expandRight then new:setExpandRight(expandRight) end
+  if expandBottom then new:setExpandBottom(expandBottom) end
+  if expandLeft then new:setExpandLeft(expandLeft) end
   return new
 end
 

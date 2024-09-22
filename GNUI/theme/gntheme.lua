@@ -16,12 +16,37 @@
 ---GNUI.Button        ->    Button
 ---GNUI.Button.Slider ->    Slider
 
+local GNUI = require "GNUI.main"
+local atlas = textures["GNUI.theme.gnuiTheme"]
 
 ---@type GNUI.Theme
 return {
   Button = {
+    ---@param box GNUI.Button
     Default = function (box)
-      box:setText("Hello WOrld")
+      local spriteNormal = GNUI.newNineslice(atlas,2,2,2,4 ,7,1,11,7, 2)
+      local spritePressed = GNUI.newNineslice(atlas,2,2,2,2 ,13,3,17,7)
+      
+      box:setDefaultTextColor("black"):setTextAlign(0.5,0.5)
+      
+      local wasPressed = false
+      box.BUTTON_CHANGED:register(function (pressed,hovering)
+        if pressed ~= wasPressed then
+          wasPressed = pressed
+          if pressed then
+            
+            box:setNineslice(spritePressed)
+            :setTextOffset(0,2)
+            GNUI.playSound("minecraft:block.wooden_button.click_on",0.7)
+          else
+            GNUI.playSound("minecraft:block.wooden_button.click_off",0.5)
+            box:setNineslice(spriteNormal)
+            :setTextOffset(0,0)
+          end
+        end
+      end)
+      
+      box:setNineslice(spriteNormal)
     end
   }
 }

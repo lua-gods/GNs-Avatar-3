@@ -7,7 +7,7 @@ textures:newTexture("gnui_debug_outline",6,6)
 :fill(0,0,6,6,vec(0,0,0,1))
 :fill(1,1,4,4,vec(1,1,1))
 :fill(2,2,2,2,vec(0,0,0,1))
-local sprite = require"GNUI.ninepatch"
+local sprite = require"GNUI.nineslice"
 
 local nextID = 0
 
@@ -59,6 +59,7 @@ local nextID = 0
 ---@field AccumulatedScaleFactor number    # Scales the displayed sprites and its children based on the factor.
 --- ============================ TEXT ============================
 ---@field Text table                       # The text to be displayed.
+---@field TextOffset Vector2               # Specifies how much to offset the text from its final position.
 ---@field TextEffect GNUI.TextEffect       # The effect to be applied to the text.
 ---@field BakedText string[]               # The baked text to be displayed.
 ---@field DefaultTextColor string          # The color to be used when the text color is not specified.
@@ -70,7 +71,7 @@ local nextID = 0
 ---@field TextTasks TextTask[]             # A list of tasks to be executed when the text is changed.
 --- ============================ RENDERING ============================
 ---@field ModelPart ModelPart              # The `ModelPart` used to handle where to display debug features and the sprite.
----@field Sprite Ninepatch                    # the sprite that will be used for displaying textures.
+---@field Sprite Nineslice                    # the sprite that will be used for displaying textures.
 ---@field SPRITE_CHANGED EventLib          # Triggered when the sprite object set to this box has changed.
 ---
 --- ============================ INPUTS ============================
@@ -81,7 +82,6 @@ local nextID = 0
 ---@field MOUSE_PRESSENCE_CHANGED EventLib # Triggered when the state of the mouse to box interaction changes, arguments include: (hovering: boolean, pressed: boolean)
 ---@field MOUSE_ENTERED EventLib           # Triggered once the cursor is hovering over the container
 ---@field MOUSE_EXITED EventLib            # Triggered once the cursor leaves the confinement of this container.
----@field isPressed boolean                # `true` when the cursor is pressed over the container.
 ---@field isCursorHovering boolean         # `true` when the cursor is hovering over the container.
 ---
 --- ============================ CLIPPING ============================
@@ -144,6 +144,7 @@ function Box.new(parent)
     
     -->====================[ Text ]====================<--
     TextAlign = vec(0,0),
+    TextOffset = vec(0,0),
     TextEffect = "NONE",
     DefaultColor = "#FFFFFF",
     TextHandling = true,
@@ -164,7 +165,6 @@ function Box.new(parent)
     MOUSE_PRESSENCE_CHANGED = eventLib.new(),
     MOUSE_ENTERED = eventLib.new(),
     MOUSE_EXITED = eventLib.new(),
-    isPressed = false,
     isCursorHovering = false,
     
     -->====================[ Clipping ]====================<--
@@ -176,32 +176,15 @@ function Box.new(parent)
   
   -->==========[ Internals ]==========<--
   if cfg.debug_mode then
-   new.debug_container = sprite.new():setModelpart(new.ModelPart):setTexture(debugTex):setRenderType("CUTOUT_EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(cfg.debug_scale):excludeMiddle(true)
+   new.debugBox = sprite.new():setModelpart(new.ModelPart):setTexture(debugTex):setRenderType("CUTOUT_EMISSIVE_SOLID"):setBorderThickness(3,3,3,3):setScale(cfg.debug_scale):excludeMiddle(true):setDepthOffset(-0.1)
    new.MOUSE_PRESSENCE_CHANGED:register(function (hovering,pressed)
     if pressed then
-      new.debug_container:setColor(0.5,0.5,0.1)
+      new.debugBox:setColor(0.5,0.5,0.1)
     else
-      new.debug_container:setColor(1,1,hovering and 0.25 or 1)
+      new.debugBox:setColor(1,1,hovering and 0.25 or 1)
     end
    end)
   end
-
-  ---@param event GNUI.InputEvent
-  new.INPUT:register(function (event)
-   if event.key == "key.mouse.left" and event.isPressed then
-    if new.isCursorHovering then
-      if not new.isPressed then
-       new.isPressed = true
-       new.MOUSE_PRESSENCE_CHANGED:invoke(new.isCursorHovering,true)
-      end
-    end
-   else
-    if new.isPressed then
-      new.isPressed = false
-      new.MOUSE_PRESSENCE_CHANGED:invoke(new.isCursorHovering,false)
-    end
-   end
-  end)
   
   new.VISIBILITY_CHANGED:register(function (v)
    new:update()
@@ -447,9 +430,9 @@ end
 ---Note: if the sprite given is already in use, it will overtake it.
 ---@generic self
 ---@param self self
----@param sprite_obj Ninepatch?
+---@param sprite_obj Nineslice?
 ---@return self
-function Box:setSprite(sprite_obj)
+function Box:setNineslice(sprite_obj)
   ---@cast self self
   if sprite_obj ~= self.Sprite then
    if self.Sprite then
@@ -677,7 +660,7 @@ function Box:setIsCursorHovering(toggle)
   ---@cast self GNUI.Box
   if self.isCursorHovering ~= toggle then
    self.isCursorHovering = toggle
-   self.MOUSE_PRESSENCE_CHANGED:invoke(toggle,self.isPressed)
+   self.MOUSE_PRESSENCE_CHANGED:invoke(toggle)
    if toggle then
     self.MOUSE_ENTERED:invoke()
    else
@@ -860,7 +843,7 @@ end
 ---@return self
 function Box:updateTheming()
   ---@cast self GNUI.Box
-  self.MOUSE_PRESSENCE_CHANGED:invoke(self.isCursorHovering,self.isPressed)
+  self.MOUSE_PRESSENCE_CHANGED:invoke(self.isCursorHovering)
   return self
 end
 
@@ -995,14 +978,14 @@ function Box:updateSpriteTasks(forced_resize_sprites)
   end
    if cfg.debug_mode then
    ---@diagnostic disable-next-line: undefined-field
-   self.debug_container
+   self.debugBox
    :setPos(
     0,
     0,
     -(((self.ChildIndex * self.Z) / (self.Parent and (#self.Parent.Children) or 1) * 0.8) * cfg.clipping_margin))
     if self.cache.size_changed then
       ---@diagnostic disable-next-line: undefined-field
-        self.debug_container:setSize(
+        self.debugBox:setSize(
           containment_rect.z - containment_rect.x,
           containment_rect.w - containment_rect.y)
     end
@@ -1235,7 +1218,7 @@ function Box:repositionText()
   local textLenghts = self.TextLengths
   local pos = vec(0,0)
   local size = self.Size
-  
+  local o = self.TextOffset
   local lineWidth = {}
   local poses = {}
   
@@ -1261,7 +1244,7 @@ function Box:repositionText()
     for i = 1, #line.poses, 1 do
       j = j + 1
       local p = line.poses[i]
-      tasks[j]:setPos(-(size.x*align.x+p.x-line.width*align.x),-(size.y-p.y-lines*10)*align.y+p.y*(1-align.y),0)
+      tasks[j]:setPos(-(size.x*align.x+p.x-line.width*align.x)-o.x,-(size.y-p.y-lines*10)*align.y+p.y*(1-align.y)-o.y,0)
     end
   end
 end
@@ -1276,11 +1259,11 @@ local lengthTrim = client.getTextWidth("|")*2
 function Box:setText(text)
   ---@cast self GNUI.Box
   if type(text) == "string" then
-    text = {text=text}
+    text = {{text=text}}
   end
   local t = flattenJsonText(text)
   for _, c in pairs(t) do
-    if c.color and c.color == "default" then
+    if (c.color and c.color == "default") or c.color == nil then
       c.color = self.DefaultTextColor
     end
   end
@@ -1340,6 +1323,20 @@ function Box:setTextEffect(effect)
   ---@cast self GNUI.Box
   self.TextEffect = effect
   self:rebuildTextTasks()
+  return self
+end
+
+---Sets the offset of the text.
+---@overload fun(self : GNUI.Box, pos : Vector2): GNUI.Box
+---@param x number
+---@param y number
+---@generic self
+---@param self self
+---@return self
+function Box:setTextOffset(x,y)
+  ---@cast self GNUI.Box
+  self.TextOffset = utils.vec2(x,y)
+  self:repositionText()
   return self
 end
 

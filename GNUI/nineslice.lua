@@ -15,16 +15,24 @@ local update = {}
 ---@field Modelpart ModelPart?
 ---@field MODELPART_CHANGED EventLib
 ---@field UV Vector4
----@field Size Vector2
+---
 ---@field Position Vector2
+---@field Size Vector2
+---@field DIMENSIONS_CHANGED EventLib
+---
 ---@field Color Vector3
 ---@field Alpha number
 ---@field Scale number
----@field DIMENSIONS_CHANGED EventLib
+---
 ---@field RenderTasks table<any,SpriteTask>
 ---@field RenderType ModelPart.renderType
+---
 ---@field BorderThickness Vector4
 ---@field BORDER_THICKNESS_CHANGED EventLib
+---
+---@field BorderExpand Vector4
+---@field BORDER_EXPAND_CHANGED EventLib
+---
 ---@field ExcludeMiddle boolean
 ---@field DepthOffset number
 ---@field Visible boolean
@@ -54,7 +62,9 @@ function N.new(obj)
   new.RenderTasks = {}
   new.RenderType = obj.RenderType or "CUTOUT"
   new.BorderThickness = obj.BorderThickness or vec(0,0,0,0)
+  new.BorderExpand = obj.BorderExpand or vec(0,0,0,0)
   new.BORDER_THICKNESS_CHANGED = eventLib.new()
+  new.BORDER_EXPAND_CHANGED = eventLib.new()
   new.ExcludeMiddle = obj.ExcludeMiddle or false
   new.Visible = true
   new.id = sprite_next_free
@@ -181,7 +191,7 @@ function N:setBorderBottom(units)
   return self
 end
 
----Sets the right border thickness.
+---Sets the right expansion.
 ---@param units number?
 ---@return Nineslice
 function N:setBorderRight(units)
@@ -189,6 +199,45 @@ function N:setBorderRight(units)
   self.BORDER_THICKNESS_CHANGED:invoke(self,self.BorderThickness)
   return self
 end
+
+
+
+---Sets the top expansion.
+---@param units number?
+---@return Nineslice
+function N:setExpandTop(units)
+  self.BorderExpand.y = units or 0
+  self.BORDER_EXPAND_CHANGED:invoke(self,self.BorderExpand)
+  return self
+end
+
+---Sets the left expansion.
+---@param units number?
+---@return Nineslice
+function N:setExpandLeft(units)
+  self.BorderExpand.x = units or 0
+  self.BORDER_EXPAND_CHANGED:invoke(self,self.BorderExpand)
+  return self
+end
+
+---Sets the down expansion.
+---@param units number?
+---@return Nineslice
+function N:setExpandBottom(units)
+  self.BorderExpand.w = units or 0
+  self.BORDER_EXPAND_CHANGED:invoke(self,self.BorderExpand)
+  return self
+end
+
+---Sets the right expansion.
+---@param units number?
+---@return Nineslice
+function N:setExpandRight(units)
+  self.BorderExpand.z = units or 0
+  self.BORDER_EXPAND_CHANGED:invoke(self,self.BorderExpand)
+  return self
+end
+
 
 ---Sets the padding for all sides.
 ---@param left number?
@@ -305,11 +354,12 @@ function N:updateRenderTasks()
   if not self.Modelpart then return self end
   local res = self.Texture:getDimensions()
   local uv = self.UV:copy():add(0,0,1,1)
-  local pos = vec(self.Position.x,self.Position.y,self.DepthOffset)
+  local pos = vec(self.Position.x+self.BorderExpand.x,self.Position.y+self.BorderExpand.y,self.DepthOffset)
+  local size = self.Size+self.BorderExpand.xy+self.BorderExpand.zw
   if not self.is_ninepatch then
     self.RenderTasks[1]
     :setPos(pos)
-    :setScale(self.Size.x/res.x,self.Size.y/res.y,0)
+    :setScale(size.x/res.x,size.y/res.y,0)
     :setColor(self.Color:augmented(self.Alpha))
     :setRenderType(self.RenderType)
     :setUVPixels(
@@ -322,7 +372,6 @@ function N:updateRenderTasks()
   else
     local sborder = self.BorderThickness*self.Scale --scaled border, used in rendering
     local border = self.BorderThickness         --border, used in UVs
-    local size = self.Size
     local uvsize = vec(uv.z-uv.x,uv.w-uv.y)
     for _, task in pairs(self.RenderTasks) do
       task

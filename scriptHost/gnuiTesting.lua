@@ -7,3 +7,4 @@ local screen = GNUI.getScreenCanvas()
 local button = Button.new(screen)
 
 button:setDimensions(100,100,200,200)
+button:setText("Hello World")
