@@ -839,7 +839,7 @@ function Box:_update()
   self.AccumulatedScaleFactor = scale
   self.Dimensions:scale(scale)
   -- generate the containment rect
-  local cr = self.Dimensions:copy():sub(self.Parent and self.Parent.offsetChildren.xyxy or vec(0,0,0,0))
+  local cr = self.Dimensions:copy():add(self.Parent and self.Parent.offsetChildren.xyxy or vec(0,0,0,0))
   -- adjust based on parent if this has one
   local clipping = false
   local size

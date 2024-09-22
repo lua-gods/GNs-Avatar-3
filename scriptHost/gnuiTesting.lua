@@ -1,3 +1,4 @@
+if true then return end
 --- Require elements used
 local GNUI = require "GNUI.main"
 local Button = require "GNUI.element.button"

@@ -24,11 +24,11 @@ local co = require("GNUI.primitives.box")
 
 ---Creates a new Box.  
 ---A canvas can be given as a parameter to automatically add child it to that
----@param canvas GNUI.Canvas?
+---@param parent GNUI.Box?
 ---@return GNUI.Box
-api.newBox = function (canvas) 
+api.newBox = function (parent) 
   local new = co.new()
-  if canvas then canvas:addChild(new) end
+  if parent then parent:addChild(new) end
   return new
 end
 
@@ -52,7 +52,7 @@ api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 ---@param expandBottom number?
 ---@param expandLeft number?
 ---@return Nineslice
-api.newNineslice = function (texture,borderLeft,borderTop,borderRight,borderBottom,UVx1,UVy1,UVx2,UVy2,expandTop,expandRight,expandBottom,expandLeft)
+api.newNineslice = function (texture,UVx1,UVy1,UVx2,UVy2,borderLeft,borderTop,borderRight,borderBottom,expandTop,expandRight,expandBottom,expandLeft)
   local new = s.new()
   if texture then new:setTexture(texture) end
   if borderLeft then new:setBorderLeft(borderLeft) end

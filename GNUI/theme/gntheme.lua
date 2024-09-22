@@ -24,36 +24,37 @@ return {
   Box = {
     Default = function (box)end,
     Solid = function (box)
-      local spritePressed = GNUI.newNineslice(atlas,2,2,2,2 ,1,7,3,9)
+      local spritePressed = GNUI.newNineslice(atlas,1,7,3,9 ,2,2,2,2)
       box:setNineslice(spritePressed)
     end
   },
   Button = {
     ---@param box GNUI.Button
     Default = function (box)
-      local spriteNormal = GNUI.newNineslice(atlas,2,2,2,4 ,7,1,11,7, 2)
-      local spritePressed = GNUI.newNineslice(atlas,2,2,2,2 ,13,3,17,7)
+      local spriteNormal = GNUI.newNineslice(atlas,7,1,11,7 ,2,2,2,4, 2)
+      local spritePressed = GNUI.newNineslice(atlas,13,3,17,7 ,2,2,2,2)
       
       box:setDefaultTextColor("black"):setTextAlign(0.5,0.5)
       
-      local wasPressed = false
-      box.BUTTON_CHANGED:register(function (pressed,hovering)
+      local wasPressed = true
+      local function update(pressed,hovering)
         if pressed ~= wasPressed then
           wasPressed = pressed
           if pressed then
-            
             box:setNineslice(spritePressed)
             :setTextOffset(0,2)
+            :setChildrenOffset(0,0)
             GNUI.playSound("minecraft:ui.button.click",1)
           else
-            GNUI.playSound("minecraft:block.wooden_button.click_on",0.7)
             box:setNineslice(spriteNormal)
             :setTextOffset(0,0)
+            :setChildrenOffset(0,-2)
           end
         end
-      end)
+      end
       
-      box:setNineslice(spriteNormal)
+      box.BUTTON_CHANGED:register(update)
+      update(false,false)
     end
   },
 }

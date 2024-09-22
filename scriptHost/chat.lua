@@ -99,7 +99,7 @@ local message_filters = {
         ---@param component table
         utils.filterPattern(message.post_json,"[%d+%-*^./ ()]+",function (component)
           if #component.text > 1 then
-            local ok,result = pcall(load("return "..component.text,"meth","t",env))
+            local ok,result = pcall(load("return "..component.text,"meth",env))
             if ok and (type(result) == "number" or not result) then
               if result then
                 component.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
