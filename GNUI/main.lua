@@ -16,7 +16,7 @@ local api = {path = cfg.path}
 ---@alias GNUI.any GNUI.Box|GNUI.Box|GNUI.Canvas
 
 local u = require("GNUI.utils")
-local s = require("GNUI.ninepatch")
+local s = require("GNUI.nineslice")
 local ca = require("GNUI.primitives.canvas")
 local co = require("GNUI.primitives.box")
 
@@ -46,14 +46,14 @@ api.newCanvas = function (autoInputs)return ca.new(autoInputs) end
 ---@param UVy1 number?
 ---@param UVx2 number?
 ---@param UVy2 number?
----@return Ninepatch
-api.newNineslice = function (texture,borderTop,borderRight,borderBottom,borderLeft,UVx1,UVy1,UVx2,UVy2)
+---@return Nineslice
+api.newNineslice = function (texture,borderLeft,borderTop,borderRight,borderBottom,UVx1,UVy1,UVx2,UVy2)
   local new = s.new()
   if texture then new:setTexture(texture) end
+  if borderLeft then new:setBorderLeft(borderLeft) end
   if borderTop then new:setBorderTop(borderTop) end
   if borderRight then new:setBorderRight(borderRight) end
   if borderBottom then new:setBorderBottom(borderBottom) end
-  if borderLeft then new:setBorderLeft(borderLeft) end
   if UVx1 and UVy1 and UVx2 and UVy2 then new:setUV(UVx1,UVy1,UVx2,UVy2) end
   return new
 end
