@@ -21,6 +21,13 @@ local atlas = textures["GNUI.theme.gnuiTheme"]
 
 ---@type GNUI.Theme
 return {
+  Box = {
+    Default = function (box)end,
+    Solid = function (box)
+      local spritePressed = GNUI.newNineslice(atlas,2,2,2,2 ,1,7,3,9)
+      box:setNineslice(spritePressed)
+    end
+  },
   Button = {
     ---@param box GNUI.Button
     Default = function (box)
@@ -37,9 +44,9 @@ return {
             
             box:setNineslice(spritePressed)
             :setTextOffset(0,2)
-            GNUI.playSound("minecraft:block.wooden_button.click_on",0.7)
+            GNUI.playSound("minecraft:ui.button.click",1)
           else
-            GNUI.playSound("minecraft:block.wooden_button.click_off",0.5)
+            GNUI.playSound("minecraft:block.wooden_button.click_on",0.7)
             box:setNineslice(spriteNormal)
             :setTextOffset(0,0)
           end
@@ -48,5 +55,5 @@ return {
       
       box:setNineslice(spriteNormal)
     end
-  }
+  },
 }

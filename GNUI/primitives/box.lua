@@ -1,4 +1,4 @@
----@diagnostic disable: param-type-mismatch, return-type-mismatch
+---@diagnostic disable: param-type-mismatch
 local cfg = require"GNUI.config"
 local eventLib,utils = cfg.event, cfg.utils
 
@@ -470,7 +470,8 @@ end
 --- if Z or W is missing, they will use X and Y instead
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector4): GNUI.Box
+---@overload fun(self : self, x : number, y : number, z : number, w : number): self
+---@overload fun(self : self, vec : Vector4): self
 ---@param x number
 ---@param y number
 ---@param w number
@@ -487,7 +488,8 @@ end
 ---Sets the position of this container
 ---@generic self
 ---@param self self
----@overload fun(self : self, vec : Vector2): GNUI.Box
+---@overload fun(self : self, x : number, y : number): self
+---@overload fun(self : self, vec : Vector2): self
 ---@param x number
 ---@param y number?
 ---@return self
@@ -502,11 +504,12 @@ end
 
 
 ---Sets the Size of this container.
----@generic self
----@param self self
----@overload fun(self : self, vec : Vector2): GNUI.Box
+---@overload fun(self : self, x : number, y : number): self
+---@overload fun(self : self, vec : Vector2): self
 ---@param x number
 ---@param y number
+---@generic self
+---@param self self
 ---@return self
 function Box:setSize(x,y)
   ---@cast self GNUI.Box
@@ -525,6 +528,7 @@ end
 
 
 ---Checks if the given position is inside the container, in local BBunits of this box with dimension offset considered.
+---@overload fun(self : self, x : number, y : number): boolean
 ---@overload fun(self : self, vec : Vector2): boolean
 ---@param x number|Vector2
 ---@param y number?
@@ -635,8 +639,9 @@ end
 --- x 0 <-> 1 = left <-> right  
 --- y 0 <-> 1 = top <-> bottom  
 ---if right and bottom are not given, they will use left and top instead.
----@overload fun(self : GNUI.Box, xz : Vector2, yw : Vector2): GNUI.Box
----@overload fun(self : GNUI.Box, rect : Vector4): GNUI.Box
+---@overload fun(self : GNUI.Box, left : number, top : number, right : number?, bottom : number?): self
+---@overload fun(self : GNUI.Box, xz : Vector2, yw : Vector2): self
+---@overload fun(self : GNUI.Box, rect : Vector4): self
 ---@param left number
 ---@param top number
 ---@param right number?
@@ -671,6 +676,7 @@ function Box:setIsCursorHovering(toggle)
 end
 
 --Sets the minimum size of the container. resets to none if no arguments is given
+---@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
 ---@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
 ---@param x number
 ---@param y number
@@ -697,6 +703,7 @@ end
 -- This API is only made for libraries, use `Container:setCustomMinimumSize()` instead
 --Sets the minimum size of the container.  
 --* this does not make the box update. `Container:update()` still needs to be called.
+---@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
 ---@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
 ---@param x number
 ---@param y number
@@ -718,6 +725,7 @@ end
 --- x -1 <-> 1 = left <-> right  
 --- y -1 <-> 1 = top <-> bottom  
 --Sets the grow direction of the container
+---@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
 ---@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
 ---@param x number
 ---@param y number
@@ -733,7 +741,7 @@ function Box:setGrowDirection(x,y)
 end
 
 ---Sets the shift of the children, useful for scrollbars.
----@overload fun(self : GNUI.Box, vec : Vector2): GNUI.Box
+---@overload fun(self : GNUI.Box, x : number, y : number): GNUI.Box
 ---@param x number
 ---@param y number
 ---@generic self
@@ -764,6 +772,7 @@ function Box:getMinimumSize()
 end
 
 --- Converts a point from BBunits to UV units.
+---@overload fun(self : GNUI.any, pos : Vector2): Vector2
 ---@overload fun(self : GNUI.any, pos : Vector2): Vector2
 ---@param x number
 ---@param y number
