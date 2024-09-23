@@ -1,8 +1,8 @@
 # Clean up
-[ ] Refactor GNUI's require to be modular
-[ ] Merge multiple classes as much as possible.
+[r] Refactor GNUI's require to be modular
+[x] Merge multiple classes as much as possible.
 # Rendering
-[ ] Rewrite text rendering to be more abstract
+[x] Rewrite text rendering to be more abstract
  - text rendering is awful as of now
 [ ] Rewrite Debug mode to be its own library, somehow
 

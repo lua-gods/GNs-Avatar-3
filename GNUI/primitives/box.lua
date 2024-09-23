@@ -485,7 +485,7 @@ end
 ---Sets the position of this container
 ---@generic self
 ---@param self self
----@param x number|Vector4
+---@param x number|Vector2
 ---@param y number?
 ---@return self
 function Box:setPos(x,y)
