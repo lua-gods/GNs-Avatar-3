@@ -14,6 +14,14 @@ local base = GNUI.newBox(screen)
 :setAnchor(0.5,0,1,1)
 
 
+
+local window = GNUI.newBox(base)
+Theme.style(window,"Background")
+
+window:setAnchor(0,1,1,1):setDimensions(TABSIZE+OFFSET.x,-64+OFFSET.y,OFFSET.x-4,OFFSET.y+BTNSIZE)
+
+
+
 local tabsBox = GNUI.newBox(base):setAnchor(0,1)
 
 

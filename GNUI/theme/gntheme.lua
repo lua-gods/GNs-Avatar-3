@@ -23,7 +23,7 @@ local atlas = textures["GNUI.theme.gnuiTheme"]
 return {
   Box = {
     Default = function (box)end,
-    Solid = function (box)
+    Background = function (box)
       local spritePressed = GNUI.newNineslice(atlas,1,7,3,9 ,2,2,2,2)
       box:setNineslice(spritePressed)
     end

@@ -6,7 +6,6 @@ local icons = textures["textures.icons"]
 
 local icon = GNUI.newNineslice(icons,9,0,15,9)
 
-panels.newTab("Example",icon)
-panels.newTab("Example",icon)
-panels.newTab("Example",icon)
-panels.newTab("Example",icon)
+for i = 1, 10, 1 do
+  panels.newTab("Example",icon)
+end
