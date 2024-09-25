@@ -430,18 +430,17 @@ end
 ---Note: if the sprite given is already in use, it will overtake it.
 ---@generic self
 ---@param self self
----@param sprite_obj Nineslice?
+---@param nineslice Nineslice?
 ---@return self
-function Box:setNineslice(sprite_obj)
+function Box:setNineslice(nineslice)
   ---@cast self self
-  if sprite_obj ~= self.Sprite then
+  if nineslice ~= self.Sprite then
    if self.Sprite then
-    self.Sprite:deleteRenderTasks()
-    self.Sprite = nil
+    self.Sprite:setModelpart()
    end
-   if sprite_obj then
-    self.Sprite = sprite_obj
-    sprite_obj:setModelpart(self.ModelPart)
+   if nineslice then
+    self.Sprite = nineslice
+    nineslice:setModelpart(self.ModelPart)
    end
    self:updateSpriteTasks(true)
    self.SPRITE_CHANGED:invoke()

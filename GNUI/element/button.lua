@@ -12,6 +12,9 @@ local Theme = require"GNUI.theme"
 ---@field isPressed boolean
 ---@field isToggle boolean
 ---@field keybind GNUI.keyCode
+---
+---@field HoverBox GNUI.Box
+---
 ---@field BUTTON_CHANGED EventLib
 ---@field PRESSED EventLib
 ---@field BUTTON_DOWN EventLib
@@ -36,7 +39,10 @@ function Button.new(parent,variant)
   new.isToggle = false
   new.isPressed = false
   
-  new.MOUSE_PRESSENCE_CHANGED:register(function (isHovering) 
+  local hoverBox = Box.new(new)
+  new.HoverBox = hoverBox
+  
+  new.MOUSE_PRESSENCE_CHANGED:register(function (isHovering)
     new.BUTTON_CHANGED:invoke(new.isPressed,new.isCursorHovering)
   end)
   

@@ -89,14 +89,15 @@ function N.new(obj)
 end
 
 ---Sets the modelpart to parent to.
----@param part ModelPart
+---@param part ModelPart?
 ---@return Nineslice
 function N:setModelpart(part)
-  if self.Modelpart then
-    self:deleteRenderTasks()
-  end
+  self:deleteRenderTasks()
   self.Modelpart = part
-  self:buildRenderTasks()
+  
+  if self.Modelpart then
+    self:buildRenderTasks()
+  end
   self.MODELPART_CHANGED:invoke(self.Modelpart)
   return self
 end
@@ -145,8 +146,8 @@ function N:setOpacity(a)
 end
 
 ---Sets the size of the sprite duh.
----@param xpos number
----@param y number
+---@param xpos number|Vector2
+---@param y number?
 ---@return Nineslice
 function N:setSize(xpos,y)
   self.Size = utils.vec2(xpos,y)
@@ -315,8 +316,10 @@ function N:update()
 end
 
 function N:deleteRenderTasks()
-  for _, task in pairs(self.RenderTasks) do
-    self.Modelpart:removeTask(task:getName())
+  if self.Modelpart then
+    for _, task in pairs(self.RenderTasks) do
+      self.Modelpart:removeTask(task:getName())
+    end
   end
   return self
 end
