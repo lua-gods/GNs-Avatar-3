@@ -33,7 +33,7 @@ return {
     Default = function (box)
       local spriteNormal = GNUI.newNineslice(atlas,7,1,11,7 ,2,2,2,4, 2)
       local spritePressed = GNUI.newNineslice(atlas,13,3,17,7 ,2,2,2,2)
-      local spriteHover = GNUI.newNineslice(atlas,5,13,7,15 ,1,1,1,1, 1,1,1,1)
+      local spriteHover = GNUI.newNineslice(atlas,19,1,25,7 ,3,3,3,3, 2,2,2,2)
       
       box:setDefaultTextColor("black"):setTextAlign(0.5,0.5)
       box.HoverBox:setNineslice(spriteHover):setAnchor(0,0,1,1):setBlockMouse(false):setZMul(200)
