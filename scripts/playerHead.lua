@@ -14,8 +14,8 @@ local base = models.playerHead
 :setParentType("SKULL")
 :setPrimaryRenderType("CUTOUT_CULL")
 local modelPlushie = base.plushie
-local modelHead = base.head:scale(1.15,1.15,1.15)
-local modelItem = base.item:scale(1.2,1.2,1.2)
+local modelHat = models.hat:setParentType("SKULL"):scale(0.9,0.9,0.9)
+local modelItem = models.item:setParentType("SKULL"):scale(1,1,1)
 --local modelStatue = recursiveCopy(models.player):setParentType("Skull"):setPos(0,-19.5,0):scale(0.8)
 --models:addChild(modelStatue)
 --for key, child in pairs(modelStatue:getChildren()) do
@@ -45,11 +45,11 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
     if type(color) == "string" then
       color = vectors.hexToRGB(color)
     end
-    modelHead.cylinder:setScale(1,height or 10,1)
-    modelHead.ribbon.shade4:setColor(color)
-    modelHead.ribbon.shade3:setColor(colorGrade(color,0,0.05,-0.1))
-    modelHead.ribbon.shade2:setColor(colorGrade(color,0,0.25,-0.25))
-    modelHead.ribbon.shade1:setColor(colorGrade(color,0,0.5,-0.4))
+    --modelHat.cylinder:setScale(1,height or 10,1)
+    --modelHat.ribbon.shade4:setColor(color)
+    --modelHat.ribbon.shade3:setColor(colorGrade(color,0,0.05,-0.1))
+    --modelHat.ribbon.shade2:setColor(colorGrade(color,0,0.25,-0.25))
+    --modelHat.ribbon.shade1:setColor(colorGrade(color,0,0.5,-0.4))
   --elseif situation == 3 then
   --  local pose = entity:getNbt().Pose
   --  for key, value in pairs(pose) do
@@ -83,7 +83,7 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
   --  modelStatue.LeftArm:setMatrix(invHead)
   --  
   end
-  modelHead:setVisible(situation == 2)
+  modelHat:setVisible(situation == 2)
   modelPlushie:setVisible(situation == 1)
   modelItem:setVisible(situation == 0)
   --modelStatue:setVisible(situation == 3)

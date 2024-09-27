@@ -1,31 +1,27 @@
 
 local colors = {
-  vectors.hexToRGB("#d3fc7e"),
-  vectors.hexToRGB("#99e65f"),
-  vectors.hexToRGB("#5ac54f"),
-  vectors.hexToRGB("#33984b"),
-  vectors.hexToRGB("#1e6f50"),
-  vectors.hexToRGB("#134c4c"),
-  vectors.hexToRGB("#0c2e44"),
+  vectors.hexToRGB("#edab50"),
+  vectors.hexToRGB("#e07438"),
+  vectors.hexToRGB("#c64524"),
+  vectors.hexToRGB("#8e251d"),
 }
 
 
 
 function pings.GNPOOF(x,y,z,appear)
   local pos = vec(x,y,z)
-  particles:newParticle("minecraft:flash",pos):setColor(0.5,1,0.4)
+  particles:newParticle("minecraft:flash",pos):setColor(colors[1])
   local max_pow = 0.5
   for ci = 1, #colors, 1 do
     local clr = colors[ci]
     local low_pow,high_pow = (ci-1) / #colors * max_pow,ci / #colors * max_pow
-    for i = 1, 50, 1 do
+    for i = 1, 200, 1 do
       local mpow = math.lerp(low_pow,high_pow,math.random())
       local inv_pow = math.pow((1 - mpow )* max_pow,3)
       local v = vectors.angleToDir(math.random()*360,math.random()*180)*mpow
-      v:mul(0.5,1,0.5)
+      v:mul(1,1,1)
       local p = particles
       :newParticle("minecraft:end_rod",pos)
-      
       if not appear then
         p:setVelocity(v)
         :color(clr)
@@ -40,9 +36,11 @@ function pings.GNPOOF(x,y,z,appear)
       end
     end
   end
-  --sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,1,1)
+  sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,2)
+  sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,1)
+  sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,0.5)
   sounds:playSound("minecraft:entity.generic.extinguish_fire",pos,0.1,0.8)
-  --sounds:playSound("minecraft:entity.allay.item_taken",pos,1,1)
+  --sounds:playSound("minecraft:entity.allay.item_taken",pos,1,0.5)
   for i = 1, 3, 1 do
     sounds:playSound("minecraft:particle.soul_escape",pos,1,1)
   end

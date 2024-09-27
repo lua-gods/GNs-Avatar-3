@@ -8,6 +8,8 @@ local Box = require"GNUI.primitives.box"
 local eventLib = require"libraries.eventLib"
 local Theme = require"GNUI.theme"
 
+local tree = {}
+
 ---@class GNUI.Button : GNUI.Box
 ---@field isPressed boolean
 ---@field isToggle boolean

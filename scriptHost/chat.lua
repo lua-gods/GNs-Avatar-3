@@ -114,10 +114,58 @@ local message_filters = {
   },
 }
 
+local function clone(tbl)
+  local output = {}
+  for k,v in pairs(tbl) do
+    output[k] = v
+  end
+  return output
+end
+
+--- flattens all nested components into one big array.
+---@param input Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
+local function flattenJsonText(input)
+  input = clone(input) ---@type Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
+  if input[1] then -- is an array
+    for i = 1, #input, 1 do
+      input[i] = flattenJsonText(input[i])
+    end
+  else -- is a component
+    if input.extra then
+      local extra ---@type Minecraft.RawJSONText.Component[]
+      if input.extra[1] then -- is an array
+        extra = input.extra
+      else
+        extra = {input.extra}
+      end
+      local output = {input}
+      input.extra = nil
+      for i = 1, #extra, 1 do
+        local ec = extra[i]
+        local ecFlat = clone(ec)
+        for key, value in pairs(input) do
+          ecFlat[key] = ec[key] or value
+        end
+        
+        ecFlat = flattenJsonText(ecFlat) -- flattens nested extra tags
+        
+        -- merges the tables into one array
+        if ecFlat[1] then -- is an array
+          for j = 1, #ecFlat, 1 do
+            output[#output+1] = ecFlat[j]
+          end
+        else output[#output+1] = ecFlat end
+      end
+      input = output
+    end
+  end
+  return input
+end
+
 local recived_messages = 0
 events.CHAT_RECEIVE_MESSAGE:register(function (message, json)
   recived_messages = recived_messages + 1
-  local parsed_json = parseJson(json)
+  local parsed_json = flattenJsonText(parseJson(json))
   local data = {
     plain_text = message,
     translate = parsed_json.translate,

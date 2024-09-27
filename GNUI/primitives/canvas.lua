@@ -218,6 +218,10 @@ for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 ---@class GNUI.Canvas : GNUI.Box # A special type of container that handles all the inputs
 ---@field MousePosition Vector2 # the position of the mouse
 ---@field HoveredElement GNUI.any? # the element the mouse is currently hovering over
+---@field PassiveHoveredElement GNUI.Box? # the last hovering element.
+---@field HOVERING_ELEMENT_CHANGED EventLib # triggered when the hovering element changes
+---@field PASSIVE_HOVERING_ELEMENT_CHANGED EventLib # Just like the HOVERING_BOX_CHANGED, but will never be nil if there is nothing being hovered.
+---
 ---@field PressedElement GNUI.any? # the last pressed element, used to unpress buttons that have been unhovered.
 ---@field MOUSE_POSITION_CHANGED EventLib # called when the mouse position changes
 ---@field reciveInputs boolean # EventLibs whether the canvas could capture input events
@@ -226,7 +230,6 @@ for key, value in pairs(mousemap) do mousemap[key] = "key.mouse." .. value end
 ---@field hasCustomCursorSetter boolean # true when the setCursor is called, while false, the canvas will use the screen cursor.
 ---@field INPUT EventLib # serves as the handler for all inputs within the boundaries of the canvas. called with the first argument being an input event
 ---@field UNHANDLED_INPUT EventLib # triggers when an input is not handled by the children of the canvas.
----@field HOVERING_BOX_CHANGED EventLib # triggered when the mouse enters or exits the canvas
 local Canvas = {}
 Canvas.__index = function (t,i)
   return rawget(t,i) or Canvas[i] or Container[i]
@@ -309,7 +312,8 @@ function Canvas.new(autoScreenInputs)
   new.MOUSE_POSITION_CHANGED = eventLib.new()
   new.INPUT = eventLib.new()
   new.UNHANDLED_INPUT = eventLib.new()
-  new.HOVERING_BOX_CHANGED = eventLib.new()
+  new.HOVERING_ELEMENT_CHANGED = eventLib.new()
+  new.PASSIVE_HOVERING_ELEMENT_CHANGED = eventLib.new()
   
   WORLD_RENDER:register(function ()
    new:_propagateUpdateToChildren()
@@ -463,12 +467,15 @@ function Canvas:setHoveringChild(box)
   if box ~= self.HoveredElement then  
     if self.HoveredElement then
       self.HoveredElement:setIsCursorHovering(false)
+      local l = self.PassiveHoveredElement
+      self.PassiveHoveredElement = box
+      self.PASSIVE_HOVERING_ELEMENT_CHANGED:invoke(box,l)
     end
     if box then
       box:setIsCursorHovering(true)
     end
     self.HoveredElement = box
-    self.HOVERING_BOX_CHANGED:invoke(box)
+    self.HOVERING_ELEMENT_CHANGED:invoke(box,self.PassiveHoveredElement)
   end
   return self
 end
