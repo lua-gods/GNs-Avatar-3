@@ -1,5 +1,5 @@
 
-if not host:isHost() then return end
+if true then return end
 local GNUI = require"GNUI.main"
 local panels = require"scriptHost.panels"
 local icons = textures["textures.icons"]
