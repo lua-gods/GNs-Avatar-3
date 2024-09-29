@@ -21,7 +21,10 @@ local function applyChangesToIndex(i)
 end
 
 local utils = require("libraries.rawjsonUtils")
-local env = {math=math}
+local env = {math=math,vectors = vectors,vec=vec}
+for key, value in pairs(math) do -- inject math into global
+  env[key] = value
+end
 
 local function clone(tbl)
   local output = {}
