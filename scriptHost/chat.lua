@@ -48,6 +48,44 @@ local function clone(tbl)
 end
 
 
+local keywords = {
+  ["true"] = true,
+  ["false"] = true,
+  ["nil"] = true,
+  ["and"] = true,
+  ["or"] = true,
+  ["not"] = true,
+  ["if"] = true,
+  ["then"] = true,
+  ["elseif"] = true,
+  ["else"] = true,
+  ["while"] = true,
+  ["do"] = true,
+  ["for"] = true,
+  ["in"] = true,
+  ["function"] = true,
+  ["local"] = true,
+  ["return"] = true,
+  ["break"] = true,
+  ["continue"] = true,
+  ["end"] = true,
+  ["%="] = true,
+  ["%+"] = true,
+  ["%-"] = true,
+  ["%*"] = true,
+  ["/"] = true,
+  ["%%"] = true,
+  ["%^"] = true,
+  ["%.%."] = true,
+  ["<"] = true,
+  [">"] = true,
+  ["<="] = true,
+  [">="] = true,
+  ["=="] = true,
+  ["~="] = true,
+}
+
+
 local filters = {
 -- Theme
   ---@param message chatscript.data
@@ -105,15 +143,22 @@ local filters = {
         snippet = snippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
         snippet = snippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
         --print(prefix .. "return" .. snippet)
-        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",proxyEnv))
+        local tempEnv = setmetatable({}, {__index = env or proxyEnv})
+        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",tempEnv))
         if not ok then
           ok,result = pcall(load(prefix.." "..snippet,"math",clone(env)))
         end
-        if ok and (type(result) == "number" or not result) then
-          if result then
-            c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
-            c.hoverEvent = {action = "show_text", contents = {text="= "..result}}
-          end
+        if ok and result then
+          c.color = "#ffffff"
+          c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
+          c.hoverEvent = {action = "show_text", contents = {{text=result},{text="\nClick to Copy",color="gray"}}}
+        end
+        
+        for key, _ in pairs(keywords) do
+          utils.filterPattern(c,key,function (v)
+            v.color = "#f5555d"
+            v.antiTamper = true
+          end)
         end
         c.antiTamper = true
       end
@@ -125,7 +170,7 @@ local filters = {
     ---@param c table
     utils.filterPattern(message.json,"[%d+%-*^./ ()]+",function (c)
       if #c.text > 1 then
-        local ok,result = pcall(load("return "..c.text,"meth",env))
+        local ok,result = pcall(load("return "..c.text))
         if ok and (type(result) == "number" or not result) then
           if result then
             c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
