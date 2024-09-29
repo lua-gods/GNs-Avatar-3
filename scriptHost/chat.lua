@@ -53,7 +53,7 @@ local keywords = {
   ["false"] = true,
   ["nil"] = true,
   ["and"] = true,
-  ["or"] = true,
+  [" or"] = true,
   ["not"] = true,
   ["if"] = true,
   ["then"] = true,
@@ -140,20 +140,62 @@ local filters = {
         local snippet = c.text:sub(2,-2) ---@type string
         snippet = snippet:gsub("STACK","stack")
         local prefix = "local STACK = 0;"
-        snippet = snippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
-        snippet = snippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
-        snippet = snippet:gsub("%)"," ) STACK = STACK + 1 if STACK > 100 then break end ")
-        --print(prefix .. "return" .. snippet)
-        local tempEnv = setmetatable({}, {__index = env or proxyEnv})
-        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",tempEnv))
-        if not ok then
-          ok,result = pcall(load(prefix.." "..snippet,"math",clone(env)))
+        
+        local strings = {}
+        
+        -- save all the strings
+        
+        while true do -- [[]]
+          local a,b = (snippet.." "):find("%[%[(.*)%]%][^%]]")
+          if b then 
+            strings[#strings+1] = snippet:sub(a,b)
+            snippet = snippet:sub(1,a-1) .. "@" .. snippet:sub(b+1,-1)
+          else break end
         end
-        if ok and result then
-          c.color = "#ffffff"
-          c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
-          c.hoverEvent = {action = "show_text", contents = {{text=result},{text="\nClick to Copy",color="gray"}}}
+        
+        for i = 1, 100, 1 do
+          local q = ("="):rep(i)
+          while true do -- [=[]=]
+            local a,b = (snippet.." "):find("%["..q.."%[(.*)%]"..q.."%][^%]]")
+            if b then 
+              b = b - 1
+              strings[#strings+1] = snippet:sub(a,b)
+              snippet = snippet:sub(1,a-1) .. "@" .. snippet:sub(b+1,-1)
+            else break end
+          end
         end
+        
+        while true do -- ""
+          local a,b = snippet:find("\"(.*)\"")
+          if b then 
+            strings[#strings+1] = snippet:sub(a,b)
+            snippet = snippet:sub(1,a-1) .. "@" .. snippet:sub(b+1,-1)
+          else break end
+        end
+        
+        while true do -- ''
+          local a,b = snippet:find("'(.*)'")
+          if b then 
+            strings[#strings+1] = snippet:sub(a,b)
+            snippet = snippet:sub(1,a-1) .. "@" .. snippet:sub(b+1,-1)
+          else break end
+        end
+        
+        
+        local patchedSNippet = snippet
+        patchedSNippet = patchedSNippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
+        patchedSNippet = patchedSNippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
+        patchedSNippet = patchedSNippet:gsub("::",":: STACK = STACK + 1 if STACK > 100 then break end ")
+        c.text = "`"..snippet.."`"
+        snippet = patchedSNippet
+        
+        local g = 0
+        utils.filterPattern(c,"@",function (v)
+          g = g + 1
+          v.text = strings[g]
+          v.color = "#56c0f0"
+          v.antiTamper = true
+        end)
         
         for key, _ in pairs(keywords) do
           utils.filterPattern(c,key,function (v)
@@ -161,6 +203,27 @@ local filters = {
             v.antiTamper = true
           end)
         end
+        
+        snippet = snippet.format(snippet:gsub("@","%%s"),table.unpack(strings))
+        
+        while true do
+          local _,a = snippet:find("%a%([^)]*%)")
+          if a then
+            snippet = snippet:sub(1,a-1) .. "STACK = STACK + 1 if STACK > 100 then break end " .. snippet:sub(a+1,-1)
+          else break end
+        end
+        --print(prefix .. "return" .. snippet)
+        local tempEnv = setmetatable({}, {__index = env or proxyEnv})
+        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",tempEnv))
+        if not ok then
+          ok,result = pcall(load(prefix..snippet,"math",clone(env)))
+        end
+        if ok and result then
+          c.color = "#ffffff"
+          c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
+          c.hoverEvent = {action = "show_text", contents = {{text=result},{text="\n^ Click to Copy to Clipboard\n",color="gold"},{text=snippet,color="gray"}}}
+        end
+        
         c.antiTamper = true
       end
     end)

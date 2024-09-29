@@ -1,0 +1,14 @@
+
+
+-->====================[ Decimal to Binary ]====================<--
+
+local input = 1
+
+local binary = ""
+
+while input > 0 do
+  binary = (input % 2) .. binary
+  input = math.floor(input / 2)
+end
+
+print(binary)
