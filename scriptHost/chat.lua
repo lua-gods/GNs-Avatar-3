@@ -142,6 +142,7 @@ local filters = {
         local prefix = "local STACK = 0;"
         snippet = snippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
         snippet = snippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
+        snippet = snippet:gsub("%)"," ) STACK = STACK + 1 if STACK > 100 then break end ")
         --print(prefix .. "return" .. snippet)
         local tempEnv = setmetatable({}, {__index = env or proxyEnv})
         local ok,result = pcall(load(prefix .. "return " .. snippet,"math",tempEnv))
@@ -182,7 +183,6 @@ local filters = {
     end)
   end,
 }
-
 --`for i = 1, 10, 1 do end; return 1+1`
 
 --- flattens all nested components into one big array.
