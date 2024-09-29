@@ -77,7 +77,7 @@ local filters = {
       c.antiTamper = true
     end)
   end,
-  --Calculator Advanced
+  --Codeblock Eval
   ---@param message chatscript.data
   function (message)
     ---@param c table
@@ -85,11 +85,10 @@ local filters = {
       if #c.text > 1 then
         local snippet = c.text:sub(2,-2) ---@type string
         snippet = snippet:gsub("STACK","stack")
-        local prefix = "local STACK = 0 "
+        local prefix = "local STACK = 0;"
         snippet = snippet:gsub(" do "," do STACK = STACK + 1 if STACK > 100 then break end ")
-        snippet = snippet:gsub(" end "," end STAACK = 0 ")
-        --print(prefix..snippet)
-        local ok,result = pcall(load(prefix .. "return" .. snippet,"math",clone(env)))
+        --print(prefix .. "return" .. snippet)
+        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",clone(env)))
         if not ok then
           ok,result = pcall(load(prefix.." "..snippet,"math",clone(env)))
         end
