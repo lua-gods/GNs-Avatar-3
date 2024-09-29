@@ -185,7 +185,6 @@ local filters = {
         local patchedSNippet = snippet
         patchedSNippet = patchedSNippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
         patchedSNippet = patchedSNippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
-        patchedSNippet = patchedSNippet:gsub("::",":: STACK = STACK + 1 if STACK > 100 then break end ")
         c.text = "`"..snippet.."`"
         snippet = patchedSNippet
         
@@ -206,7 +205,7 @@ local filters = {
         
         snippet = snippet.format(snippet:gsub("@","%%s"),table.unpack(strings))
         
-        while true do
+        while true do -- patch functions
           local _,a = snippet:find("%a%([^)]*%)")
           if a then
             snippet = snippet:sub(1,a-1) .. "STACK = STACK + 1 if STACK > 100 then break end " .. snippet:sub(a+1,-1)
