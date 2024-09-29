@@ -23,6 +23,15 @@ end
 local utils = require("libraries.rawjsonUtils")
 local env = {math=math}
 
+local function clone(tbl)
+  local output = {}
+  for k,v in pairs(tbl) do
+    output[k] = v
+  end
+  return output
+end
+
+
 local filters = {
 -- Theme
   ---@param message chatscript.data
@@ -68,6 +77,32 @@ local filters = {
       c.antiTamper = true
     end)
   end,
+  --Calculator Advanced
+  ---@param message chatscript.data
+  function (message)
+    ---@param c table
+    utils.filterPattern(message.json,"`([^`]+)`",function (c)
+      if #c.text > 1 then
+        local snippet = c.text:sub(2,-2) ---@type string
+        snippet = snippet:gsub("STACK","stack")
+        local prefix = "local STACK = 0 "
+        snippet = snippet:gsub(" do "," do STACK = STACK + 1 if STACK > 100 then break end ")
+        snippet = snippet:gsub(" end "," end STAACK = 0 ")
+        --print(prefix..snippet)
+        local ok,result = pcall(load(prefix .. "return" .. snippet,"math",clone(env)))
+        if not ok then
+          ok,result = pcall(load(prefix.." "..snippet,"math",clone(env)))
+        end
+        if ok and (type(result) == "number" or not result) then
+          if result then
+            c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
+            c.hoverEvent = {action = "show_text", contents = {text="= "..result}}
+          end
+        end
+        c.antiTamper = true
+      end
+    end)
+  end,
 --Calculator
   ---@param message chatscript.data
   function (message)
@@ -78,7 +113,7 @@ local filters = {
         if ok and (type(result) == "number" or not result) then
           if result then
             c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
-            c.hoverEvent = {action = "show_text", contents = {text="it's "..result.." btw"}}
+            c.hoverEvent = {action = "show_text", contents = {text="= "..result}}
           end
         end
         c.antiTamper = true
@@ -87,13 +122,7 @@ local filters = {
   end,
 }
 
-local function clone(tbl)
-  local output = {}
-  for k,v in pairs(tbl) do
-    output[k] = v
-  end
-  return output
-end
+--`for i = 1, 10, 1 do end; return 1+1`
 
 --- flattens all nested components into one big array.
 ---@param input Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
