@@ -10,6 +10,7 @@
 ---@type chatscript.data[]
 local history = {}
 
+
 ---@class chatscript.data : HostAPI.chatMessage
 ---@field json Minecraft.RawJSONText.Component|Minecraft.RawJSONText.Component[]
 
@@ -25,6 +26,18 @@ local env = {math=math,vectors = vectors,vec=vec}
 for key, value in pairs(math) do -- inject math into global
   env[key] = value
 end
+
+local function proxify(tbl)
+  for key, value in pairs(tbl) do
+    if type(value) == "table" then
+      tbl[key] = proxify(value)
+    end
+  end
+  local output = setmetatable({}, {__index = tbl, __newindex = function ()end})
+  return output
+end
+
+local proxyEnv = proxify(env)
 
 local function clone(tbl)
   local output = {}
@@ -92,7 +105,7 @@ local filters = {
         snippet = snippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
         snippet = snippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
         --print(prefix .. "return" .. snippet)
-        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",clone(env)))
+        local ok,result = pcall(load(prefix .. "return " .. snippet,"math",proxyEnv))
         if not ok then
           ok,result = pcall(load(prefix.." "..snippet,"math",clone(env)))
         end
