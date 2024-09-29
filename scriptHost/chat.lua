@@ -89,7 +89,8 @@ local filters = {
         local snippet = c.text:sub(2,-2) ---@type string
         snippet = snippet:gsub("STACK","stack")
         local prefix = "local STACK = 0;"
-        snippet = snippet:gsub("[ ;]do[ ;]"," do STACK = STACK + 1 if STACK > 100 then break end ")
+        snippet = snippet:gsub("do[ ;-]"," do STACK = STACK + 1 if STACK > 100 then break end ")
+        snippet = snippet:gsub("until[ ;-]"," until STACK = STACK + 1 if STACK > 100 then break end ")
         --print(prefix .. "return" .. snippet)
         local ok,result = pcall(load(prefix .. "return " .. snippet,"math",clone(env)))
         if not ok then
