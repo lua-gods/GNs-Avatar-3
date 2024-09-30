@@ -143,8 +143,9 @@ local filters = {
         
         local strings = {}
         
-        -- save all the strings
+        snippet = snippet.format(snippet:gsub("@"," "),table.unpack(strings))
         
+        -- save all the strings
         while true do -- [[]]
           local a,b = (snippet.." "):find("%[%[(.*)%]%][^%]]")
           if b then 

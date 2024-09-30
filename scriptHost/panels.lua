@@ -1,4 +1,3 @@
-if true then return end
 local GNUI = require"GNUI.main"
 local Theme = require"GNUI.theme"
 local Button = require"GNUI.element.button"
@@ -14,17 +13,7 @@ local base = GNUI.newBox(screen)
 :setDimensions(92,0,0,0)
 :setAnchor(0.5,0,1,1)
 
-
-
-local window = GNUI.newBox(base)
-Theme.style(window,"Background")
-
-window:setAnchor(0,1,1,1):setDimensions(TABSIZE+OFFSET.x,-64+OFFSET.y,OFFSET.x-4,OFFSET.y+BTNSIZE)
-
-
-
 local tabsBox = GNUI.newBox(base):setAnchor(0,1)
-
 
 local baseButton = Button.new(base)
 :setSize(BTNSIZE,BTNSIZE):setPos(OFFSET)
@@ -49,6 +38,7 @@ function api.newTab(name,icon)
   :setSize(TABSIZE,TABSIZE):setPos(0,(#tabs)*(TABSIZE-1))
   tabs[#tabs+1] = "FILLER"
   tabsBox:setDimensions(OFFSET.x+(BTNSIZE-TABSIZE)*0.5,-(#tabs*(TABSIZE-1))+OFFSET.y,OFFSET.x+BTNSIZE-(BTNSIZE-TABSIZE)*0.5,OFFSET.y)
+  return btn
 end
 
 return api
