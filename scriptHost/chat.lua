@@ -236,12 +236,12 @@ local filters = {
       if #c.text > 1 then
         local ok,result = pcall(load("return "..c.text))
         if ok and (type(result) == "number" or not result) then
-          if result then
+          if result and tostring(result) ~= c.text then
             c.clickEvent = {action = "copy_to_clipboard", value = tostring(result)}
             c.hoverEvent = {action = "show_text", contents = {text="= "..result}}
           end
+          c.antiTamper = true
         end
-        c.antiTamper = true
       end
     end)
   end,
@@ -303,31 +303,6 @@ end)
 
 
 
-local GNUI = require"GNUI.main"
-local screen = GNUI.getScreenCanvas()
-
-local chat = GNUI.newBox(screen)
-:setAnchor(0,0.5,0.5,0.8)
-
-local MARGIN = 3
-
-local tween = require("libraries.tween")
-local function repositionChat()
-  local shift = 0
-  for i = 1, #chat.Children-10, 1 do -- clears old messages
-    chat:removeChild(chat.Children[i])
-  end
-  for i = #chat.Children, 1, -1 do
-    local child = chat.Children[i]
-    shift = shift + child.Size.y + MARGIN
-    child:setPos(0,-shift+MARGIN)
-  end
-end
-
-chat.CHILDREN_CHANGED:register(repositionChat)
-chat.DIMENSIONS_CHANGED:register(repositionChat)
-
-
 events.POST_WORLD_RENDER:register(function ()
   while 0 < recivedMsgs do
     local data = host:getChatMessage(recivedMsgs)
@@ -344,31 +319,7 @@ events.POST_WORLD_RENDER:register(function ()
         end
       end
     end
-    local box = GNUI.newBox(chat)
-    :setText(data.json)
-    :setVisible(false)
-    :setTextBehavior("WRAP")
-    :setTextEffect("SHADOW")
-    :setAnchor(0,1,1,1)
-    :forceUpdate()
-    :setVisible(true)
-    tween.tweenFunction(-box.SystemMinimumSize.y-MARGIN,0,0.5,"inOutCubic",function (v,t)
-      chat:setPos(10,-v):forceUpdate()
-    end,nil,"gnui.chat")
-    tween.tweenFunction(-1,0,0.5,"outCubic",function (v)
-      box:setAnchor(v,1,1+v,1)
-    end)
     recivedMsgs = recivedMsgs - 1
   end
   recivedMsgs = 0
 end)
-goofy:setDisableGUIElement("CHAT",true)
---local wasChatOpen = false
---events.WORLD_RENDER:register(function ()
---  local chatOpen = #(host:getChatText() or "") == 0 and host:isChatOpen()
---  if wasChatOpen ~= chatOpen then
---    wasChatOpen = chatOpen
---    goofy:setDisableGUIElement("CHAT",not chatOpen)
---    chat:setVisible(not chatOpen)
---  end
---end)
