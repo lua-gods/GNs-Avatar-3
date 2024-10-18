@@ -3,42 +3,45 @@ local Theme = require"GNUI.theme"
 local Button = require"GNUI.element.button"
 local eventLib = require"libraries.eventLib"
 local screen = GNUI.getScreenCanvas()
-local icons = textures["textures.icons"]
 
-local OFFSET = vec(0,-19)
-local TABSIZE = 13
-local BTNSIZE = 15
 
-local base = GNUI.newBox(screen)
-:setDimensions(92,0,0,0)
-:setAnchor(0.5,0,1,1)
 
-local tabsBox = GNUI.newBox(base):setAnchor(0,1)
+---@class GNUI.Panel.Page
+---@field name string?
+---@field content GNUI.Panel.any[]
+local Page = {}
+Page.__index = Page
 
-local baseButton = Button.new(base)
-:setSize(BTNSIZE,BTNSIZE):setPos(OFFSET)
-:setAnchor(0,1,0,1)
+---@alias GNUI.Panel.any GNUI.Panel.Button|GNUI.Panel.Slider
 
---- Main Button Icon
-local iconSize = 9/2
-GNUI.newBox(baseButton)
-:setNineslice(GNUI.newNineslice(icons,0,0,8,8))
-:setAnchor(0.5,0.5)
-:setDimensions(-iconSize,-iconSize,iconSize,iconSize)
-:setBlockMouse(false)
+---@class GNUI.Panel.Button
+---@field text string
+---@field onClick fun(self: GNUI.Panel.Button)
 
-local tabs = {}
+---@class GNUI.Panel.Slider
+---@field text string
+---@field min number
+---@field max number
+---@field step number
+---@field value number
+---@field onChange fun(value: number, self: GNUI.Panel.Slider)
+---@field onClick fun(self: GNUI.Panel.Button)
 
-local api = {}
 
----@param name string
----@param icon Nineslice
-function api.newTab(name,icon)
-  local btn = Button.new(tabsBox):setToggle(true)
-  :setSize(TABSIZE,TABSIZE):setPos(0,(#tabs)*(TABSIZE-1))
-  tabs[#tabs+1] = "FILLER"
-  tabsBox:setDimensions(OFFSET.x+(BTNSIZE-TABSIZE)*0.5,-(#tabs*(TABSIZE-1))+OFFSET.y,OFFSET.x+BTNSIZE-(BTNSIZE-TABSIZE)*0.5,OFFSET.y)
-  return btn
+---@class GNUI.Panel
+---@field page GNUI.Panel.Page
+---@field box GNUI.Box
+local Panels = {}
+
+
+---@param parent GNUI.any
+function Panels.new(parent)
+  local self = {
+    box = GNUI.newBox(parent)
+  }
+  setmetatable(self,Panels)
+  return self
 end
 
-return api
+
+return Panels
