@@ -1,47 +1,30 @@
+
 local GNUI = require"GNUI.main"
 local Theme = require"GNUI.theme"
 local Button = require"GNUI.element.button"
-local eventLib = require"libraries.eventLib"
 local screen = GNUI.getScreenCanvas()
 
+local Dialog = require"libraries.dialog"
+
+local panels = Dialog.newDialog(screen)
+panels.box
+:setAnchor(0.5,1,1,1)
+:setDimensions(93,-3,-3,-3)
+:setGrowDirection(1,-1)
+:setCustomMinimumSize(0,100)
 
 
----@class GNUI.Panel.Page
----@field name string?
----@field content GNUI.Panel.any[]
-local Page = {}
-Page.__index = Page
+local page = Dialog.newPage()
+page:newButton{
+  label = "Example",
+  text = "woag"
+}
 
----@alias GNUI.Panel.any GNUI.Panel.Button|GNUI.Panel.Slider
+page:newButton{
+  label = "Anoatha One",
+  text = "woage"
+}
+page:newButton{text = "x2"}
+page:newButton{text = "x2"}
 
----@class GNUI.Panel.Button
----@field text string
----@field onClick fun(self: GNUI.Panel.Button)
-
----@class GNUI.Panel.Slider
----@field text string
----@field min number
----@field max number
----@field step number
----@field value number
----@field onChange fun(value: number, self: GNUI.Panel.Slider)
----@field onClick fun(self: GNUI.Panel.Button)
-
-
----@class GNUI.Panel
----@field page GNUI.Panel.Page
----@field box GNUI.Box
-local Panels = {}
-
-
----@param parent GNUI.any
-function Panels.new(parent)
-  local self = {
-    box = GNUI.newBox(parent)
-  }
-  setmetatable(self,Panels)
-  return self
-end
-
-
-return Panels
+panels:setPage(page)

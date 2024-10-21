@@ -4,6 +4,8 @@
 / /_/ / /|  / 
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/rawjsonUtils.lua]]
 
+
+---@type [string,Texture][]
 local api = {}
 
 function api.copyTable(tbl)
