@@ -21,10 +21,20 @@ page:newButton{
 }
 
 page:newButton{
-  label = "Anoatha One",
-  text = "woage"
+  label = "Row of Buttons",
+  text = "1"
 }
-page:newButton{text = "x2"}
-page:newButton{text = "x2"}
+page:newButton{text = "2th"}
+page:newButton{text = "3ft"}
+
+page:newRadioButton({
+  label="Radio Button",
+  texts={
+    "A",
+    "B",
+    "C",
+    "D",
+  }
+})
 
 panels:setPage(page)
