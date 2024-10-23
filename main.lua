@@ -67,10 +67,12 @@ function tracebackError(input)
   printJson(toJson(compose))
 end
 
+local errors = 0
 if events.ERROR then
   events.ERROR:register(function (error)
+    errors = errors + 1
     tracebackError(error)
-    goofy:stopAvatar()
+    if errors > 10 then goofy:stopAvatar() end
     return true
   end)
 end

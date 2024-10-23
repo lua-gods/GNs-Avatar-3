@@ -1,13 +1,15 @@
 local GNUI = require"GNUI.main"
 local Theme = require"GNUI.theme"
 local Button = require"GNUI.element.button"
+local Slider = require"GNUI.element.slider"
+local TextField = require"GNUI.element.textField"
 local eventLib = require"libraries.eventLib"
 local screen = GNUI.getScreenCanvas()
 
 
 -->========================================[ Page ]=========================================<--
 
----@alias GNUI.Dialog.any GNUI.Dialog.Button|GNUI.Dialog.RadioButton
+---@alias GNUI.Dialog.any GNUI.Dialog.Button|GNUI.Dialog.RadioButton|GNUI.Dialog.Slider|GNUI.Dialog.TextField
 
 ---@class GNUI.Dialog.Element
 ---@field type string
@@ -23,7 +25,19 @@ local screen = GNUI.getScreenCanvas()
 ---@class GNUI.Dialog.RadioButton : GNUI.Dialog.Element
 ---@field texts string
 ---@field selected integer
----@field onClick fun(index: integer)
+---@field onChange fun(index: integer)
+
+---@class GNUI.Dialog.Slider : GNUI.Dialog.Element
+---@field onChange fun()
+---@field min number
+---@field max number
+---@field step number
+---@field value number
+
+---@class GNUI.Dialog.TextField : GNUI.Dialog.Element
+---@field textField string
+---@field onConfirm fun(field: string)
+---@field onChange fun(field: string)
 
 ---@class GNUI.Dialog.Page
 ---@field name string?
@@ -84,7 +98,37 @@ function Page:newRadioButton(data)
   row.content[#row.content+1] = btn
 end
 
+---@param data {label:string,onChange:fun()?,min:number?,max:number?,step:number?,value:number?}
+function Page:newSlider(data)
+  if data.label then self:newRow(data.label) end
+  if not self.rows[1] then self:newRow() end
+  
+  local btn = {
+    onChange = data.onChange,
+    type = "Slider",
+    min = math.min(data.min or 0,data.max or 10),
+    max = math.max(data.min or 0,data.max or 10),
+    step = data.step or 1,
+  }
+  btn.value = data.value or btn.min
+  local row = self.rows[#self.rows]
+  row.content[#row.content+1] = btn
+end
 
+
+---@param data {label:string?,onConfirm:fun(field:string)?,onChange:fun(field:string)?,textField:string?}
+function Page:newTextField(data)
+  if data.label then self:newRow(data.label) end
+  if not self.rows[1] then self:newRow() end
+  local btn = {
+    onConfirm = data.onConfirm,
+    onChange = data.onChange,
+    textField = data.textField,
+    type = "TextField"
+  }
+  local row = self.rows[#self.rows]
+  row.content[#row.content+1] = btn
+end
 
 
 -->========================================[ Dialog ]=========================================<--
@@ -133,47 +177,63 @@ function Dialog:setPage(page)
     :setText(row.label)
     :setTextAlign(0,1)
     :setChildrenOffset(0,1)
-    :setZMul(i) -- sort by height
+    :setZMul(i*10) -- sort by height
     
-    local elementBox = GNUI.newBox(boxRow)
+    local elementsBox = GNUI.newBox(boxRow)
     :setAnchor(0.5,0,1,1):setDimensions(0,0,-2,0)
     
     local contentCount = #row.content
     for c = 1, contentCount, 1 do
-      local content = row.content[c]
-      local a,b = (c-1)/contentCount,c/contentCount
+      local data = row.content[c]
+      local elementBox = GNUI.newBox(elementsBox)
+      :setAnchor((c-1)/contentCount,0,c/contentCount,1)
       
-      local type = content.type
-      if type == "Button" then
+      local type = data.type
+      if type == "Button" then -->==========[ Button ]==========<--
         Button.new(elementBox)
-        :setAnchor(a,0,b,1)
-        :setText(content.text)
+        :setAnchor(0,0,1,1)
+        :setText(data.text)
+        if data.onClick then Button.PRESSED:register(data.onClick) end
       
-      elseif type == "RadioButton" then
+      elseif type == "RadioButton" then -->==========[ RadioButton ]==========<--
         local buttons = {} ---@type GNUI.Button[]
         local function renew()
           for j = 1, #buttons, 1 do
             local button = buttons[j]
-            if content.selected == j then
+            if data.selected == j then
               if not button.isPressed then button:press() end
             else
               if button.isPressed then button:press() end
             end
           end
         end
-        for j = 1, #content.texts, 1 do
+        for j = 1, #data.texts, 1 do
           local button = Button.new(elementBox):setToggle(true)
-          :setAnchor(math.lerp(a,b,(j-1)/#content.texts),0,math.lerp(a,b,j/#content.texts),1)
-          :setText(content.texts[j])
+          :setAnchor((j-1)/#data.texts,0,j/#data.texts,1)
+          :setText(data.texts[j])
           local o = j
           button.BUTTON_DOWN:register(function ()
-            content.selected = o
-            renew()
+            if data.selected ~= o then
+              data.selected = o
+              if data.onChange then data.onChange(o) end
+              renew()
+            end
           end)
           button.BUTTON_UP:register(renew)
           renew()
           buttons[j] = button
         end
+      
+      elseif type == "Slider" then -->==========[ Slider ]==========<--
+        local btn = Slider.new(false,data.min,data.max,data.step,data.value,elementsBox)
+        :setAnchor(0,0,1,1)
+        if data.onChange then btn.VALUE_CHANGED:register(function () data.onChange(btn.value) end) end
+      elseif type == "TextField" then -->==========[ TextField ]==========<--
+        local btn = TextField.new(elementBox)
+        :setAnchor(0,0,1,1)
+        :setText(data.textField)
+        if data.onConfirm then btn.FIELD_CONFIRMED:register(data.onConfirm) end
+        if data.onChange then btn.FIELD_CHANGED:register(data.onChange) end
       end
     end
     if self.page then

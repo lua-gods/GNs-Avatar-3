@@ -37,4 +37,18 @@ page:newRadioButton({
   }
 })
 
+page:newSlider({
+  label = "Slider",
+  min = 0,
+  max = 10,
+  step = 1,
+  value = 5
+})
+
+page:newTextField({
+  label = "Text Field",
+  textField = "Text",
+  onConfirm = function(text) print(text) end
+})
+
 panels:setPage(page)
