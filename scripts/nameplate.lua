@@ -5,11 +5,9 @@
 \____/_/ |_/\__,_/_/ /_/ /_/_/_/ /_/ /_/\__,_/\__/\___/____]]
 local config = {
   sync_wait_time = 20, -- ticks, second * 20 = ticks
-  gn_command_handler_library = "services.commandHandler" -- optional
 }
 local username = avatar:getEntityName()
 local status
-local statusSince
 
 local defaultColors = {
   (vectors.hexToRGB("#e07438") * 255):floor(),
@@ -17,10 +15,6 @@ local defaultColors = {
   (vectors.hexToRGB("#e07438") * 255):floor(),
   (vectors.hexToRGB("#c64524") * 255):floor(),
 }
-
-
-
- 
 
 local colors = defaultColors
 
@@ -50,9 +44,6 @@ end
 
 -->====================[ Rest ]====================<--
 
-function setStatus(text)
-  status = text
-end
 
 -- Generates a json text for minecraft to interpret as gradient text.
 local function generateName()
@@ -79,10 +70,7 @@ local function generateName()
   
 end
 
-function pings.syncName(name,s,...)
-  if not host:isHost() then
-    status = s
-  end
+function pings.syncName(name,...)
   colors = {...}
   generateName()
 end
@@ -90,16 +78,15 @@ end
 
 -- Host only things that will sync data to non host view of this avatar.
 if not host:isHost() then return end
-local OK,command = pcall(require, config.gn_command_handler_library)
-pings.syncName(username,status,table.unpack(colors))
+pings.syncName(username,table.unpack(colors))
 
 
 -- every config.sync_wait_time, the timer triggers to sync the name to everyone
 local timer = config.sync_wait_time
-events.TICK:register(function ()
+events.WORLD_TICK:register(function ()
   timer = timer - 1
   if timer < 0 then
     timer = config.sync_wait_time
-    pings.syncName(username,status,table.unpack(colors))
+    pings.syncName(username,table.unpack(colors))
   end
 end)

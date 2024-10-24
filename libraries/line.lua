@@ -220,21 +220,24 @@ function line:immediateUpdate()
 end
 
 events.WORLD_RENDER:register(function ()
-  local c = client:getCameraPos()
-  if c ~= cpos then
-    cpos = c
-    for _, l in pairs(lines) do
-      l:update()
+  events.WORLD_RENDER:remove("GNLineLib_priority-last")
+  events.WORLD_RENDER:register(function ()
+    local c = client:getCameraPos()
+    if c ~= cpos then
+      cpos = c
+      for _, l in pairs(lines) do
+        l:update()
+      end
     end
-  end
-  for i = 1, #queue_update, 1 do
-    local l = queue_update[i]
-    if l._queue_update then
-      l:immediateUpdate()
-      l._queue_update = false
+    for i = 1, #queue_update, 1 do
+      local l = queue_update[i]
+      if l._queue_update then
+        l:immediateUpdate()
+        l._queue_update = false
+      end
     end
-  end
-  queue_update = {}
+    queue_update = {}
+  end,"GNLineLib_priority-last")
 end)
 
 return {
