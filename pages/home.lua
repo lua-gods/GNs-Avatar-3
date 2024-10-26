@@ -34,5 +34,10 @@ page:newPageButton({
   text = "Debug Info",
   icon = "minecraft:creeper_banner_pattern"
 })
+page:newPageButton({
+  text = "UI Demo",
+  icon = "minecraft:firework_rocket",
+  pagePath = "pages.demo"
+})
 
 return page

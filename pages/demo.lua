@@ -56,4 +56,12 @@ page:newTextField({
   onConfirm = function(text) print(text) end
 })
 
+page:newPageButton({
+  text = "Page Button",
+  icon="minecraft:grass_block",
+  pagePath = "pages.demo"
+})
+
+page:newReturnButton()
+
 return page

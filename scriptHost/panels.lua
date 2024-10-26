@@ -8,7 +8,7 @@ local Dialog = require"libraries.dialog"
 local panels = Dialog.newDialog(screen,"HOTBAR RIGHT")
 
 local homePage = require"pages.home"
-
+GNUI.debugMode()
 panels:setPage(homePage)
 
 local wasUnlocked = false

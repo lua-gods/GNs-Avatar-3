@@ -2,4 +2,8 @@ local macro = require"libraries.macros"
 return macro.new(function (events)
   function events.TICK()
   end
+  function events.FRAME()
+  end
+  function events.EXIT()
+  end
 end)

@@ -59,7 +59,7 @@ local screen = GNUI.getScreenCanvas()
 ---@class GNUI.Dialog.Page
 ---@field TICK EventLib
 ---@field FRAME EventLib
----@field INIT EventLib
+---@field PREPROCESS EventLib
 ---@field CLOSE EventLib
 ---@field name string?
 ---@field color Vector3?
@@ -82,7 +82,7 @@ function Page.new(data)
     positioning = data.positioning,
     TICK  = eventLib.new(),
     FRAME = eventLib.new(),
-    INIT  = eventLib.new(),
+    PREPROCESS  = eventLib.new(),
     CLOSE = eventLib.new()
   }
   setmetatable(self,Page)
@@ -278,8 +278,8 @@ function Dialog:setPage(page)
   if self.page then self.page.CLOSE:invoke() self.page.dialog = nil end
   local positioning = page.positioning or self.positioning
   if positioning == "HOTBAR RIGHT" then
-    self.box:setAnchor(0.5,1,0.5,1)
-    :setDimensions(93,-3,243,-3)
+    self.box:setAnchor(0.5,1,1,1)
+    :setDimensions(93,-3,-3,-3)
     :setGrowDirection(1,-1)
   elseif positioning == "MIDDLE" then
     self.box:setAnchor(0.5,0.5)
@@ -305,6 +305,9 @@ function Dialog:setPage(page)
   
   
   -- Generate UI
+  
+  if self.page then self.page.PREPROCESS:invoke()end
+  
   for i = 1, #page.rows, 1 do
     local row = page.rows[i]
     local height = row.height or 14
@@ -400,7 +403,6 @@ function Dialog:setPage(page)
       self.box:setCustomMinimumSize(0,y+17)
     end
   end
-  if self.page then self.page.INIT:invoke()end
   return self
 end
 

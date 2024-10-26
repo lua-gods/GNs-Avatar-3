@@ -6,28 +6,25 @@ local page = Dialog.newPage({
 })
 
 local GNUI = require"GNUI.main"
+local screen = GNUI.getScreenCanvas()
 local Button = require"GNUI.element.button"
 
+local Macros = {} ---@type table<string,Macro>
 local items = listFiles("pages.ui")
-
-local macros = {}
-
-events.WORLD_RENDER:register(function ()
-  for key, macro in pairs(macros) do
-    if macro.FRAME then macro.FRAME() end
-  end
-end)
-
-events.WORLD_TICK:register(function ()
-  for key, macro in pairs(macros) do
-    if macro.TICK then macro.TICK() end
-  end
-end)
-
 for key, item in pairs(items) do
   if item ~= "pages.ui" then
     local name = item:match("[^.]+$")
-    
+    local macro = require(item) ---@type Macro
+    Macros[name] = macro
+  end
+end
+
+page.PREPROCESS:register(function()
+  
+end)
+
+for name, item in pairs(Macros) do
+  if item ~= "pages.ui" then
     page:newRow({
       label=name})
       page:newCustomUI({
@@ -36,26 +33,20 @@ for key, item in pairs(items) do
           :setAnchor(0,0,1,1):setDimensions(0,0,-14,0)
           config:setName("GN.pages.ui")
           
-          local macro = require(item)
-          macros[item] = macro
-          
 
           local function refresh()
-            local enabled = config:load(item) and true or false
+            local enabled = config:load(name) and true or false
           
             if enabled then toggle:setText({text="True",color="dark_green"})
             else toggle:setText({text="False",color="dark_red"})
             end
-            macro.wasEnabled = true
-            macro.enabled = enabled
-            if enabled and macro.ENABLE then macro.ENABLE() end
-            if not enabled and macro.wasEnabled and macro.DISABLE then macro.DISABLE() end
+            item:setActive(enabled)
           end
           
           refresh()
           
           toggle.PRESSED:register(function()
-            config:save(item,not config:load(item))
+            config:save(name,not config:load(name))
             refresh()
           end)
           
