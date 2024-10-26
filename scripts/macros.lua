@@ -8,9 +8,13 @@
 ---@field isActive boolean
 ---@field sync boolean
 ---@field id string
+---@field keybind GNUI.InputEvent
+---@field toggle boolean
 local Macro = {}
 Macro.__type = "Macro"
 Macro.__index = Macro
+
+local isHost = host:isHost()
 
 ---@class Macro.Events
 ---@field TICK function?
@@ -25,14 +29,19 @@ local macros = {} -- list of registered macros
 ---@param sync boolean?
 ---@return table
 function Macro.new(id,init,sync)
+  config:setName("GN-macros-"..avatar:getName())
   local self = {
     instantiate = init,
     id = id,
     sync = sync,
-    isActive = false,
   }
   setmetatable(self,Macro)
   macros[id] = self
+  if isHost then
+    self.isActive = config:load(id..".isActive") and true or false
+    self.keybind = config:load(id..".keybind")
+    self.toggle = config:load(id..".toggle")
+  end
   return self
 end
 
@@ -53,8 +62,32 @@ events.WORLD_TICK:register(function ()
   for key, value in pairs(activeInstances) do if value.TICK then value.TICK() end end
 end)
 
+local queueSync = {}
+
+local function sync(id,state)
+  queueSync[#queueSync+1] = {id,state}
+end
+
+
+if isHost then
+  local timer = 0
+  local waitTime = 60
+  events.WORLD_TICK:register(function ()
+    if host:isAvatarUploaded() and #queueSync > 0 then
+      timer = timer + 1
+      if timer > waitTime then
+        waitTime = 5
+        timer = 0
+        local data = queueSync[#queueSync]
+        pings.syncMacro(data[1],data[2])
+        queueSync[#queueSync] = nil
+      end
+    end
+  end,"MacroStartupWait")
+end
+
 function pings.syncMacro(id,state)
-  if not host:isHost() then
+  if not isHost then
     macros[id]:setActive(state)
   end
 end
@@ -62,8 +95,8 @@ end
 ---@param active boolean
 function Macro:setActive(active)
   if active ~= self.isActive then
-    if host:isHost() then
-      pings.syncMacro(self.id,active)
+    if isHost then
+      sync(self.id,active)
     end
     if active then
       if not self.instance then
@@ -74,9 +107,11 @@ function Macro:setActive(active)
         activeInstances[self.instanceID] = events
       end
     else
-      if self.instance.EXIT then self.instance.EXIT() end
-      activeInstances[self.instanceID] = nil
-      self.instance = nil
+      if self.instance then
+        if self.instance.EXIT then self.instance.EXIT() end
+        activeInstances[self.instanceID] = nil
+        self.instance = nil
+      end
     end
     self.isActive = active
   end

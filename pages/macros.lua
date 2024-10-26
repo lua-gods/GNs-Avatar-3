@@ -28,9 +28,7 @@ for key, item in pairs(items) do
   end
 end
 
-page.PREPROCESS:register(function()
-  
-end)
+local configuringMacro = nil
 
 for categoryName, categoryContent in pairs(Macros) do
   for name, item in pairs(categoryContent) do
@@ -44,10 +42,9 @@ for categoryName, categoryContent in pairs(Macros) do
           init = function(parent)
             local toggle = Button.new(parent)
             :setAnchor(0,0,1,1):setDimensions(0,0,-14,0)
-            config:setName("GN.pages.ui")
             
             local function refresh()
-              local enabled = config:load(name) and true or false
+              local enabled = item.isActive
             
               if enabled then toggle:setText({text="True",color="dark_green"})
               else toggle:setText({text="False",color="dark_red"})
@@ -58,7 +55,7 @@ for categoryName, categoryContent in pairs(Macros) do
             refresh()
             
             toggle.PRESSED:register(function()
-              config:save(name,not config:load(name))
+              item:setActive(not item.isActive)
               refresh()
             end)
             
