@@ -8,25 +8,20 @@ local page = Dialog.newPage({
 local GNUI = require"GNUI.main"
 local Button = require"GNUI.element.button"
 
-page:newRow("")
 page:newPageButton({
   text ="Appearance",
   icon = "minecraft:leather_chestplate{display:{color:6282596}}",
-  pagePath = "pages.appearance"
+  page = "pages.appearance"
 })
 page:newPageButton({
-  text = "User Interface",
-  icon = "minecraft:painting",
-  pagePath = "pages.ui"
+  text = "Macros",
+  icon = "minecraft:redstone",
+  page = "pages.macros"
 })
 page:newPageButton({
-  text = "Utilities",
-  icon = "minecraft:name_tag",
-  pagePath = "pages.utilities"
-})
-page:newPageButton({
-  text = "Command Utilities",
-  icon = "minecraft:command_block"
+  text = "Players",
+  icon = "minecraft:player_head",
+  page = "pages.players"
 })
 
 page:newSeparator()
@@ -37,7 +32,9 @@ page:newPageButton({
 page:newPageButton({
   text = "UI Demo",
   icon = "minecraft:firework_rocket",
-  pagePath = "pages.demo"
+  page = "pages.demo"
 })
+
+--keybinds:fromVanilla("key.jump"):onPress(function () return true end)
 
 return page

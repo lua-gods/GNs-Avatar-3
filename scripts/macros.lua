@@ -6,6 +6,8 @@
 ---@class Macro
 ---@field instantiate fun(events:Macro.Events)
 ---@field isActive boolean
+---@field sync boolean
+---@field id string
 local Macro = {}
 Macro.__type = "Macro"
 Macro.__index = Macro
@@ -18,19 +20,19 @@ Macro.__index = Macro
 ---@type Macro[]
 local macros = {} -- list of registered macros
 
+---@param id string
 ---@param init fun(events:Macro.Events)
 ---@param sync boolean?
 ---@return table
-function Macro.new(init,sync)
-  local i = #macros+1
+function Macro.new(id,init,sync)
   local self = {
     instantiate = init,
-    i = i,
+    id = id,
     sync = sync,
     isActive = false,
   }
   setmetatable(self,Macro)
-  macros[i] = self
+  macros[id] = self
   return self
 end
 
@@ -51,19 +53,26 @@ events.WORLD_TICK:register(function ()
   for key, value in pairs(activeInstances) do if value.TICK then value.TICK() end end
 end)
 
-function pings.syncMacro(id)
-  macros[id]:setActive(id)
+function pings.syncMacro(id,state)
+  if not host:isHost() then
+    macros[id]:setActive(state)
+  end
 end
 
 ---@param active boolean
 function Macro:setActive(active)
   if active ~= self.isActive then
+    if host:isHost() then
+      pings.syncMacro(self.id,active)
+    end
     if active then
-      local events = {}
-      self.instantiate(events)
-      self.instance = events
-      self.instanceID = #activeInstances+1
-      activeInstances[self.instanceID] = events
+      if not self.instance then
+        local events = {}
+        self.instantiate(events)
+        self.instance = events
+        self.instanceID = #activeInstances+1
+        activeInstances[self.instanceID] = events
+      end
     else
       if self.instance.EXIT then self.instance.EXIT() end
       activeInstances[self.instanceID] = nil

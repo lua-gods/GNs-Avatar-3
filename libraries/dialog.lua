@@ -26,7 +26,7 @@ local screen = GNUI.getScreenCanvas()
 ---@class GNUI.Dialog.PageButton : GNUI.Dialog.Element
 ---@field text string
 ---@field icon Minecraft.itemID
----@field pagePath string
+---@field page string|GNUI.Dialog.Page
 
 ---@class GNUI.Dialog.Custom : GNUI.Dialog.Element
 ---@field init fun(parent: GNUI.Box)
@@ -149,7 +149,7 @@ function Page:newButton(data)
   return self
 end
 
----@param data {text:string,icon:Minecraft.itemID,pagePath:string}
+---@param data {text:string,icon:Minecraft.itemID,page:string|GNUI.Dialog.Page}
 function Page:newPageButton(data)
   self:newRow({label="",height = 20})
   if not self.rows[1] then self:newRow() end
@@ -157,7 +157,7 @@ function Page:newPageButton(data)
   local btn = {
     text = data.text,
     icon = data.icon,
-    pagePath = data.pagePath,
+    page = data.page,
     type = "PageButton",
   }
   local row = self.rows[#self.rows]
@@ -319,12 +319,18 @@ function Dialog:setPage(page)
     y = y + height
     
     local labelBox = GNUI.newBox(boxRow)
-    :setAnchor(0,0,0.5,1)
     :setText(row.label)
-    :setTextAlign(1,1)
-    :setTextOffset(-5,0)
     :setTextEffect("SHADOW")
     
+    if #row.content > 0 then
+      labelBox:setTextAlign(1,1)
+      :setTextOffset(-5,0)
+      :setAnchor(0,0,0.5,1)
+    else
+      labelBox:setTextAlign(0,1)
+      :setTextOffset(3,-4)
+      :setAnchor(0,0,1,1)
+    end
     local elementsBox = GNUI.newBox(boxRow):setDimensions(0,0,-2,0)
     if #row.label > 0 then elementsBox:setAnchor(0.5,0,1,1)
     else elementsBox:setAnchor(0,0,1,1)
@@ -336,14 +342,14 @@ function Dialog:setPage(page)
       local elementBox = GNUI.newBox(elementsBox)
       :setAnchor((c-1)/contentCount,0,c/contentCount,1)
       
-      local type = data.type
-      if type == "Button" then -->==========[ Button ]==========<--
+      local is = data.type
+      if is == "Button" then -->==========[ Button ]==========<--
         local btn = Button.new(elementBox)
         :setAnchor(0,0,1,1)
         :setText(data.text)
         if data.onClick then btn.PRESSED:register(data.onClick) end
       
-      elseif type == "RadioButton" then -->==========[ RadioButton ]==========<--
+      elseif is == "RadioButton" then -->==========[ RadioButton ]==========<--
         local buttons = {} ---@type GNUI.Button[]
         local function renew()
           for j = 1, #buttons, 1 do
@@ -372,27 +378,37 @@ function Dialog:setPage(page)
           buttons[j] = button
         end
       
-      elseif type == "Slider" then -->==========[ Slider ]==========<--
+      elseif is == "Slider" then -->==========[ Slider ]==========<--
         local btn = Slider.new(data.vertical,data.min,data.max,data.step,data.value,elementBox)
         :setAnchor(0,0,1,1)
         if data.onChange then btn.VALUE_CHANGED:register(function () data.onChange(btn.value) end) end
-      elseif type == "TextField" then -->==========[ TextField ]==========<--
+      elseif is == "TextField" then -->==========[ TextField ]==========<--
         local btn = TextField.new(elementBox)
         :setAnchor(0,0,1,1)
         :setText(data.textField)
         if data.onConfirm then btn.FIELD_CONFIRMED:register(data.onConfirm) end
         if data.onChange then btn.FIELD_CHANGED:register(data.onChange) end
-      elseif type == "PageButton" then
+      elseif is == "PageButton" then
         local base = Button.new(elementBox):setAnchor(0,0,1,1)
         local logo = GNUI.newBox(base):setAnchor(0,0.5):setPos(10,0):setCanCaptureCursor(false)
         local label = GNUI.newBox(base):setAnchor(0,0,1,1):setDefaultTextColor("black"):setText(data.text):setTextOffset(32,2):setTextAlign(0,0.5):setCanCaptureCursor(false)
         logo.ModelPart:newItem("icon"):item(data.icon):displayMode("GUI"):scale(1,1,1):pos(-4,0,-10)
-        if page then base.PRESSED:register(function () page.dialog:setPage(require(data.pagePath))end) end
-      elseif type == "Separator" then -->==========[ Separator ]==========<--
+        if page then
+          base.PRESSED:register(function ()
+            if type(data.page) == "string" then
+              ---@diagnostic disable-next-line: param-type-mismatch
+              page.dialog:setPage(require(data.page))
+            else
+              ---@diagnostic disable-next-line: param-type-mismatch
+              page.dialog:setPage(data.page)
+            end
+          end)
+        end
+      elseif is == "Separator" then -->==========[ Separator ]==========<--
         local box = GNUI.newBox(elementBox):setAnchor(0,0.5,1,0.5):setDimensions(0,-1,0,0)
         box.__type = "Separator"
         Theme.style(box)
-      elseif type == "Custom" then -->==========[ Custom ]==========<--
+      elseif is == "Custom" then -->==========[ Custom ]==========<--
       
         if data.init then
           data.init(elementBox)
@@ -400,7 +416,7 @@ function Dialog:setPage(page)
       end
     end
     if self.page then
-      self.box:setCustomMinimumSize(0,y+17)
+      self.box:setCustomMinimumSize(0,y+20)
     end
   end
   return self

@@ -59,7 +59,7 @@ page:newTextField({
 page:newPageButton({
   text = "Page Button",
   icon="minecraft:grass_block",
-  pagePath = "pages.demo"
+  page = "pages.demo"
 })
 
 page:newReturnButton()

@@ -11,7 +11,7 @@ local Button = require"GNUI.element.button"
 page:newPageButton({
   text = "Nameplate",
   icon = "minecraft:name_tag",
-  pagePath = "pages.appearance.nameplate",
+  page = "pages.appearance.nameplate",
 })
 
 page:newSeparator()

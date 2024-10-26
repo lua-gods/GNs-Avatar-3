@@ -1,1 +1,1 @@
-require"pages.ui"
+require"pages.macros"
