@@ -1,0 +1,41 @@
+{
+  "GNUI": {
+    "bundle": [
+      "GNUI/main",
+      "GNUI/config",
+      "GNUI/eventLib",
+      "GNUI/nineslice",
+      "GNUI/theme",
+      "GNUI/theme/gntheme",
+      "GNUI/primitives/box",
+      "GNUI/primitives/canvas",
+      "GNUI/elements/button",
+      "GNUI/elements/slider",
+      "GNUI/elements/textField"
+    ],
+    "assets": [
+      "GNUI/theme/gnuiTheme.png",
+      "GNUI/theme/textures.bbmodel"
+    ]
+  },
+  "GNUI/main": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/main.lua",
+  "GNUI/config": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/config.lua",
+  "GNUI/eventLib": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/eventLib.lua",
+  "GNUI/nineslice": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/nineslice.lua",
+  "GNUI/theme": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/theme.lua",
+  "GNUI/utils": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/utils.lua",
+  "GNUI/theme/gntheme": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/theme/gntheme.lua",
+  "GNUI/theme/gnuiTheme.png": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/theme/gnuiTheme.png",
+  "GNUI/theme/textures.bbmodel": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/theme/textures.bbmodel",
+  "GNUI/primitives/box": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/primitives/box.lua",
+  "GNUI/primitives/canvas": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/primitives/canvas.lua",
+  "GNUI/elements/button": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/button.lua",
+  "GNUI/elements/slider": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/slider.lua",
+  "GNUI/elements/textField": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/.lua",
+  
+  "GNLineLib": "https://github.com/lua-gods/GNs-Avatar-3/raw/refs/heads/GNUI-Simplification/libraries/line.lua",
+  "GNTrailLib": "https://raw.githubusercontent.com/lua-gods/GNs-Avatar-3/refs/heads/GNUI-Simplification/libraries/trail.lua",
+  "GNTweenLib":"https://raw.githubusercontent.com/lua-gods/GNs-Avatar-3/refs/heads/GNUI-Simplification/libraries/tween.lua",
+  "GNBase64Lib":"https://raw.githubusercontent.com/lua-gods/GNs-Avatar-3/refs/heads/GNUI-Simplification/libraries/base64.lua"
+  
+}
