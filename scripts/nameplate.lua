@@ -72,6 +72,9 @@ end
 
 function pings.syncName(name,...)
   colors = {...}
+  if not host:isHost() then 
+    username = name
+  end
   generateName()
 end
 
