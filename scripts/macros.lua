@@ -18,7 +18,8 @@ local isHost = host:isHost()
 
 ---@class Macro.Events
 ---@field TICK function?
----@field FRAME fun(deltaFrame:number, deltaTick:number)?
+---@field WORLD_RENDER fun(deltaFrame:number, deltaTick:number)?
+---@field RENDER fun(deltaTick:number, ctx:table, matrix:table)?
 ---@field EXIT function?
 
 ---@type Macro[]
@@ -52,8 +53,16 @@ events.WORLD_RENDER:register(function (dt)
   local systemTime = client:getSystemTime()
   local df = (systemTime - lastSystemTime) / 1000
   for _, value in pairs(activeInstances) do
-    if value.FRAME then
-      value.FRAME(df,dt)
+    if value.WORLD_RENDER then
+      value.WORLD_RENDER(df,dt)
+    end
+  end
+end)
+
+events.RENDER:register(function (delta, ctx, matrix)
+  for _, value in pairs(activeInstances) do
+    if value.RENDER then
+      value.RENDER(delta,ctx,matrix)
     end
   end
 end)

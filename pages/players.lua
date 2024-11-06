@@ -23,7 +23,8 @@ page.PREPROCESS:register(function()
         positioning = "HOTBAR RIGHT",
       })
       
-      if player:getGamemode() == "CREATIVE" then
+      
+      if player:getGamemode() == "CREATIVE" then -- require creative
         playerPage:newButton({
           label = "Creative",
           text="Get Head",

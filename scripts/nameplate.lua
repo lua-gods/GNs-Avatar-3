@@ -10,10 +10,10 @@ local username = avatar:getEntityName()
 local status
 
 local defaultColors = {
-  (vectors.hexToRGB("#e07438") * 255):floor(),
-  (vectors.hexToRGB("#edab50 ") * 255):floor(),
-  (vectors.hexToRGB("#e07438") * 255):floor(),
-  (vectors.hexToRGB("#c64524") * 255):floor(),
+  (vectors.hexToRGB("#99e65f") * 255):floor(),
+  (vectors.hexToRGB("#d3fc7e ") * 255):floor(),
+  (vectors.hexToRGB("#99e65f") * 255):floor(),
+  (vectors.hexToRGB("#1e6f50") * 255):floor(),
 }
 
 local colors = defaultColors
@@ -50,7 +50,7 @@ local function generateName()
   avatar:color(colors[1]/255)
   local final = {}
   final[#final+1] = {text="${badges}"} -- figura badge
-  final[#final+1] = {text=":jack_o_lantern:"} -- figura badge
+  final[#final+1] = {text=":@gn:"} -- figura badge
   --final[#final+1] = {font="figura:emoji_portrait",text=""} -- top hat
   for i = 1, #username, 1 do
     final[#final+1] = {

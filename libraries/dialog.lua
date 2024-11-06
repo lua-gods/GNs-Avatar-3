@@ -3,7 +3,8 @@ local Theme = require"GNUI.theme"
 local Button = require"GNUI.element.button"
 local Slider = require"GNUI.element.slider"
 local TextField = require"GNUI.element.textField"
-local eventLib = require"libraries.eventLib"
+local cfg = require"GNUI.config"
+local eventLib = cfg.event
 local screen = GNUI.getScreenCanvas()
 
 
