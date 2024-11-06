@@ -6,8 +6,8 @@
 
 local default_model = models:newPart("gnlinelibline","WORLD"):scale(16,16,16)
 local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vectors.vec3(1,1,1))
-local lines = {} ---@type line[]
-local queue_update = {} ---@type line[]
+local lines = {} ---@type Line[]
+local queue_update = {} ---@type Line[]
 
 local cpos = client:getCameraPos()
 
@@ -25,7 +25,7 @@ local function figureOutVec3(x,y,z)
   end
 end
 
----@class line # A straight path from point A to B
+---@class Line # A straight path from point A to B
 ---@field id integer
 ---@field visible boolean
 ---@field a Vector3? # First end of the line
@@ -44,8 +44,8 @@ line.__type = "gn.line"
 line.__type = "gn.line"
 
 ---Creates a new line.
----@param preset line?
----@return line
+---@param preset Line?
+---@return Line
 function line.new(preset)
   preset = preset or {}
   local next_free = #lines+1 
@@ -64,14 +64,14 @@ function line.new(preset)
 end
 
 ---Sets both points of the line.
----@overload fun(self : line, from : Vector3, to :Vector3): line
+---@overload fun(self : Line, from : Vector3, to :Vector3): Line
 ---@param x1 number
 ---@param y1 number
 ---@param z1 number
 ---@param x2 number
 ---@param y2 number
 ---@param z2 number
----@return line
+---@return Line
 function line:setAB(x1,y1,z1,x2,y2,z2)
   if type(x1) == "Vector3" and type(y1) == "Vector3" then
     self.a = x1:copy()
@@ -90,11 +90,11 @@ function line:setAB(x1,y1,z1,x2,y2,z2)
 end
 
 ---Sets the first point of the line.
----@overload fun(self: line ,pos : Vector3): line
+---@overload fun(self: Line ,pos : Vector3): Line
 ---@param x number
 ---@param y number
 ---@param z number
----@return line
+---@return Line
 function line:setA(x,y,z)
   self.a = figureOutVec3(x,y,z)
   self:update()
@@ -102,11 +102,11 @@ function line:setA(x,y,z)
 end
 
 ---Sets the second point of the line.
----@overload fun(self: line ,pos : Vector3): line
+---@overload fun(self: Line ,pos : Vector3): Line
 ---@param x number
 ---@param y number
 ---@param z number
----@return line
+---@return Line
 function line:setB(x,y,z)
   self.b = figureOutVec3(x,y,z)
   self:update()
@@ -116,7 +116,7 @@ end
 ---Sets the width of the line.  
 ---Note: This is in minecraft blocks/meters.
 ---@param w number
----@return line
+---@return Line
 function line:setWidth(w)
   self.width = w
   self:update()
@@ -126,21 +126,21 @@ end
 ---Sets the render type of the line.  
 ---by default this is "CUTOUT_EMISSIVE_SOLID".
 ---@param render_type ModelPart.renderType
----@return line
+---@return Line
 function line:setRenderType(render_type)
   self.model:setRenderType(render_type)
   return self
 end
 
 ---Sets the color of the line.
----@overload fun(self : line, rgb : Vector3): line
----@overload fun(self : line, rgb : Vector4): line
----@overload fun(self : line, string : string): line
+---@overload fun(self : Line, rgb : Vector3): Line
+---@overload fun(self : Line, rgb : Vector4): Line
+---@overload fun(self : Line, string : string): Line
 ---@param r number
 ---@param g number
 ---@param b number
 ---@param a number
----@return line
+---@return Line
 function line:setColor(r,g,b,a)
   local rt,yt,bt = type(r),type(g),type(b)
   if rt == "number" and yt == "number" and bt == "number" then
@@ -161,7 +161,7 @@ end
 ---Sets the depth of the line.  
 ---Note: this is an offset to the depth of the object. meaning 0 is normal, `0.5` is farther and `-0.5` is closer
 ---@param z number
----@return line
+---@return Line
 function line:setDepth(z)
   self.depth = 1 + z
   return self
@@ -176,7 +176,7 @@ function line:free()
 end
 
 ---@param visible boolean
----@return line
+---@return Line
 function line:setVisible(visible)
   self.visible = visible
   self.model:setVisible(visible)
@@ -187,7 +187,7 @@ function line:setVisible(visible)
 end
 
 ---Queues itself to be updated in the next frame.
----@return line
+---@return Line
 function line:update()
   if not self._queue_update and self.visible then
     queue_update[#queue_update+1] = self
@@ -197,7 +197,7 @@ function line:update()
 end
 
 ---Immediately updates the line without queuing it.
----@return line
+---@return Line
 function line:immediateUpdate()
   local a,b = self.a,self.b
   local offset = a - cpos
