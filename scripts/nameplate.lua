@@ -4,10 +4,14 @@
 / /_/ / /|  / /_/ / / / / / / / / / / / / /_/ / /_/  __(__  )
 \____/_/ |_/\__,_/_/ /_/ /_/_/_/ /_/ /_/\__,_/\__/\___/____]]
 local config = {
-  sync_wait_time = 20, -- ticks, second * 20 = ticks
+  sync_wait_time = 20*8, -- ticks, second * 20 = ticks
 }
 local username = avatar:getEntityName()
-local status
+
+local proxy = {
+  GNUI = "GNamimates",
+}
+username = proxy[username] or username
 
 local defaultColors = {
   (vectors.hexToRGB("#99e65f") * 255):floor(),
@@ -59,10 +63,6 @@ local function generateName()
     }
   end
   nameplate.CHAT:setText(toJson(final))
-  
-  if status then
-    final[#final+1] = {text="\nPlaying: "..status,color="gray"}
-  end
   
   final = toJson(final)
   nameplate.LIST:setText(final)
