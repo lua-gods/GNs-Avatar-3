@@ -1,9 +1,10 @@
-
+local endesga = require"libraries.palettes.endesga64"
 local colors = {
-  vectors.hexToRGB("#edab50"),
-  vectors.hexToRGB("#e07438"),
-  vectors.hexToRGB("#c64524"),
-  vectors.hexToRGB("#8e251d"),
+endesga.brightGreen,
+endesga.lightGreen,
+endesga.green,
+endesga.darkGreen,
+endesga.darkerGreen
 }
 
 
@@ -15,7 +16,7 @@ function pings.GNPOOF(x,y,z,appear)
   for ci = 1, #colors, 1 do
     local clr = colors[ci]
     local low_pow,high_pow = (ci-1) / #colors * max_pow,ci / #colors * max_pow
-    for i = 1, 200, 1 do
+    for i = 1, 100, 1 do
       local mpow = math.lerp(low_pow,high_pow,math.random())
       local inv_pow = math.pow((1 - mpow )* max_pow,3)
       local v = vectors.angleToDir(math.random()*360,math.random()*180)*mpow
@@ -37,8 +38,6 @@ function pings.GNPOOF(x,y,z,appear)
     end
   end
   sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,2)
-  sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,1)
-  sounds:playSound("minecraft:entity.illusioner.cast_spell",pos,0.33,0.5)
   sounds:playSound("minecraft:entity.generic.extinguish_fire",pos,0.1,0.8)
   --sounds:playSound("minecraft:entity.allay.item_taken",pos,1,0.5)
   for i = 1, 3, 1 do

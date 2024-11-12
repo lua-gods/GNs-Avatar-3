@@ -7,7 +7,6 @@ local is_holding_sword = false
 local was_holding_sword
 
 local GNanim = require("libraries.GNanimLib")
-local extraMath = require("libraries.extraMath")
 local trail = require("libraries.GNtrailLib")
 
 local state = GNanim.new()
@@ -107,10 +106,10 @@ events.RENDER:register(function (delta, context)
    weary = meta.y
    models.sword.Roll.Pole.Handle
    :rot(
-      extraMath.superSine(systime,135351,10,0.5,1.4)*90 * weary,
-      extraMath.superSine(systime,253631,10,0.5,1.4)*90 * weary,
-      extraMath.superSine(systime,34124 ,10,0.5,1.4)*90 * weary):pos(
-      extraMath.superSine(systime,4214 ,10,0.5,1.2)*16 * weary,
-      extraMath.superSine(systime,53631,10,0.5,1.2)*16 * weary,
-      extraMath.superSine(systime,4124 ,10,0.5,1.2)*16 * weary)
+      utils.fractralSine(systime,135351,10,0.5,1.4)*90 * weary,
+      utils.fractralSine(systime,253631,10,0.5,1.4)*90 * weary,
+      utils.fractralSine(systime,34124 ,10,0.5,1.4)*90 * weary):pos(
+      utils.fractralSine(systime,4214 ,10,0.5,1.2)*16 * weary,
+      utils.fractralSine(systime,53631,10,0.5,1.2)*16 * weary,
+      utils.fractralSine(systime,4124 ,10,0.5,1.2)*16 * weary)
 end)

@@ -4,24 +4,22 @@
 / /_/ / /|  / /_/ / / / / / / / / / / / / /_/ / /_/  __(__  )
 \____/_/ |_/\__,_/_/ /_/ /_/_/_/ /_/ /_/\__,_/\__/\___/____]]
 local config = {
-  sync_wait_time = 20*8, -- ticks, second * 20 = ticks
+  sync_wait_time = 20*5, -- ticks, second * 20 = ticks
 }
+local endesga = require"libraries.palettes.endesga64"
 local username = avatar:getEntityName()
+
+local colors = {
+  (endesga.lightGreen * 255):floor(),
+  (endesga.brightGreen * 255):floor(),
+  (endesga.lightGreen * 255):floor(),
+  (endesga.darkGreen * 255):floor(),
+}
 
 local proxy = {
   GNUI = "GNamimates",
 }
 username = proxy[username] or username
-
-local defaultColors = {
-  (vectors.hexToRGB("#99e65f") * 255):floor(),
-  (vectors.hexToRGB("#d3fc7e ") * 255):floor(),
-  (vectors.hexToRGB("#99e65f") * 255):floor(),
-  (vectors.hexToRGB("#1e6f50") * 255):floor(),
-}
-
-local colors = defaultColors
-
 -- Style
 nameplate.ENTITY:setOutline(true):setBackgroundColor(0,0,0,0)
 
@@ -52,22 +50,17 @@ end
 -- Generates a json text for minecraft to interpret as gradient text.
 local function generateName()
   avatar:color(colors[1]/255)
-  local final = {}
+  local final = {{text=""}}
   final[#final+1] = {text="${badges}"} -- figura badge
-  final[#final+1] = {text=":@gn:"} -- figura badge
-  --final[#final+1] = {font="figura:emoji_portrait",text=""} -- top hat
+  final[#final+1] = {font="figura:emoji_portrait",text=""} -- top hat
   for i = 1, #username, 1 do
     final[#final+1] = {
       text = username:sub(i,i),
       color = "#"..vectors.rgbToHex(multiMix(i/#username,colors)/255)
     }
   end
-  nameplate.CHAT:setText(toJson(final))
-  
   final = toJson(final)
-  nameplate.LIST:setText(final)
-  nameplate.ENTITY:setText(final)
-  
+  nameplate.ALL:setText(final)
 end
 
 function pings.syncName(name,...)
@@ -80,7 +73,7 @@ end
 
 
 -- Host only things that will sync data to non host view of this avatar.
-if not host:isHost() then return end
+if NOT_HOST then return end
 pings.syncName(username,table.unpack(colors))
 
 

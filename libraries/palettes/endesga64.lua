@@ -1,4 +1,6 @@
+---@diagnostic disable: assign-type-mismatch, param-type-mismatch
 -- Source: https://lospec.com/palette-list/endesga-64
+---@type table<string,Vector3>
 local palette = {
   pinkRed="#ff0040",
   black="#131313",

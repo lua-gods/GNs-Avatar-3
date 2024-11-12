@@ -1,5 +1,3 @@
-local meth = {}
-
 ---Returns a multi stacked sine wave.  
 ---
 ---**Depth** is the amount of waves being stacked  
@@ -12,8 +10,8 @@ local meth = {}
 ---@param depth integer
 ---@param presistence number?
 ---@param lacunarity number?
----@return unknown
-function meth.superSine(value,seed,depth,presistence,lacunarity)
+---@return number
+function utils.fractralSine(value,seed,depth,presistence,lacunarity)
    presistence = presistence or 0.5
    math.randomseed(seed)
    local max = 0 -- used to normalize the value
@@ -29,5 +27,3 @@ function meth.superSine(value,seed,depth,presistence,lacunarity)
    math.randomseed(client.getSystemTime())
    return result / depth / max
 end
-
-return meth
