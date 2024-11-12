@@ -310,12 +310,11 @@ events.POST_WORLD_RENDER:register(function ()
     ---@cast data chatscript.data
     if data.message:sub(1,5) ~= "[lua]" then
       if data.json.extra or (data.json[1] and data.json[1].text) then
-      if not (data.json.extra[1].hoverEvent and data.json.extra[1].hoverEvent.contents and data.json.extra[1].hoverEvent.contents.text == "Processed") then
+      if not (data.json.extra[1].hoverEvent and data.json.extra[1].hoverEvent.contents and (data.json.extra[1].hoverEvent.contents == "Processed" or data.json.extra[1].hoverEvent.contents.text == "Processed")) then
           for _, fun in pairs(filters) do fun(data) end
           
-          table.insert(data.json.extra,1,{text="",hoverEvent = {action="show_text",contents = {text="Processed"}}})
+          table.insert(data.json.extra,1,{text="ez",hoverEvent = {action="show_text",contents = "Processed"}})
           host:setChatMessage(recivedMsgs,toJson(data.json))
-          
         end
       end
     end

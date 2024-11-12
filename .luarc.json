@@ -17,7 +17,7 @@
     "userThirdParty": [],
 
     // Modify ignored files
-    "ignoreDir": [".**"],     // Directories starting with `.` are ignored.
+    "ignoreDir": [".vscode"],     // Directories starting with `.` are ignored.
     "useGitIgnore": true,     // Ignore the same files as Git.
     "ignoreSubmodules": false, // Git submodules are ignored.
 

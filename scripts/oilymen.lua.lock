@@ -138,7 +138,7 @@ function RigidBody:applyImpulseForce(pos,vel)
 	local offset = pos - self.pos
 	local impulse = vel
 	self.vel = self.vel + impulse
-	local torque = offset:normalized():cross(impulse:normalized()) / offset:length() * impulse:length() * self.invInertia * 100
+	local torque = offset:normalized():cross(impulse:normalized()) / offset:length() * impulse:length() * 10
 	self.rvel = self.rvel + torque
 	
 	particles["end_rod"]:pos(pos):color(endesga.red):velocity(vel):gravity(0):spawn()
@@ -359,22 +359,32 @@ end)
 
 
 
-for i = 1, 20, 1 do
+for i = 1, 10, 1 do
 	local body = RigidBody.new({
 		density = 1,
-		size = vec(2,2,2),
-		pos = vec(math.random(-4,4),8+i*3,math.random(-4,4)),
+		size = vec(math.random(2,4),math.random(2,4),math.random(2,4)),
+		pos = vec(math.random(-10,10),8+i*3,math.random(-10,10)),
 		vel = vec(0,0,0),
 		block="gold_block"
 	})
 end
 
 
-local body2 = RigidBody.new({
+RigidBody.new({
 	density = 1,
-	size = vec(10,1,10),
+	size = vec(30,1,30),
 	pos = vec(0,3,0),
-	rot = vec(0,0,0),
+	rot = vec(15,0,0),
+	vel = vec(0,0,0),
+	block="diamond_block",
+	static = true
+})
+
+RigidBody.new({
+	density = 1,
+	size = vec(30,1,30),
+	pos = vec(1,3,0),
+	rot = vec(-15,0,0),
 	vel = vec(0,0,0),
 	block="diamond_block",
 	static = true

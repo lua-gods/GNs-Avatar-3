@@ -7,5 +7,7 @@
   ],
   "[lua]": {
     "editor.suggest.showDeprecated": false
-  }
+  },
+  "figura.librariesFolderPath": "C:\\Users\\green\\AppData\\Roaming\\.minecraft\\figura\\avatars\\libraries\\",
+  "cSpell.enabled": true
 }
