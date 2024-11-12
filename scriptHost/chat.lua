@@ -313,7 +313,7 @@ events.POST_WORLD_RENDER:register(function ()
       if not (data.json.extra[1].hoverEvent and data.json.extra[1].hoverEvent.contents and (data.json.extra[1].hoverEvent.contents == "Processed" or data.json.extra[1].hoverEvent.contents.text == "Processed")) then
           for _, fun in pairs(filters) do fun(data) end
           
-          table.insert(data.json.extra,1,{text="ez",hoverEvent = {action="show_text",contents = "Processed"}})
+          table.insert(data.json.extra,1,{text="",hoverEvent = {action="show_text",contents = "Processed"}})
           host:setChatMessage(recivedMsgs,toJson(data.json))
         end
       end

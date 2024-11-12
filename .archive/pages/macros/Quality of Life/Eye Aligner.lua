@@ -1,4 +1,4 @@
-local macro = require"scripts.macros"
+local macro = require"libraries.macros"
 return macro.new("eyealigner",function (events)
   function events.WORLD_RENDER(deltaFrame,deltaTick)
     if player:isLoaded() then

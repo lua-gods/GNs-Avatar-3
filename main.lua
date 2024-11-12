@@ -77,19 +77,14 @@ if events.ERROR then
   end)
 end
 
+IS_HOST = host:isHost()
 
-if host:isHost() then
-  for key, value in pairs(listFiles("debug", true)) do
-    require(value)
-  end
+if IS_HOST then
+  for key, value in pairs(listFiles("debug", true)) do require(value)end
 end
 
-for key, value in pairs(listFiles("scripts", true)) do
-  require(value)
-end
+for key, value in pairs(listFiles("scripts", true)) do require(value)end
 
-if host:isHost() then
-  for key, value in pairs(listFiles("scriptHost", true)) do
-    require(value)
-  end
+if IS_HOST then
+  for key, value in pairs(listFiles("scriptHost", true)) do require(value)end
 end
