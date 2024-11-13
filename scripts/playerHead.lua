@@ -31,6 +31,7 @@ local function colorGrade(clr,hue,saturation,value)
   return vectors.hsvToRGB(math.lerp(hsv.x,0.5,clr.g*hue),math.clamp(saturation + hsv.y,0,1),math.clamp(value + hsv.z,0,1))
 end
 
+local defaultColor = vectors.hexToRGB("#5ac54f")
 
 events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
   local situation = 0
@@ -40,17 +41,20 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
   
   if situation == 2 then
     local vars = avatarVars[entity:getUUID()] or {}
-    local color = vars.color or "#5ac54f"
+    local color = vars.color
     local height = 7 --vars.hat_height and tonumber(vars.hat_height) or 7
     if type(color) == "string" then
       color = vectors.hexToRGB(color)
+    end
+    if type(color) ~= "Vector3" then
+      color = defaultColor
     end
     modelHead.cylinder:setScale(1,height or 10,1)
     modelHead.ribbon.shade4:setColor(color)
     modelHead.ribbon.shade3:setColor(colorGrade(color,0,0.05,-0.1))
     modelHead.ribbon.shade2:setColor(colorGrade(color,0,0.25,-0.25))
     modelHead.ribbon.shade1:setColor(colorGrade(color,0,0.5,-0.4))
-  --elseif situation == 3 then
+    --elseif situation == 3 then
   --  local pose = entity:getNbt().Pose
   --  for key, value in pairs(pose) do
   --    pose[key] = vec(value[1] or 0,value[2] or 0,value[3] or 0)

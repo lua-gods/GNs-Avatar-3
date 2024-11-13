@@ -1,6 +1,7 @@
 vanilla_model.PLAYER:setVisible(false)
-models.player:setPrimaryRenderType("CUTOUT")
-avatar:store("hair_color","5ac54f")
-renderer:setShadowRadius(0.4)
 vanilla_model.ELYTRA:setVisible(false)
 vanilla_model.CAPE:setVisible(true)
+renderer:setShadowRadius(0.4)
+models.player:setPrimaryRenderType("CUTOUT") -- enables more shader compatibility
+
+avatar:store("hair_color","5ac54f")
