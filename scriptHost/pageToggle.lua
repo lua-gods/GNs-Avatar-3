@@ -1,3 +1,5 @@
+local pages = require"libraries.pages"
+
 local key = keybinds:fromVanilla("figura.config.action_wheel_button")
 
 local pressTime = 0
@@ -8,6 +10,7 @@ local function cursor(isUnlocked)
   renderer:setRenderCrosshair(not isUnlocked)
   host.unlockCursor = isUnlocked
   unlocked = isUnlocked
+  pages.setPage(isUnlocked and "home" or nil)
 end
 
 key.press = function ()

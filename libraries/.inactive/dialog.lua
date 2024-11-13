@@ -58,10 +58,10 @@ local screen = GNUI.getScreenCanvas()
 
 
 ---@class GNUI.Dialog.Page
----@field TICK EventLib
----@field FRAME EventLib
----@field PREPROCESS EventLib
----@field CLOSE EventLib
+---@field TICK Event
+---@field FRAME Event
+---@field PREPROCESS Event
+---@field CLOSE Event
 ---@field name string?
 ---@field color Vector3?
 ---@field positioning GNUI.Dialog.Page.Positioning
