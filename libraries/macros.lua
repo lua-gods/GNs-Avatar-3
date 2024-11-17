@@ -7,7 +7,7 @@
 ---@field instantiate fun(events:Macro.Events)
 ---@field isActive boolean
 ---@field sync boolean
----@field id string
+---@field name string
 ---@field keybind GNUI.InputEvent
 ---@field toggle boolean
 local Macro = {}
@@ -25,23 +25,23 @@ local isHost = host:isHost()
 ---@type Macro[]
 local macros = {} -- list of registered macros
 
----@param id string
+---@param name string
 ---@param init fun(events:Macro.Events)
 ---@param sync boolean?
 ---@return table
-function Macro.new(id,init,sync)
+function Macro.new(name,init,sync)
   config:setName("GN-macros-"..avatar:getName())
   local self = {
     instantiate = init,
-    id = id,
+    name = name,
     sync = sync,
   }
   setmetatable(self,Macro)
-  macros[id] = self
+  macros[name] = self
   if isHost then
-    self.isActive = config:load(id..".isActive") and true or false
-    self.keybind = config:load(id..".keybind")
-    self.toggle = config:load(id..".toggle")
+    self.isActive = config:load(name..".isActive") and true or false
+    self.keybind = config:load(name..".keybind")
+    self.toggle = config:load(name..".toggle")
   end
   return self
 end
@@ -105,7 +105,7 @@ end
 function Macro:setActive(active)
   if active ~= self.isActive then
     if isHost then
-      sync(self.id,active)
+      sync(self.name,active)
     end
     if active then
       if not self.instance then
