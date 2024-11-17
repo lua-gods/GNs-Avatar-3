@@ -6,12 +6,14 @@
       "GNUI/eventLib",
       "GNUI/nineslice",
       "GNUI/theme",
+      "GNUI/utils",
       "GNUI/theme/gntheme",
       "GNUI/primitives/box",
       "GNUI/primitives/canvas",
       "GNUI/elements/button",
       "GNUI/elements/slider",
-      "GNUI/elements/textField"
+      "GNUI/elements/textField",
+      "GNUI/elements/GridStacker"
     ],
     "assets": [
       "GNUI/theme/gnuiTheme.png",
@@ -32,6 +34,7 @@
   "GNUI/elements/button": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/button.lua",
   "GNUI/elements/slider": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/slider.lua",
   "GNUI/elements/textField": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/elements/.lua",
+  "GNUI/elements/GridStacker": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/GridStacker.lua",
   
   "GNLineLib": "https://github.com/lua-gods/GNs-Avatar-3/raw/refs/heads/GNUI-Simplification/libraries/line.lua",
   "GNTrailLib": "https://raw.githubusercontent.com/lua-gods/GNs-Avatar-3/refs/heads/GNUI-Simplification/libraries/trail.lua",
