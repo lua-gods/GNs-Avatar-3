@@ -33,7 +33,7 @@
   "GNUI/primitives/canvas": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/primitives/canvas.lua",
   "GNUI/element/button": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/button.lua",
   "GNUI/element/slider": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/slider.lua",
-  "GNUI/element/textField": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/.lua",
+  "GNUI/element/textField": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/textField.lua",
   "GNUI/element/GridStacker": "https://raw.githubusercontent.com/lua-gods/GNUI/refs/heads/main/element/GridStacker.lua",
   
   "GNLineLib": "https://github.com/lua-gods/GNs-Avatar-3/raw/refs/heads/GNUI-Simplification/libraries/line.lua",
