@@ -10,6 +10,6 @@ local sound
 function pings.burp(pitch)
 	if player:isLoaded() then
 		if sound then sound:stop() end
-		sound = sounds.burp:pos(player:getPos()):pitch(pitch):play()
+		sound = sounds.burp:volume(0.25):pos(player:getPos()):pitch(pitch):play()
 	end
 end

@@ -17,7 +17,7 @@ local colors = {
 }
 
 local proxy = {
-  GNUI = "GNamimates",
+  --NUI = "GNamimates",
 }
 username = proxy[username] or username
 -- Style

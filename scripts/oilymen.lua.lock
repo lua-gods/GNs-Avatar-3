@@ -4,7 +4,7 @@
 / /_/ / /|  / very WIP
 \____/_/ |_/ Source: link]]
 
-local endesga = require"palettes.endesga64"
+local endesga = require"libraries.palettes.endesga64"
 local Line = require"libraries.line"
 
 local MARGIN = 0.001
@@ -26,7 +26,9 @@ local cubePoints = {}
 for z = -0.5, 0.5, 0.5 do
 	for y = -0.5, 0.5, 0.5 do
 		for x = -0.5, 0.5, 0.5 do
-			cubePoints[#cubePoints+1] = vec(x,y,z)
+			if x ~= 0 and y ~= 0 and z ~= 0 then
+				cubePoints[#cubePoints+1] = vec(x,y,z)
+			end
 		end
 	end
 end
@@ -138,10 +140,10 @@ function RigidBody:applyImpulseForce(pos,vel)
 	local offset = pos - self.pos
 	local impulse = vel
 	self.vel = self.vel + impulse
-	local torque = offset:normalized():cross(impulse:normalized()) / offset:length() * impulse:length() * 10
+	local torque = offset:normalized():cross(impulse:normalized()) / math.max(offset:length() * impulse:length() * 10,0.1)
 	self.rvel = self.rvel + torque
 	
-	particles["end_rod"]:pos(pos):color(endesga.red):velocity(vel):gravity(0):spawn()
+	--particles["end_rod"]:pos(pos):color(endesga.red):velocity(vel):gravity(0):spawn()
 end
 
 local function reflect(dir,normal)
@@ -201,17 +203,17 @@ events.WORLD_RENDER:register(function (dt)
 					local hitDir = mat:applyDir(side2dir[side])
 					if hitPos then
 						hitPos = mat:apply(hitPos)
-						body.lines.hit:setAB(hitPos,hitPos+hitDir)
+						--body.lines.hit:setAB(hitPos,hitPos+hitDir)
 						if player:getSwingTime() == 1 then
 							body:applyImpulseForce(hitPos,-hitDir*1)
 						end
 					else
-						body.lines.hit:setAB(vec(0,0,0),vec(0,0,0))
+						--body.lines.hit:setAB(vec(0,0,0),vec(0,0,0))
 					end
 				end
 	
 				local omegaDir = omega:normalized()
-				body.lines.o:setAB(body.pos-omegaDir*2,body.pos+omegaDir*2)
+				--body.lines.o:setAB(body.pos-omegaDir*2,body.pos+omegaDir*2)
 			end
 			-- rendering
 			local rMat = body.rot:augmented():translate(body.pos * 16)
@@ -219,11 +221,11 @@ events.WORLD_RENDER:register(function (dt)
 	
 			-- debug
 			local rvelDir = body.rvel:length() ~= 0 and body.rvel:normalized() or vec(0,1,0)
-			body.lines.x:setAB(body.pos,body.pos+body.rot.c1 * 1.5)
-			body.lines.y:setAB(body.pos,body.pos+body.rot.c2 * 1.5)
-			body.lines.z:setAB(body.pos,body.pos+body.rot.c3 * 1.5)
-			body.lines.l:setAB(body.pos-rvelDir*2,body.pos+rvelDir*2)
-			body.lines.v:setAB(body.pos-body.vel*2,body.pos+body.vel*2)
+			--body.lines.x:setAB(body.pos,body.pos+body.rot.c1 * 1.5)
+			--body.lines.y:setAB(body.pos,body.pos+body.rot.c2 * 1.5)
+			--body.lines.z:setAB(body.pos,body.pos+body.rot.c3 * 1.5)
+			--body.lines.l:setAB(body.pos-rvelDir*2,body.pos+rvelDir*2)
+			--body.lines.v:setAB(body.pos-body.vel*2,body.pos+body.vel*2)
 	
 			-- cache
 			local mat = matrices.mat4(
@@ -290,9 +292,51 @@ events.WORLD_RENDER:register(function (dt)
 						end
 					end
 				end
+				
+				local collisionPoints = {}
+				-- collide with the world
+				for i = 1, #cubePoints, 1 do
+					local offset = cubePoints[i]
+					local pos = matA:apply(offset)
+					local _,hitPos,sideName = raycast:block(bodyA.pos, pos,"COLLIDER","NONE")
+					if (pos-hitPos):length() > 0.001 then
+						local side = side2dir[sideName]
+						collisionPoints[#collisionPoints+1] = {
+							hitpos = hitPos,
+							offset = offset,
+							dir = side,
+							vel = vec(0,0,0)
+						}
+					end
+				end
+				
+				if #collisionPoints > 0 then
+					local midPos = vec(0,0,0)
+					local midDir = vec(0,0,0)
+					local midOffset = vec(0,0,0)
+					local midVel = vec(0,0,0)
+					for i = 1, #collisionPoints, 1 do
+						local p = collisionPoints[i]
+						midPos = midPos + p.hitpos
+						midDir = midDir + p.dir
+						midOffset = midOffset + p.offset
+						midVel = midVel + p.vel
+					end
+					local amount = #collisionPoints
+					midPos = midPos / amount
+					midDir = midDir / amount
+					midOffset = midOffset / amount
+					midVel = midVel / amount
+					collisions[#collisions+1] = {
+						a=bodyA,
+						hitPos = midPos,
+						dir = midDir,
+						offset = midOffset
+					}
+				end
 			end
 		end
-		host:setActionbar("Collisions: "..#collisions)
+		--host:setActionbar("Collisions: "..#collisions)
 		-- handling collisions
 		
 		for i = 1, #collisions, 1 do
@@ -300,23 +344,23 @@ events.WORLD_RENDER:register(function (dt)
 			local bodyA = data.a
 			local bodyB = data.b
 			local hitDir = data.dir
-			local Apos = bodyB.transform:apply(data.offset)
 			local hitPos = data.hitPos
 			
 			local massRatio
 			if bodyA.static then
 				massRatio = 1
-			elseif bodyB.static then
+			elseif not bodyB or bodyB.static then
 				massRatio = 0
 			else
 				massRatio = bodyA.mass / (bodyA.mass + bodyB.mass)
 			end
 			
 			
-			local velA = (bodyA.transform - bodyA.lastTransform):apply(data.offset)
-			local velB = (bodyB.transform - bodyB.lastTransform):apply(data.offset)
+			local velA = (bodyA and bodyA.transform) and (bodyA.transform - bodyA.lastTransform or bodyA.transform):apply(data.offset) or vec(0,0,0)
+			local velB = (bodyB and bodyB.transform) and (bodyB.transform - bodyB.lastTransform or bodyB.transform):apply(data.offset) or vec(0,0,0)
 			
 			local avel = velA - velB
+			if not bodyB then avel = velA * 0.00001 end
 			local bvel = -avel
 			
 			-- flatten velocity
@@ -326,9 +370,8 @@ events.WORLD_RENDER:register(function (dt)
 			-- flatten impulse
 			local davel = (avel - favel)
 			local dbvel = (bvel - fbvel)
-			
-			local friction = 4
-			local restitution = 1
+			local friction = 0.1
+			local restitution = 0
 			
 			local AinvMat = bodyA.transform:inverted()
 			
@@ -338,12 +381,14 @@ events.WORLD_RENDER:register(function (dt)
 			local push = (posShifted - pos)
 			bodyA.pos = bodyA.pos + push * 2 * invMassRatio
 			
-			bodyA:applyImpulseForce(pos,fbvel * friction)
-			bodyA.vel = flatten(bodyA.vel - bodyB.vel,hitDir) + flatten(bodyB.vel,hitDir)
+			local bodyBvel = bodyB and bodyB.vel or vec(0,0,0)
+			
+			--bodyA:applyImpulseForce(pos,fbvel * friction)
+			bodyA.vel = flatten(bodyA.vel - bodyBvel,hitDir) + flatten(bodyBvel,hitDir)
 			bodyA:applyImpulseForce(pos,dbvel * invMassRatio)
 			
 			
-			if not bodyB.static then
+			if bodyB and not bodyB.static then
 				local Bpush = flatten(pos - hitPos,hitDir)+hitPos - hitDir * MARGIN
 				bodyB.pos = bodyB.pos - push * 2 * massRatio
 				bodyB:applyImpulseForce(pos,favel * friction)
@@ -355,37 +400,28 @@ events.WORLD_RENDER:register(function (dt)
 end)
 
 
-
-
-
-
-for i = 1, 10, 1 do
-	local body = RigidBody.new({
-		density = 1,
-		size = vec(math.random(2,4),math.random(2,4),math.random(2,4)),
-		pos = vec(math.random(-10,10),8+i*3,math.random(-10,10)),
-		vel = vec(0,0,0),
-		block="gold_block"
+function pings.makeCube(pos,vel)
+	RigidBody.new({
+		density = 40,
+		size = vec(1,1,1),
+		pos = pos,
+		rot = vec(15,0,0),
+		vel = vel,
+		block="diamond_block",
 	})
 end
 
+function pings.clearCubes()
+	bodies = {}
+	for key, value in pairs(modelWorld:getChildren()) do
+		value:remove()
+	end
+end
 
-RigidBody.new({
-	density = 1,
-	size = vec(30,1,30),
-	pos = vec(0,3,0),
-	rot = vec(15,0,0),
-	vel = vec(0,0,0),
-	block="diamond_block",
-	static = true
-})
+keybinds:newKeybind("cube", "key.keyboard.g").press = function ()
+	pings.makeCube(player:getPos():add(0,player:getEyeHeight()),player:getLookDir() * 10)
+end
 
-RigidBody.new({
-	density = 1,
-	size = vec(30,1,30),
-	pos = vec(1,3,0),
-	rot = vec(-15,0,0),
-	vel = vec(0,0,0),
-	block="diamond_block",
-	static = true
-})
+keybinds:newKeybind("cc","key.keyboard.h").press = function ()
+	pings.clearCubes()
+end

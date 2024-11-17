@@ -1,0 +1,10 @@
+local GNUI = require("GNUI.main")
+
+local Pages = require"libraries.pages"
+local Button = require"GNUI.element.button"
+
+local page = Pages.newPage("home")
+---@param box GNUI.Box
+page.INIT:register(function (box)
+   
+end)
