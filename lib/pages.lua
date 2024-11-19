@@ -4,8 +4,8 @@
 / /_/ / /|  / 
 \____/_/ |_/ Source: link]]
 
-local eventLib = require"libraries.eventLib"
-local GNUI = require"GNUI.main"
+local eventLib = require"lib.eventLib"
+local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
 
 local background = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))

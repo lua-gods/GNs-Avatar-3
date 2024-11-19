@@ -1,4 +1,4 @@
-local pages = require"libraries.pages"
+local pages = require"lib.pages"
 
 local key = keybinds:fromVanilla("figura.config.action_wheel_button")
 

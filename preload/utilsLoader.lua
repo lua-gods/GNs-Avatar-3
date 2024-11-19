@@ -1,4 +1,4 @@
 _G.utils = {}
-for key, value in pairs(listFiles("libraries.utils", true)) do
+for key, value in pairs(listFiles("lib.utils", true)) do
    require(value)
 end

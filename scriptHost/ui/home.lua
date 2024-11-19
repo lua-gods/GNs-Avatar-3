@@ -1,8 +1,8 @@
-local GNUI = require("GNUI.main")
+local GNUI = require("lib.GNUI.main")
 
-local Pages = require"libraries.pages"
-local GridStacker = require"GNUI.element.GridStacker"
-local Button = require"GNUI.element.button"
+local Pages = require"lib.pages"
+local GridStacker = require"lib.GNUI.element.GridStacker"
+local Button = require"lib.GNUI.element.button"
 
 local page = Pages.newPage("home")
 ---@param box GNUI.Box

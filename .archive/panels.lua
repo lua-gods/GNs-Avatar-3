@@ -1,10 +1,10 @@
 
-local GNUI = require"GNUI.main"
-local Theme = require"GNUI.theme"
-local Button = require"GNUI.element.button"
+local GNUI = require"lib.GNUI.main"
+local Theme = require"lib.GNUI.theme"
+local Button = require"lib.GNUI.element.button"
 local screen = GNUI.getScreenCanvas()
 
-local Dialog = require"libraries.dialog"
+local Dialog = require"lib.dialog"
 local panels = Dialog.newDialog(screen,"HOTBAR RIGHT")
 
 local homePage = require"pages.home"

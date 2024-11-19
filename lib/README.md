@@ -3,9 +3,9 @@ All the libraries within this folder is made by me, and are free to use. all I a
 
 I spend alot of time making sure each library is easy to digest if being read, while also trying to make the file size as small as it can be.
 
-Feel free to DM me on discord `@gn8.` for help or questions about the libraries.
+Feel free to DM me on discord `@gn8.` for help or questions about the lib.
 ## Layout
-all my libraries are layed out in this specific order in every script, follow this map to make it easier for you to find what youre looking for inside the libraries.
+all my libraries are layed out in this specific order in every script, follow this map to make it easier for you to find what youre looking for inside the lib.
 
 1. Info
 ```
@@ -19,7 +19,7 @@ all my libraries are layed out in this specific order in every script, follow th
 contains the dependencies of the library. placed at top to make it easy to find what the library needs.
 ```lua
 local GNUI = require "GNUI.main"
-local line = require "libraries.line"
+local line = require "lib.line"
 ...
 ```
 3. Utility Functions (optional)

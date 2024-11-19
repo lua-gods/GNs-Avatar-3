@@ -1,4 +1,4 @@
-local GNUI = require"GNUI.main"
+local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
 
 local b = GNUI.newBox(screen)

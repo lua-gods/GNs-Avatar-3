@@ -4,7 +4,7 @@
 / /_/ / /|  / Allows you to play animations with ease.
 \____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-2/tree/main/libraries/GNanimLib.lua]]
 
-local tween = require("libraries.tween")
+local tween = require("lib.tween")
 
 ---@class animationStateMachine
 ---@field id integer

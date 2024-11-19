@@ -4,8 +4,8 @@
 / /_/ / /|  / very WIP
 \____/_/ |_/ Source: link]]
 
-local endesga = require"libraries.palettes.endesga64"
-local Line = require"libraries.line"
+local endesga = require"lib.palettes.endesga64"
+local Line = require"lib.line"
 
 local MARGIN = 0.001
 

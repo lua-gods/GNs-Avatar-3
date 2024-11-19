@@ -1,4 +1,4 @@
-local tween = require "libraries.tween"
+local tween = require "lib.tween"
 
 local SENSITIVITY = 0.1
 

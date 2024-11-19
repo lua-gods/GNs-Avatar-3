@@ -6,8 +6,8 @@
 --BIG Thankyou to the NBT wiki: https://wiki.vg/NBT
 
 -->==========[ Dependencies ]==========<--
-local zlib = require("libraries.compression.zzlib") -- Optional
-local base64 = require("libraries.base64") -- Required
+local zlib = require("lib.compression.zzlib") -- Optional
+local base64 = require("lib.base64") -- Required
 
 -->==========[ Types ]==========<--
 ---@alias NBT.Types integer

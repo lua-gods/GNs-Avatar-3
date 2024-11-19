@@ -6,7 +6,7 @@
 local config = {
   sync_wait_time = 20*5, -- ticks, second * 20 = ticks
 }
-local endesga = require"libraries.palettes.endesga64"
+local endesga = require"lib.palettes.endesga64"
 local username = avatar:getEntityName()
 
 local colors = {

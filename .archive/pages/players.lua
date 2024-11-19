@@ -1,12 +1,12 @@
-local Dialog = require"libraries.dialog"
+local Dialog = require"lib.dialog"
 local page = Dialog.newPage({
   name = "Player List",
   color="#c5b565",
   positioning = "HOTBAR RIGHT",
 })
 
-local GNUI = require"GNUI.main"
-local Button = require"GNUI.element.button"
+local GNUI = require"lib.GNUI.main"
+local Button = require"lib.GNUI.element.button"
 
 local playerPages = {}
 

@@ -6,8 +6,8 @@ models.sword.Roll.Pole.Handle.bone.glow:setPrimaryRenderType("EMISSIVE_SOLID")
 local is_holding_sword = false
 local was_holding_sword
 
-local GNanim = require("libraries.GNanimLib")
-local trail = require("libraries.GNtrailLib")
+local GNanim = require("lib.GNanimLib")
+local trail = require("lib.GNtrailLib")
 
 local state = GNanim.new()
 

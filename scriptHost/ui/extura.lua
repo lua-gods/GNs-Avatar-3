@@ -1,8 +1,8 @@
-local GNUI = require("GNUI.main")
+local GNUI = require("lib.GNUI.main")
 
-local Pages = require"libraries.pages"
-local Button = require"GNUI.element.button"
-local Slider = require"GNUI.element.slider"
+local Pages = require"lib.pages"
+local Button = require"lib.GNUI.element.button"
+local Slider = require"lib.GNUI.element.slider"
 
 --GNUI.debugMode()
 local page = Pages.newPage("extura")

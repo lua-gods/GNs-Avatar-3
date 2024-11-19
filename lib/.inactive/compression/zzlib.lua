@@ -10,7 +10,7 @@
 
 
 local un = table.unpack
-local infl = require("libraries.compression.inflate-bit32")
+local infl = require("lib.compression.inflate-bit32")
 
 local zzlib = {}
 

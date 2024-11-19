@@ -21,7 +21,7 @@ local function applyChangesToIndex(i)
   end
 end
 
-local utils = require("libraries.rawjsonUtils")
+local utils = require("lib.rawjsonUtils")
 local env = {math=math,vectors = vectors,vec=vec}
 for key, value in pairs(math) do -- inject math into global
   env[key] = value

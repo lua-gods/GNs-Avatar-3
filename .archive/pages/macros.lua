@@ -1,13 +1,13 @@
-local Dialog = require"libraries.dialog"
+local Dialog = require"lib.dialog"
 local page = Dialog.newPage({
   name = "Macros",
   color="#e45959",
   positioning = "HOTBAR RIGHT",
 })
 
-local GNUI = require"GNUI.main"
+local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
-local Button = require"GNUI.element.button"
+local Button = require"lib.GNUI.element.button"
 
 local Macros = {} ---@type table<string,table<string,Macro>>
 local items = listFiles("pages.macros",true)

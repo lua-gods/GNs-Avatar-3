@@ -1,6 +1,6 @@
 
 if true then return end
-local GNUI = require"GNUI.main"
+local GNUI = require"lib.GNUI.main"
 local panels = require"scriptHost.panels"
 local icons = textures["textures.icons"]
 
