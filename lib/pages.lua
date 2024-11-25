@@ -3,6 +3,7 @@
  / / __/  |/ / A service library for handling which page should be displayed at the screen.
 / /_/ / /|  / 
 \____/_/ |_/ Source: link]]
+local CONFIG_KEY = avatar:getName()..".lastPage"
 
 local eventLib = require"lib.eventLib"
 local GNUI = require"lib.GNUI.main"
@@ -10,10 +11,17 @@ local screen = GNUI.getScreenCanvas()
 
 local background = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
 
----@class GNUI.PageRizzler
-local pageRizzler = {}
+
 local pages = {} ---@type table<string, GNUI.page>
 local currentPage ---@type GNUI.page?
+local history = {}
+
+---@class GNUI.PageRizzler
+local pageRizzler = {
+	PAGE_CHANGED = eventLib.new(),
+	pages = pages,
+}
+
 
 ---@param name string
 ---@param bgOpacity number?
@@ -23,7 +31,7 @@ function pageRizzler.newPage(name,bgOpacity)
 		INIT = eventLib.new(),
 		EXIT = eventLib.new(),
 	}
-	if pages[name] then error("page "..name.." already exists") end
+	if pages[name] then error("page "..name.." already exists",2) end
 	pages[name] = page
 	return page
 end
@@ -40,6 +48,14 @@ function pageRizzler.setPage(name)
 		currentPage.screen:free()
 	end
 	local nextPage = pages[name] or defaultPage
+	history[#history+1] = name or "default"
+	
+	config:setName("PageRizzler")
+	config:save(CONFIG_KEY,name or "default")
+	
+	pageRizzler.currentPage = name or "default"
+	pageRizzler.PAGE_CHANGED:invoke(nextPage)
+	
 	if nextPage then
 		local box = GNUI.newBox(screen)
 		:setAnchor(0,0,1,1)
@@ -48,6 +64,14 @@ function pageRizzler.setPage(name)
 		renderer:setRenderHUD(nextPage.bgOpacity == 0)
 		nextPage.screen = box
 		currentPage = nextPage
+	end
+end
+
+function pageRizzler.returnPage()
+	if #history > 0 then
+		local i = #history
+		table.remove(history,i)
+		pageRizzler.setPage(history[i-1])
 	end
 end
 
@@ -73,6 +97,11 @@ end
 ---@field INIT EventLib
 ---@field EXIT EventLib
 
-pageRizzler.setPage("default")
+
+events.ENTITY_INIT:register(function ()
+	config:setName("PageRizzler")
+	local page = config:load(CONFIG_KEY) or "default"
+	pageRizzler.setPage(page)
+end)
 
 return pageRizzler
