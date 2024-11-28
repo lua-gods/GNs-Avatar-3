@@ -7,35 +7,12 @@ local Button = require"lib.GNUI.element.button"
 
 
 local sidebarSize = 200
+local vsep = 0.5
 
 
-local page = Pages.newPage("pageEditor",0)
+local page = Pages.newPage("pageEditor")
 ---@param screen GNUI.Box
 page.INIT:register(function (screen)
-   -->====================[ Context Menu ]====================<--
-   local contextMenu = GNUI.newBox(screen)
-   :setPos(0,0)
-   :setSize(100,200)
-   Theme.style(contextMenu,"Background")
-   
-   local persist = false
-   
-   ---@param event GNUI.InputEvent
-   screen.INPUT:register(function (event)
-      if event.key == "key.mouse.right" and event.state == 0 then
-         local canvas = screen.Canvas
-         local pos = canvas.MousePosition + vec(5,0)
-         --pos.x = math.clamp(pos.x,0,contextMenu.Size.x)
-         pos.y = math.clamp(pos.y,0,canvas.Size.y-contextMenu.Size.y)
-         contextMenu:setPos(pos):setVisible(true)
-      end
-   end)
-   
-   contextMenu.MOUSE_PRESSENCE_CHANGED:register(function (hovering,pressed)
-      if not hovering then
-         contextMenu:setVisible(false)
-      end
-   end)
    
    -->====================[ Sidebar ]====================<--
    local toolbar = GNUI.newBox(screen)
@@ -47,12 +24,12 @@ page.INIT:register(function (screen)
    :setAnchor(1,0,1,1)
    
    Theme.style(sidebar,"Background")
-   local sidebarButton = Button.new(screen)
+   local sidebarButton = Button.new(screen,"none")
    :setAnchor(1,0,1,1)
    
    local function updateSidebarSize()
       sidebar:setDimensions(-sidebarSize,0,0,0)
-      sidebarButton:setDimensions(-2-sidebarSize,16,2-sidebarSize,-16)
+      sidebarButton:setDimensions(-4-sidebarSize,0,2-sidebarSize,0)
       toolbar:setPos(-sidebarSize-20,4)
    end
    ---@param event GNUI.InputEventMouseMotion
@@ -73,6 +50,34 @@ page.INIT:register(function (screen)
    closeButton.PRESSED:register(function ()
       Pages.returnPage()
    end)
+   
+   local verticalSeparator = Button.new(sidebar)
+   
+   local upperContent = GNUI.newBox(sidebar)
+   :setDimensions(0,0,0,-8)
+   Theme.style(upperContent,"Background")
+   
+   local lowerContent = GNUI.newBox(sidebar)
+   :setDimensions(0,6,0,0)
+   Theme.style(lowerContent,"Background")
+   
+   local function updateVerticalSeparator()
+      verticalSeparator
+      :setAnchor(0,vsep,1,vsep)
+      :setDimensions(1,-6,-1,6)
+      :setText("Outliner")
+   end
+   ---@param event GNUI.InputEventMouseMotion
+   verticalSeparator.MOUSE_MOVED:register(function (event)
+      if verticalSeparator.isPressed then
+         vsep = math.clamp(vsep + event.relative.y / sidebar.Size.y,0,1)
+         updateVerticalSeparator()
+      end
+      upperContent:setAnchor(0,0,1,vsep)
+      lowerContent:setAnchor(0,vsep,1,1)
+   end)
+   
+   updateVerticalSeparator()
    
    updateSidebarSize()
 end)

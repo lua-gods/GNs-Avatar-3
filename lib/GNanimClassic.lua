@@ -2,7 +2,7 @@
   / ____/ | / / By: GNamimates
  / / __/  |/ / GNanimLib v2.0.0
 / /_/ / /|  / Allows you to play animations with ease.
-\____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-2/tree/main/libraries/GNanimLib.lua]]
+\____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/GNanimClassic.lua]]
 
 local tween = require("lib.tween")
 

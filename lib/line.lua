@@ -2,7 +2,7 @@
   / ____/ | / / By: GNamimates
  / / __/  |/ / GNlineLib v2.0.1
 / /_/ / /|  / Allows you to draw lines in the world at ease.
-\____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/line.lua]]
+\____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/line.lua]]
 
 local default_model = models:newPart("gnlinelibline","WORLD"):scale(16,16,16)
 local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vectors.vec3(1,1,1))

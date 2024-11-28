@@ -2,7 +2,7 @@
   / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
  / / __/  |/ / A service library for handling which page should be displayed at the screen.
 / /_/ / /|  / 
-\____/_/ |_/ Source: link]]
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/pages.lua]]
 local CONFIG_KEY = avatar:getName()..".lastPage"
 
 local eventLib = require"lib.eventLib"

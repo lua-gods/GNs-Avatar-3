@@ -2,7 +2,7 @@
   / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
  / / __/  |/ / Simple system for macros
 / /_/ / /|  / by macros I mean a instantiatable process.
-\____/_/ |_/ Source: link]]
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/macros.lua]]
 ---@class Macro
 ---@field instantiate fun(events:Macro.Events)
 ---@field isActive boolean
