@@ -1,7 +1,7 @@
 local GNUI = require("lib.GNUI.main")
 
 local Pages = require"lib.pages"
-local GridStacker = require"lib.GNUI.element.GridStacker"
+local GridStacker = require"lib.GNUI.element.gridStacker"
 local Button = require"lib.GNUI.element.button"
 
 ---@type {[1]:string,[2]:string,[3]:Minecraft.itemID}[]

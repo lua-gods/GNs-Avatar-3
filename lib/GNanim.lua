@@ -178,4 +178,26 @@ function api.smooth(driver,duration,start)
 	return proxy
 end
 
+
+
+---@param animation Animation
+---@param afterAnimation Animation
+function api.playAfter(animation,afterAnimation)
+	local played = false
+	local uuid = client.intUUIDToString(client:generateUUID())
+	events.WORLD_RENDER:register(function (delta)
+		if played then
+			if animation:getPlayState() ~= "PLAYING" then
+				animation:stop()
+				afterAnimation:stop():play()
+				events.WORLD_RENDER:remove(uuid)
+			end
+		else
+			if animation:getPlayState() == "PLAYING" then
+				played = true
+			end
+		end
+	end,uuid)
+end
+
 return api

@@ -343,57 +343,59 @@ events.WORLD_RENDER:register(function (dt)
 			local data = collisions[i]
 			local bodyA = data.a
 			local bodyB = data.b
-			local hitDir = data.dir
-			local hitPos = data.hitPos
-			
-			local massRatio
-			if bodyA.static then
-				massRatio = 1
-			elseif not bodyB or bodyB.static then
-				massRatio = 0
-			else
-				massRatio = bodyA.mass / (bodyA.mass + bodyB.mass)
-			end
-			
-			
-			local velA = (bodyA and bodyA.transform) and (bodyA.transform - bodyA.lastTransform or bodyA.transform):apply(data.offset) or vec(0,0,0)
-			local velB = (bodyB and bodyB.transform) and (bodyB.transform - bodyB.lastTransform or bodyB.transform):apply(data.offset) or vec(0,0,0)
-			
-			local avel = velA - velB
-			if not bodyB then avel = velA * 0.00001 end
-			local bvel = -avel
-			
-			-- flatten velocity
-			local favel = flatten(avel,hitDir)
-			local fbvel = flatten(bvel,hitDir)
-			
-			-- flatten impulse
-			local davel = (avel - favel)
-			local dbvel = (bvel - fbvel)
-			local friction = 0.1
-			local restitution = 0
-			
-			local AinvMat = bodyA.transform:inverted()
-			
-			local invMassRatio = (1-massRatio)
-			local pos = bodyA.transform:apply(data.offset)
-			local posShifted = flatten(pos - hitPos,hitDir)+hitPos + hitDir * MARGIN
-			local push = (posShifted - pos)
-			bodyA.pos = bodyA.pos + push * 2 * invMassRatio
-			
-			local bodyBvel = bodyB and bodyB.vel or vec(0,0,0)
-			
-			--bodyA:applyImpulseForce(pos,fbvel * friction)
-			bodyA.vel = flatten(bodyA.vel - bodyBvel,hitDir) + flatten(bodyBvel,hitDir)
-			bodyA:applyImpulseForce(pos,dbvel * invMassRatio)
-			
-			
-			if bodyB and not bodyB.static then
-				local Bpush = flatten(pos - hitPos,hitDir)+hitPos - hitDir * MARGIN
-				bodyB.pos = bodyB.pos - push * 2 * massRatio
-				bodyB:applyImpulseForce(pos,favel * friction)
-				bodyB.vel = flatten(bodyB.vel - bodyA.vel,hitDir) + flatten(bodyA.vel,hitDir)
-				bodyB:applyImpulseForce(pos,davel * massRatio)
+			if not (bodyA and bodyB) or true then
+				local hitDir = data.dir
+				local hitPos = data.hitPos
+				
+				local massRatio
+				if bodyA.static then
+					massRatio = 1
+				elseif not bodyB or bodyB.static then
+					massRatio = 0
+				else
+					massRatio = bodyA.mass / (bodyA.mass + bodyB.mass)
+				end
+				
+				
+				local velA = (bodyA and bodyA.transform) and (bodyA.transform - bodyA.lastTransform or bodyA.transform):apply(data.offset) or vec(0,0,0)
+				local velB = (bodyB and bodyB.transform) and (bodyB.transform - bodyB.lastTransform or bodyB.transform):apply(data.offset) or vec(0,0,0)
+				
+				local avel = velA - velB
+				if not bodyB then avel = velA * 0.00001 end
+				local bvel = -avel
+				
+				-- flatten velocity
+				local favel = flatten(avel,hitDir)
+				local fbvel = flatten(bvel,hitDir)
+				
+				-- flatten impulse
+				local davel = (avel - favel)
+				local dbvel = (bvel - fbvel)
+				local friction = 0.1
+				local restitution = 0
+				
+				local AinvMat = bodyA.transform:inverted()
+				
+				local invMassRatio = (1-massRatio)
+				local pos = bodyA.transform:apply(data.offset)
+				local posShifted = flatten(pos - hitPos,hitDir)+hitPos + hitDir * MARGIN
+				local push = (posShifted - pos)
+				bodyA.pos = bodyA.pos + push * 2 * invMassRatio
+				
+				local bodyBvel = bodyB and bodyB.vel or vec(0,0,0)
+				
+				--bodyA:applyImpulseForce(pos,fbvel * friction)
+				bodyA.vel = flatten(bodyA.vel - bodyBvel,hitDir) + flatten(bodyBvel,hitDir)
+				bodyA:applyImpulseForce(pos,dbvel * invMassRatio)
+				
+				
+				if bodyB and not bodyB.static then
+					local Bpush = flatten(pos - hitPos,hitDir)+hitPos - hitDir * MARGIN
+					bodyB.pos = bodyB.pos - push * 2 * massRatio
+					bodyB:applyImpulseForce(pos,favel * friction)
+					bodyB.vel = flatten(bodyB.vel - bodyA.vel,hitDir) + flatten(bodyA.vel,hitDir)
+					bodyB:applyImpulseForce(pos,davel * massRatio)
+				end
 			end
 		end
 	end
@@ -402,7 +404,7 @@ end)
 
 function pings.makeCube(pos,vel)
 	RigidBody.new({
-		density = 40,
+		density = 100,
 		size = vec(1,1,1),
 		pos = pos,
 		rot = vec(15,0,0),
@@ -419,7 +421,7 @@ function pings.clearCubes()
 end
 
 keybinds:newKeybind("cube", "key.keyboard.g").press = function ()
-	pings.makeCube(player:getPos():add(0,player:getEyeHeight()),player:getLookDir() * 10)
+	pings.makeCube(player:getPos():add(0,player:getEyeHeight()),player:getLookDir() * 1)
 end
 
 keybinds:newKeybind("cc","key.keyboard.h").press = function ()

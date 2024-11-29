@@ -13,19 +13,34 @@ local Gradient = {}
 Gradient.__index = Gradient
 Gradient.__type = "Gradient"
 
----@param config table<number, Vector3|string>?
+---@param config table<number, Vector3|string>|string?
 ---@return Gradient
 function Gradient.new(config)
+   ---@type Gradient
    local self = {
       colors = {},
       positions = {},
       range = 1,
    }
    setmetatable(self,Gradient)
-   if config then
+   local cfgType = type(config)
+   if cfgType == "table" then
       for pos,color in pairs(config) do
          self:addPoint(pos,color)
       end
+   elseif cfgType == "string" then
+      local buffer = data:createBuffer(#config*5)
+      buffer:writeByteArray(config)
+      buffer:setPosition(0)
+      local count = buffer:readInt()
+      for i = 1, count, 1 do
+         local pos = buffer:readFloat()
+         local r = buffer:read() / 255
+         local g = buffer:read() / 255
+         local b = buffer:read() / 255
+         self:addPoint(pos,vec(r,g,b))
+      end
+      buffer:close()
    end
    return self
 end
@@ -55,6 +70,22 @@ function Gradient:addPoint(pos,color)
       self.positions[#self.positions+1] = pos
    end
    self.range = self.positions[#self.positions]
+   return self
+end
+
+---@param id integer
+---@param clr Vector3
+---@return Gradient
+function Gradient:setColor(id,clr) 
+   self.colors[id] = clr
+   return self
+end
+
+---@param id integer
+---@param pos number
+---@return Gradient
+function Gradient:setPosition(id,pos) 
+   self.positions[id] = pos
    return self
 end
 
@@ -97,10 +128,11 @@ end
 ---@param pos number
 ---@return Vector3
 function Gradient:sample(pos)
+   pos = math.clamp(pos,0,self.range)
    local positions = self.positions
    local colors = self.colors
    for i = 1, #self.colors, 1 do
-      if positions[i] > pos then
+      if positions[i] >= pos then
          local j = (i-2)%#colors+1
          local colorA = colors[j]
          local colorB = colors[i]
@@ -118,6 +150,28 @@ end
 ---@return Vector3
 function Gradient:sampleRange(pos)
    return self:sample(pos*self.range)
+end
+
+
+-->====================[ Compression ]====================<--
+
+function Gradient:pack()
+   local count = #self.colors
+   local buffer = data:createBuffer(count*5)
+   buffer:writeInt(count)
+   for i = 1, count, 1 do
+      local pos = self.positions[i]
+      local color = self.colors[i]
+      buffer:writeFloat(pos)
+      buffer:write(math.clamp(math.floor(color.x*255),0,255))
+      buffer:write(math.clamp(math.floor(color.y*255),0,255))
+      buffer:write(math.clamp(math.floor(color.z*255),0,255))
+   end
+   local len = buffer:getPosition()
+   buffer:setPosition(0)
+   local out = buffer:readByteArray(len)
+   buffer:close()
+   return out
 end
 
 return Gradient
