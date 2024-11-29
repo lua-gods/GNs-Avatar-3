@@ -3,7 +3,7 @@
   / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
  / / __/  |/ / a color picker
 / /_/ / /|  / 
-\____/_/ |_/ Source: link]]
+\____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/GNUIExtras/colorPicker.lua]]
 
 local path = require("./path")
 local Box = require(path.."../primitives/box") ---@type GNUI.Box
