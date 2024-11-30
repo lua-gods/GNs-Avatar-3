@@ -2,11 +2,12 @@ local eventLib = require"lib.eventLib"
 
 local stats = {
    wetness = 0,
-   UPDATE = eventLib.new()
+   UPDATE = eventLib.new(),
 }
 
 local timer = 0
 events.TICK:register(function ()
+   
    timer = timer + 1
    if timer > 10 then
       timer = 0

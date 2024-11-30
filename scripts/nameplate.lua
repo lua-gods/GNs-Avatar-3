@@ -54,7 +54,7 @@ local function makeNameplate()
   end
   
   local baked = {}
-  for i = 1, #chars, 1 do
+  for i = 1, math.min(#chars,63), 1 do
     baked[i] = {
       text = chars[i],
       color = "#"..vectors.rgbToHex(plate.gradient:sampleRange((i-1)/#chars))

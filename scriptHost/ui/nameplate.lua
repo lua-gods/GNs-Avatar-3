@@ -9,7 +9,7 @@ local Pages = require"lib.pages"
 local Button = require"lib.GNUI.element.button"
 local TextField = require"lib.GNUI.element.textField"
 
-local page = Pages.newPage("nameplate",0)
+local page = Pages.newPage("nameplate",{bgOpacity = 0.1})
 ---@param screen GNUI.Box
 page.INIT:register(function (screen)
    renderer:setFOV(0.5)

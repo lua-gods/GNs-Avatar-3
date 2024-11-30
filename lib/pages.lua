@@ -23,11 +23,15 @@ local pageRizzler = {
 }
 
 
+
 ---@param name string
----@param bgOpacity number?
-function pageRizzler.newPage(name,bgOpacity)
+---@param config {bgOpacity:number?,unlockCursor:boolean?}
+function pageRizzler.newPage(name,config)
+	config = config or {}
+	print(config,not (config and config.unlockCursor ~= nil and ( not config.unlockCursor)))
 	local page = {
-		bgOpacity = bgOpacity,
+		bgOpacity = config.bgOpacity or 0.5,
+		unlockCursor = not (config and config.unlockCursor ~= nil and not config.unlockCursor),
 		INIT = eventLib.new(),
 		EXIT = eventLib.new(),
 	}
@@ -37,7 +41,7 @@ function pageRizzler.newPage(name,bgOpacity)
 end
 
 
-local defaultPage = pageRizzler.newPage("default",0)
+local defaultPage = pageRizzler.newPage("default",{bgOpacity = 0,unlockCursor = false})
 
 
 ---Sets the current page to the one with the assigned name.
@@ -61,7 +65,10 @@ function pageRizzler.setPage(name)
 		:setAnchor(0,0,1,1)
 		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
 		nextPage.INIT:invoke(box)
-		renderer:setRenderHUD(nextPage.bgOpacity == 0)
+		local hideHud = nextPage.bgOpacity > 0
+		renderer:setRenderHUD(not hideHud)
+		renderer:setRenderCrosshair(not hideHud)
+ 		host.unlockCursor = nextPage.unlockCursor
 		nextPage.screen = box
 		currentPage = nextPage
 	end
@@ -94,6 +101,7 @@ end
 ---@field name string
 ---@field screen GNUI.Box?
 ---@field bgOpacity number
+---@field unlockCursor boolean
 ---@field INIT EventLib
 ---@field EXIT EventLib
 
