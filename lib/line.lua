@@ -52,11 +52,11 @@ function Line.new(preset)
 	local next_free = #lines+1 
 	local new = setmetatable({},Line)
 	new.visible = true
-	new.a = preset.a:copy() or vec(0,0,0)
-	new.b = preset.b:copy() or vec(0,0,0)
+	new.a = preset.a and preset.a:copy() or vec(0,0,0)
+	new.b = preset.a and preset.b:copy() or vec(0,0,0)
 	new.width = preset.width or 0.125
 	new.width = preset.width or 0.125
-	new.color = preset.color:copy() or vec(1,1,1)
+	new.color = preset.color and preset.color:copy() or vec(1,1,1)
 	new.depth = preset.depth or 1
 	new.model = MODEL:newSprite("line"..next_free):setTexture(TEXTURE,1,1):setRenderType("EMISSIVE_SOLID"):setScale(0,0,0)
 	new.id = next_free
@@ -219,10 +219,8 @@ function Line:immediateUpdate()
 	return self
 end
 
-events.WORLD_RENDER:register(function ()
-	events.WORLD_RENDER:remove("GNLineLib_priority-last")
-	events.WORLD_RENDER:register(function ()
-		local c = client:getCameraPos()
+MODEL:setPreRender(function ()
+	local c = client:getCameraPos()
 		if c ~= cpos then
 			cpos = c
 			for _, l in pairs(lines) do
@@ -237,7 +235,6 @@ events.WORLD_RENDER:register(function ()
 			end
 		end
 		queueUpdate = {}
-	end,"GNLineLib_priority-last")
 end)
 
 return Line
