@@ -123,7 +123,7 @@ local filters = {
   ---@param message chatscript.data
   function (message)
     ---@param c table
-    utils.filterPattern(message.json,"https?://[%a%d;,/?:@&=+%$-_.!~*'()#]+",function (c)
+    utils.filterPattern(message.json,"https?://[%a%d;,/?:@&=+%%bruh%$-_.!~*'()#]+",function (c)
       c.color = "yellow"
       c.underlined = "true"
       c.clickEvent = {action = "open_url", value = c.text}

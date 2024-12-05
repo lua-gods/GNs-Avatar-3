@@ -68,6 +68,7 @@ function pageRizzler.setPage(name)
 		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
 		nextPage.INIT:invoke(box)
 		local hideHud = nextPage.bgOpacity > 0
+		renderer:postEffect(hideHud and "blur" or nil)
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
  		host.unlockCursor = nextPage.unlockCursor
