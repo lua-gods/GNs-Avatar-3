@@ -150,7 +150,7 @@ function Line:setColor(r,g,b,a)
 		self.color = r:augmented()
 	elseif rt == "Vector4" then
 		self.color = r
-	elseif rt == "string" and rt:find("#%x%x%x%x%x%x") then
+	elseif rt == "string" then
 		self.color = vectors.hexToRGB(r):augmented(1)
 	else
 		error("Invalid Color parameter, expected Vector3, (number, number, number) or Hexcode, instead got ("..rt..", "..yt..", "..bt..")")
