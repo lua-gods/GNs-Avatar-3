@@ -1,13 +1,15 @@
 --[[______  __
-  / ____/ | / / By: GNamimates
- / / __/  |/ / GNlineLib v2.0.2
+	/ ____/ | / / By: GNamimates
+ / / __/  |/ / GNlineLib v2.0.1
 / /_/ / /|  / Allows you to draw lines in the world at ease.
 \____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/line.lua]]
 
-local default_model = models:newPart("gnlinelibline","WORLD"):scale(16,16,16)
-local default_texture = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vectors.vec3(1,1,1))
+-->==========[ Config ]==========<--
+local MODEL = models:newPart("gnlinelibline","WORLD"):scale(16,16,16)
+local TEXTURE = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
+-->==========[  ]==========<--
 local lines = {} ---@type Line[]
-local queue_update = {} ---@type Line[]
+local queueUpdate = {} ---@type Line[]
 
 local cpos = client:getCameraPos()
 
@@ -16,13 +18,11 @@ local cpos = client:getCameraPos()
 ---@param y number
 ---@param z number
 ---@return Vector3
-local function figureOutVec3(x,y,z)
-  local typa = type(x)
-  if typa == "Vector3" then
-    return x:copy()
-  elseif typa == "number" then
-    return vectors.vec3(x,y,z)
-  end
+local function vec3(x,y,z)
+	local t = type(x)
+	if t == "Vector3" then return x:copy()
+	elseif t == "number" then return vec(x,y,z)
+	end
 end
 
 ---@class Line # A straight path from point A to B
@@ -38,55 +38,55 @@ end
 ---@field depth number # The offset depth of the line. 0 is normal, 0.5 is farther and -0.5 is closer
 ---@field package _queue_update boolean # Whether or not the line should be updated in the next frame
 ---@field model SpriteTask
-local Line = {}
-Line.__index = Line
-Line.__type = "gn.line"
-Line.__version = "2.0.2"
+local line = {}
+line.__index = line
+line.__type = "gn.line"
+line.__type = "gn.line"
 
 ---Creates a new line.
 ---@param preset Line?
 ---@return Line
-function Line.new(preset)
-  preset = preset or {}
-  local next_free = #lines+1 
-  local new = setmetatable({},Line)
-  new.visible = true
-  new.a = preset.a or vectors.vec3()
-  new.b = preset.b or vectors.vec3()
-  new.width = preset.width or 0.125
-  new.width = preset.width or 0.125
-  new.color = preset.color or vectors.vec3(1,1,1)
-  new.depth = preset.depth or 1
-  new.model = default_model:newSprite("line"..next_free):setTexture(default_texture,1,1):setRenderType("EMISSIVE_SOLID"):setScale(0,0,0)
-  new.id = next_free
-  lines[next_free] = new
-  return new
+function line.new(preset)
+	preset = preset or {}
+	local next_free = #lines+1 
+	local new = setmetatable({},line)
+	new.visible = true
+	new.a = preset.a or vec(0,0,0)
+	new.b = preset.b or vec(0,0,0)
+	new.width = preset.width or 0.125
+	new.width = preset.width or 0.125
+	new.color = preset.color or vec(1,1,1)
+	new.depth = preset.depth or 1
+	new.model = MODEL:newSprite("line"..next_free):setTexture(TEXTURE,1,1):setRenderType("EMISSIVE_SOLID"):setScale(0,0,0)
+	new.id = next_free
+	lines[next_free] = new
+	return new
 end
 
 ---Sets both points of the line.
 ---@overload fun(self : Line, from : Vector3, to :Vector3): Line
----@param x1 number
----@param y1 number
+---@param x1 number|Vector3
+---@param y1 number|Vector3
 ---@param z1 number
 ---@param x2 number
 ---@param y2 number
 ---@param z2 number
 ---@return Line
-function Line:setAB(x1,y1,z1,x2,y2,z2)
-  if type(x1) == "Vector3" and type(y1) == "Vector3" then
-    self.a = x1:copy()
-    self.b = y1:copy()
-    self.a = x1:copy()
-    self.b = y1:copy()
-  else
-    self.a = vectors.vec3(x1,y1,z1)
-    self.b = vectors.vec3(x2,y2,z2)
-    self.a = vectors.vec3(x1,y1,z1)
-    self.b = vectors.vec3(x2,y2,z2)
-  end
-  self:update()
-  self:update()
-  return self
+function line:setAB(x1,y1,z1,x2,y2,z2)
+	if type(x1) == "Vector3" and type(y1) == "Vector3" then
+		self.a = x1:copy()
+		self.b = y1:copy()
+		self.a = x1:copy()
+		self.b = y1:copy()
+	else
+		self.a = vec(x1,y1,z1)
+		self.b = vec(x2,y2,z2)
+		self.a = vec(x1,y1,z1)
+		self.b = vec(x2,y2,z2)
+	end
+	self:update()
+	self:update()
+	return self
 end
 
 ---Sets the first point of the line.
@@ -95,10 +95,10 @@ end
 ---@param y number
 ---@param z number
 ---@return Line
-function Line:setA(x,y,z)
-  self.a = figureOutVec3(x,y,z)
-  self:update()
-  return self
+function line:setA(x,y,z)
+	self.a = vec3(x,y,z)
+	self:update()
+	return self
 end
 
 ---Sets the second point of the line.
@@ -107,29 +107,29 @@ end
 ---@param y number
 ---@param z number
 ---@return Line
-function Line:setB(x,y,z)
-  self.b = figureOutVec3(x,y,z)
-  self:update()
-  return self
+function line:setB(x,y,z)
+	self.b = vec3(x,y,z)
+	self:update()
+	return self
 end
 
 ---Sets the width of the line.  
 ---Note: This is in minecraft blocks/meters.
 ---@param w number
 ---@return Line
-function Line:setWidth(w)
-  self.width = w
-  self:update()
-  return self
+function line:setWidth(w)
+	self.width = w
+	self:update()
+	return self
 end
 
 ---Sets the render type of the line.  
 ---by default this is "CUTOUT_EMISSIVE_SOLID".
 ---@param render_type ModelPart.renderType
 ---@return Line
-function Line:setRenderType(render_type)
-  self.model:setRenderType(render_type)
-  return self
+function line:setRenderType(render_type)
+	self.model:setRenderType(render_type)
+	return self
 end
 
 ---Sets the color of the line.
@@ -141,98 +141,107 @@ end
 ---@param b number
 ---@param a number
 ---@return Line
-function Line:setColor(r,g,b,a)
-  local rt,yt,bt = type(r),type(g),type(b)
-  if rt == "number" and yt == "number" and bt == "number" then
-    self.color = vectors.vec4(r,g,b,a or 1)
-  elseif rt == "Vector3" then
-    self.color = r:augmented()
-  elseif rt == "Vector4" then
-    self.color = r
-  elseif rt == "string" and rt:find("#%x%x%x%x%x%x") then
-    self.color = vectors.hexToRGB(r):augmented(1)
-  else
-    error("Invalid Color parameter, expected Vector3, (number, number, number) or Hexcode, instead got ("..rt..", "..yt..", "..bt..")")
-  end
-  self.model:setColor(self.color)
-  return self
+function line:setColor(r,g,b,a)
+	local rt,yt,bt = type(r),type(g),type(b)
+	if rt == "number" and yt == "number" and bt == "number" then
+		self.color = vectors.vec4(r,g,b,a or 1)
+	elseif rt == "Vector3" then
+		self.color = r:augmented()
+	elseif rt == "Vector4" then
+		self.color = r
+	elseif rt == "string" and rt:find("#%x%x%x%x%x%x") then
+		self.color = vectors.hexToRGB(r):augmented(1)
+	else
+		error("Invalid Color parameter, expected Vector3, (number, number, number) or Hexcode, instead got ("..rt..", "..yt..", "..bt..")")
+	end
+	self.model:setColor(self.color)
+	return self
 end
 
 ---Sets the depth of the line.  
 ---Note: this is an offset to the depth of the object. meaning 0 is normal, `0.5` is farther and `-0.5` is closer
 ---@param z number
 ---@return Line
-function Line:setDepth(z)
-  self.depth = 1 + z
-  return self
+function line:setDepth(z)
+	self.depth = 1 + z
+	return self
 end
 
 ---Frees the line from memory.
-function Line:free()
-  lines[self.id] = nil
-  self.model:remove()
-  self._queue_update = false
-  self = nil
+function line:free()
+	lines[self.id] = nil
+	self.model:remove()
+	self._queue_update = false
+	self = nil
 end
 
 ---@param visible boolean
 ---@return Line
-function Line:setVisible(visible)
-  self.visible = visible
-  self.model:setVisible(visible)
-  if visible then
-    self:immediateUpdate()
-  end
-  return self
+function line:setVisible(visible)
+	self.visible = visible
+	self.model:setVisible(visible)
+	if visible then
+		self:immediateUpdate()
+	end
+	return self
 end
 
 ---Queues itself to be updated in the next frame.
 ---@return Line
-function Line:update()
-  if not self._queue_update and self.visible then
-    queue_update[#queue_update+1] = self
-    self._queue_update = true
-  end
-  return self
+function line:update()
+	if not self._queue_update and self.visible then
+		queueUpdate[#queueUpdate+1] = self
+		self._queue_update = true
+	end
+	return self
 end
 
 ---Immediately updates the line without queuing it.
 ---@return Line
-function Line:immediateUpdate()
-  local a,b = self.a,self.b
-  local offset = a - cpos
-  local dir = (b - a)
-  self.dir = dir
-  local l = dir:length()
-  self.length = l
-  local w = self.width
-  local d = dir:normalized()
-  local p = (offset - d * offset:copy():dot(d)):normalize()
-  local c = p:copy():cross(d) * w
-  local mat = matrices.mat4(
-    (p:cross(d) * w):augmented(0),
-    (-d * (l + w * 0.5)):augmented(0),
-    p:augmented(0),
-    (a + c * 0.5):augmented(1)
-  )
-  self.model:setMatrix(mat * self.depth)
-  return self
+function line:immediateUpdate()
+	local a,b = self.a,self.b
+	local offset = a - cpos
+	local dir = (b - a)
+	self.dir = dir
+	local l = dir:length()
+	self.length = l
+	local w,d = self.width,dir:normalized()
+	local p = (offset - d * offset:copy():dot(d)):normalize()
+	local c = p:copy():cross(d) * w
+	local mat = matrices.mat4(
+		(p:cross(d) * w):augmented(0),
+		(-d * (l + w * 0.5)):augmented(0),
+		p:augmented(0),
+		(a + c * 0.5):augmented(1)
+	)
+	self.model:setMatrix(mat * self.depth)
+	return self
 end
-default_model:setPreRender(function (delta, context, part)
-  local c = client:getCameraPos()
-  if c ~= cpos then
-    cpos = c
-    for _, l in pairs(lines) do
-      l:update()
-    end
-  end
-  for i = 1, #queue_update, 1 do
-    local l = queue_update[i]
-    if l._queue_update then
-      l:immediateUpdate()
-      l._queue_update = false
-    end
-  end
-  queue_update = {}
+
+events.WORLD_RENDER:register(function ()
+	events.WORLD_RENDER:remove("GNLineLib_priority-last")
+	events.WORLD_RENDER:register(function ()
+		local c = client:getCameraPos()
+		if c ~= cpos then
+			cpos = c
+			for _, l in pairs(lines) do
+				l:update()
+			end
+		end
+		for i = 1, #queueUpdate, 1 do
+			local l = queueUpdate[i]
+			if l._queue_update then
+				l:immediateUpdate()
+				l._queue_update = false
+			end
+		end
+		queueUpdate = {}
+	end,"GNLineLib_priority-last")
 end)
-return Line
+
+return {
+	new = line.new,
+	default_model = MODEL,
+	default_texture = TEXTURE,
+	_VERSION = "2.0.1"
+}
