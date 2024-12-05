@@ -206,15 +206,15 @@ function Line:immediateUpdate()
 	self.dir = dir
 	local w,d = self.width,dir:normalized()
 	local w2 = w * 0.5
-	local l = dir:length() - w2
+	local l = dir:length()
 	self.length = l
 	local p = (offset - d * offset:copy():dot(d)):normalize()
 	local c = p:copy():cross(d) * w
 	local mat = matrices.mat4(
 		(p:cross(d) * w):augmented(0),
-		(-d * (l + w2)):augmented(0),
+		(-d * (l + w)):augmented(0),
 		p:augmented(0),
-		(a + c * 0.5):augmented(1)
+		(a + c * 0.5 - d * w2):augmented(1)
 	)
 	self.model:setMatrix(mat * self.depth)
 	return self
