@@ -204,14 +204,15 @@ function Line:immediateUpdate()
 	local offset = a - cpos
 	local dir = (b - a)
 	self.dir = dir
-	local l = dir:length()
-	self.length = l
 	local w,d = self.width,dir:normalized()
+	local w2 = w * 0.5
+	local l = dir:length() - w2
+	self.length = l
 	local p = (offset - d * offset:copy():dot(d)):normalize()
 	local c = p:copy():cross(d) * w
 	local mat = matrices.mat4(
 		(p:cross(d) * w):augmented(0),
-		(-d * (l + w * 0.5)):augmented(0),
+		(-d * (l + w2)):augmented(0),
 		p:augmented(0),
 		(a + c * 0.5):augmented(1)
 	)
