@@ -1,6 +1,6 @@
 --[[______  __
   / ____/ | / / By: GNamimates
- / / __/  |/ / GNlineLib v2.0.1
+ / / __/  |/ / GNlineLib v2.0.2
 / /_/ / /|  / Allows you to draw lines in the world at ease.
 \____/_/ |_/ https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/line.lua]]
 
@@ -38,18 +38,18 @@ end
 ---@field depth number # The offset depth of the line. 0 is normal, 0.5 is farther and -0.5 is closer
 ---@field package _queue_update boolean # Whether or not the line should be updated in the next frame
 ---@field model SpriteTask
-local line = {}
-line.__index = line
-line.__type = "gn.line"
-line.__type = "gn.line"
+local Line = {}
+Line.__index = Line
+Line.__type = "gn.line"
+Line.__version = "2.0.2"
 
 ---Creates a new line.
 ---@param preset Line?
 ---@return Line
-function line.new(preset)
+function Line.new(preset)
   preset = preset or {}
   local next_free = #lines+1 
-  local new = setmetatable({},line)
+  local new = setmetatable({},Line)
   new.visible = true
   new.a = preset.a or vectors.vec3()
   new.b = preset.b or vectors.vec3()
@@ -72,7 +72,7 @@ end
 ---@param y2 number
 ---@param z2 number
 ---@return Line
-function line:setAB(x1,y1,z1,x2,y2,z2)
+function Line:setAB(x1,y1,z1,x2,y2,z2)
   if type(x1) == "Vector3" and type(y1) == "Vector3" then
     self.a = x1:copy()
     self.b = y1:copy()
@@ -95,7 +95,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Line
-function line:setA(x,y,z)
+function Line:setA(x,y,z)
   self.a = figureOutVec3(x,y,z)
   self:update()
   return self
@@ -107,7 +107,7 @@ end
 ---@param y number
 ---@param z number
 ---@return Line
-function line:setB(x,y,z)
+function Line:setB(x,y,z)
   self.b = figureOutVec3(x,y,z)
   self:update()
   return self
@@ -117,7 +117,7 @@ end
 ---Note: This is in minecraft blocks/meters.
 ---@param w number
 ---@return Line
-function line:setWidth(w)
+function Line:setWidth(w)
   self.width = w
   self:update()
   return self
@@ -127,7 +127,7 @@ end
 ---by default this is "CUTOUT_EMISSIVE_SOLID".
 ---@param render_type ModelPart.renderType
 ---@return Line
-function line:setRenderType(render_type)
+function Line:setRenderType(render_type)
   self.model:setRenderType(render_type)
   return self
 end
@@ -141,7 +141,7 @@ end
 ---@param b number
 ---@param a number
 ---@return Line
-function line:setColor(r,g,b,a)
+function Line:setColor(r,g,b,a)
   local rt,yt,bt = type(r),type(g),type(b)
   if rt == "number" and yt == "number" and bt == "number" then
     self.color = vectors.vec4(r,g,b,a or 1)
@@ -162,13 +162,13 @@ end
 ---Note: this is an offset to the depth of the object. meaning 0 is normal, `0.5` is farther and `-0.5` is closer
 ---@param z number
 ---@return Line
-function line:setDepth(z)
+function Line:setDepth(z)
   self.depth = 1 + z
   return self
 end
 
 ---Frees the line from memory.
-function line:free()
+function Line:free()
   lines[self.id] = nil
   self.model:remove()
   self._queue_update = false
@@ -177,7 +177,7 @@ end
 
 ---@param visible boolean
 ---@return Line
-function line:setVisible(visible)
+function Line:setVisible(visible)
   self.visible = visible
   self.model:setVisible(visible)
   if visible then
@@ -188,7 +188,7 @@ end
 
 ---Queues itself to be updated in the next frame.
 ---@return Line
-function line:update()
+function Line:update()
   if not self._queue_update and self.visible then
     queue_update[#queue_update+1] = self
     self._queue_update = true
@@ -198,7 +198,7 @@ end
 
 ---Immediately updates the line without queuing it.
 ---@return Line
-function line:immediateUpdate()
+function Line:immediateUpdate()
   local a,b = self.a,self.b
   local offset = a - cpos
   local dir = (b - a)
@@ -218,31 +218,21 @@ function line:immediateUpdate()
   self.model:setMatrix(mat * self.depth)
   return self
 end
-
-events.WORLD_RENDER:register(function ()
-  events.WORLD_RENDER:remove("GNLineLib_priority-last")
-  events.WORLD_RENDER:register(function ()
-    local c = client:getCameraPos()
-    if c ~= cpos then
-      cpos = c
-      for _, l in pairs(lines) do
-        l:update()
-      end
+default_model:setPreRender(function (delta, context, part)
+  local c = client:getCameraPos()
+  if c ~= cpos then
+    cpos = c
+    for _, l in pairs(lines) do
+      l:update()
     end
-    for i = 1, #queue_update, 1 do
-      local l = queue_update[i]
-      if l._queue_update then
-        l:immediateUpdate()
-        l._queue_update = false
-      end
+  end
+  for i = 1, #queue_update, 1 do
+    local l = queue_update[i]
+    if l._queue_update then
+      l:immediateUpdate()
+      l._queue_update = false
     end
-    queue_update = {}
-  end,"GNLineLib_priority-last")
+  end
+  queue_update = {}
 end)
-
-return {
-  new = line.new,
-  default_model = default_model,
-  default_texture = default_texture,
-  _VERSION = "2.0.1"
-}
+return Line
