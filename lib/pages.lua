@@ -25,15 +25,17 @@ local pageRizzler = {
 
 
 ---@param name string
----@param config {bgOpacity:number?,unlockCursor:boolean?}
+---@param config {bgOpacity:number?,unlockCursor:boolean?}?
+---@return GNUI.page
 function pageRizzler.newPage(name,config)
 	config = config or {}
-	print(config,not (config and config.unlockCursor ~= nil and ( not config.unlockCursor)))
 	local page = {
 		bgOpacity = config.bgOpacity or 0.5,
 		unlockCursor = not (config and config.unlockCursor ~= nil and not config.unlockCursor),
 		INIT = eventLib.new(),
 		EXIT = eventLib.new(),
+		TICK = eventLib.new(),
+		RENDER = eventLib.new(),
 	}
 	if pages[name] then error("page "..name.." already exists",2) end
 	pages[name] = page
@@ -104,12 +106,25 @@ end
 ---@field unlockCursor boolean
 ---@field INIT EventLib
 ---@field EXIT EventLib
+---@field TICK EventLib
+---@field RENDER EventLib
 
 
 events.ENTITY_INIT:register(function ()
 	config:setName("PageRizzler")
 	local page = config:load(CONFIG_KEY) or "default"
 	pageRizzler.setPage(page)
+end)
+
+events.WORLD_TICK:register(function ()
+	if currentPage then currentPage.TICK:invoke() end
+end)
+
+local lastSystemTime = client:getSystemTime()
+events.WORLD_RENDER:register(function (delta)
+	local systemTime = client:getSystemTime()
+	local deltaFrame = (systemTime - lastSystemTime) / 1000
+	if currentPage then currentPage.RENDER:invoke(delta,deltaFrame) end
 end)
 
 return pageRizzler

@@ -5,11 +5,8 @@ local zoom = 0.2
 local isActive = false
 
 local page = Pages.newPage("spyglass",{bgOpacity=0,unlockCursor=false})
-page.INIT:register(function ()
-   
-end)
 
-events.TICK:register(function ()
+page.TICK:register(function ()
    if use:isPressed() and player:getHeldItem().id == "minecraft:spyglass" then
       if not isActive then
          isActive = true

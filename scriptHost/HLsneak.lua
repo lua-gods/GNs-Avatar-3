@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+if not host.setPos then return end
 local wasSneaking = false
 events.TICK:register(function ()
    local isSneaking = player:isSneaking()

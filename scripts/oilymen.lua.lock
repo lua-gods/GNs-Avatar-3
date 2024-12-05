@@ -421,7 +421,7 @@ function pings.clearCubes()
 end
 
 keybinds:newKeybind("cube", "key.keyboard.g").press = function ()
-	pings.makeCube(player:getPos():add(0,player:getEyeHeight()),player:getLookDir() * 1)
+	pings.makeCube(player:getPos():add(0,player:getEyeHeight()),player:getLookDir() * 10)
 end
 
 keybinds:newKeybind("cc","key.keyboard.h").press = function ()
