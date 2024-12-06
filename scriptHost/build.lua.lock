@@ -1,0 +1,68 @@
+local use = keybinds:fromVanilla('key.use')
+local attack = keybinds:fromVanilla('key.attack')
+
+local faceToDir = {
+   up = vec(0, 1, 0),
+   down = vec(0, -1, 0),
+   west = vec(-1, 0, 0),
+   east = vec(1, 0, 0),
+   south = vec(0, 0, 1),
+   north = vec(0, 0, -1)
+}
+
+local function getTargetedBlock()
+   local pos = player:getPos():add(0, player:getEyeHeight(), 0) + (renderer:getEyeOffset() or 0)
+   local dir = player:getLookDir()
+   local endPos = pos + dir * 5
+   local block, hit, face = raycast:block(pos, endPos, "OUTLINE", "ANY")
+   if (hit - endPos):length() < 0.1 then
+      return
+   end
+   return hit, block, face
+end
+
+use.press = function()
+   if not player:isLoaded() then return end
+   local item = player:getItem(1)
+   local block = item:getBlockstate()
+   if not block then return end
+   local _, bl, face = getTargetedBlock()
+   if not bl then
+      return
+   end
+   local pos = bl:getPos() + (faceToDir[face] or 0)
+   pos = pos:floor()
+   host:swingArm()
+   local blockStr = block:toStateString()
+
+   local id = block.id:match(":(.*)")
+   sounds[block:getSounds()["break"]]:pitch(0.8):pos(pos):play()
+   
+   if not host:setBlock(blockStr, pos) then
+      print(world.newBlock(blockStr))
+   end
+
+   return true
+end
+
+attack.press = function()
+   if not player:isLoaded() then return end
+   local _, block = getTargetedBlock()
+   if not block then
+      return
+   end
+   local pos = block:getPos()
+   host:swingArm()
+   host:setBlock('minecraft:air', pos)
+   local id = block.id:match(":(.*)")
+   sounds[block:getSounds()["break"]]:pitch(0.8):pos(pos):play()
+   for z = 1, 4, 1 do
+      for y = 1, 4, 1 do
+         for x = 1, 4, 1 do
+            local offset = vec(x,y,z) * 0.25 + pos
+            particles:newParticle("minecraft:block " .. id,offset,vec(x-2,0,z-2) * 0.1)
+         end
+      end
+   end
+   return true
+end

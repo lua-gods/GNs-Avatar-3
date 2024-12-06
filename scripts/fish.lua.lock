@@ -1,0 +1,36 @@
+local bobber
+
+local area = vec(3,3,3)
+events.ON_PLAY_SOUND:register(function (id, pos, volume, pitch, loop, category, path)
+   if id == "minecraft:entity.fishing_bobber.splash" then
+      if bobber and bobber:isLoaded() then
+         print((pos-bobber:getPos()):length())
+         if (pos-bobber:getPos()):length() < 0.5 then
+            print("FISH DETECTED")
+         end
+      end
+   end
+   if id == "minecraft:entity.fishing_bobber.throw" and math.floor((pos-player:getPos():add(0,player:getEyeHeight())):length() * 100) == 162 then
+      local timer = 0
+      events.TICK:register(function ()
+         timer = timer + 1
+         if timer > 20 then
+            events.TICK:remove("bobber-finder")
+         end
+         events.TICK:remove("bobber-finder")
+         local ppos = player:getPos():add(0,player:getEyeHeight())
+         local entities = world.getEntities(ppos-area,ppos+area)
+         for key, entity in pairs(entities) do
+            if entity:getType() == "minecraft:fishing_bobber" then
+               local dist = (entity:getPos()-ppos):length()
+               if dist > 1.25 and dist < 2 then
+                  print("Fishing bobber found")
+                  bobber = entity
+                  events.TICK:remove("bobber-finder")
+               end
+               break
+            end
+         end
+      end,"bobber-finder")
+   end
+end)

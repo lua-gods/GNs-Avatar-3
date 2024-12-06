@@ -3,27 +3,35 @@
  / / __/  |/ / __ `/ __ `__ \/ / __ `__ \/ __ `/ __/ _ \/ ___/
 / /_/ / /|  / /_/ / / / / / / / / / / / / /_/ / /_/  __(__  )
 \____/_/ |_/\__,_/_/ /_/ /_/_/_/ /_/ /_/\__,_/\__/\___/____]]
-local config = {
-  sync_wait_time = 20*5, -- ticks, second * 20 = ticks
-}
-local endesga = require"lib.palettes.endesga64"
-local username = avatar:getEntityName()
+local SYNC_WAIT_TIME = 0.5*20
 
+
+local endesga = require"lib.palettes.endesga64"
 local Gradient = require("lib.gradient")
 
+
+config:setName("gn.nameplate")
 local plate = {
-  name = avatar:getEntityName(),
-  gradient = Gradient.new({
-     [0] = endesga.lightGreen,
-     [0.5] = endesga.brightGreen,
-     [2] = endesga.lightGreen,
-     [3] = endesga.darkGreen,
+  name = config:load("name") or ("${badges}"..avatar:getEntityName()),
+  gradient = Gradient.new(config:load("gradient") or {
+     [0] = endesga.lightRed,
+     [0.5] = endesga.brightRed,
+     [2] = endesga.lightRed,
+     [3] = endesga.darkRed,
   }),
+  hoverText = config:load("hoverText") or "",
 }
+
+function plate.save()
+  config:setName("gn.nameplate")
+  config:save("name",plate.name)
+  config:save("gradient",plate.gradient:pack())
+  config:save("hoverText",plate.hoverText)
+end
 
 local cluster = {
   "^:.+:",
-  "${.+}",
+  "^${.+}",
   ".",
 }
 
@@ -52,10 +60,13 @@ local function makeNameplate()
       i = i + 1
     end
   end
-  
-  local baked = {}
+  ---@type Minecraft.RawJSONText.Component[]
+  local baked = {{text="",hoverEvent={action="show_text", contents=plate.hoverText}}}
   for i = 1, math.min(#chars,63), 1 do
-    baked[i] = {
+    if chars[i] == "${badges}" then
+      avatar:setColor(plate.gradient:sampleRange((i-1)/#chars))
+    end
+    baked[#baked+1] = {
       text = chars[i],
       color = "#"..vectors.rgbToHex(plate.gradient:sampleRange((i-1)/#chars))
     }
@@ -72,9 +83,10 @@ if IS_HOST then
   local timer = 0
   events.WORLD_TICK:register(function ()
   timer = timer - 1
-  if timer < 0 then sync() timer = 10 end
+  if timer < 0 then sync() timer = SYNC_WAIT_TIME end
   end)
 end
+
 ---@param name string
 ---@param gradient string
 function pings.syncNameplate(name,gradient)

@@ -25,13 +25,14 @@ local pageRizzler = {
 
 
 ---@param name string
----@param config {bgOpacity:number?,unlockCursor:boolean?}?
+---@param config {bgOpacity:number?,unlockCursor:boolean?,blur:boolean}?
 ---@return GNUI.page
 function pageRizzler.newPage(name,config)
 	config = config or {}
 	local page = {
 		bgOpacity = config.bgOpacity or 0.5,
 		unlockCursor = not (config and config.unlockCursor ~= nil and not config.unlockCursor),
+		blur = not (config and config.blur ~= nil and not config.blur),
 		INIT = eventLib.new(),
 		EXIT = eventLib.new(),
 		TICK = eventLib.new(),
@@ -68,7 +69,7 @@ function pageRizzler.setPage(name)
 		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
 		nextPage.INIT:invoke(box)
 		local hideHud = nextPage.bgOpacity > 0
-		renderer:postEffect(hideHud and "blur" or nil)
+		renderer:postEffect((hideHud and nextPage.blur) and "blur" or nil)
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
  		host.unlockCursor = nextPage.unlockCursor
@@ -118,14 +119,14 @@ events.ENTITY_INIT:register(function ()
 end)
 
 events.WORLD_TICK:register(function ()
-	if currentPage then currentPage.TICK:invoke() end
+	if currentPage then currentPage.TICK:invoke(currentPage.screen) end
 end)
 
 local lastSystemTime = client:getSystemTime()
 events.WORLD_RENDER:register(function (delta)
 	local systemTime = client:getSystemTime()
 	local deltaFrame = (systemTime - lastSystemTime) / 1000
-	if currentPage then currentPage.RENDER:invoke(delta,deltaFrame) end
+	if currentPage then currentPage.RENDER:invoke(currentPage.screen,delta,deltaFrame) end
 end)
 
 return pageRizzler

@@ -116,7 +116,7 @@ function ColorPicker.new(parent,x,y)
    Theme.style(box,"Background")
    box._parent_class = ColorPicker
    box:setSize(WIDTH,WIDTH+MODE_HEIGHT+PREVIEW_SIZE+SLIDER_WIDTH*3+HEX_FIELD_SIZE)
-   :setZ(10)
+   :setZMul(10)
    :setPos(pos)
    setmetatable(box,ColorPicker)
    existingPickers[#existingPickers+1] = box

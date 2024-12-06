@@ -41,6 +41,11 @@ events.TICK:register(function ()
       alive = 60
       setIdle(true)
    end
+   if not host:isHost() then
+      if player:getVelocity().xz:length() > 0.1 then
+         alive = 60
+      end
+   end
 end)
 
 models.player.Newspaper:setVisible(true)
