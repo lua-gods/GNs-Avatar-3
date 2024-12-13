@@ -20,6 +20,8 @@ local items = {
    {"nameplate","Nameplate","minecraft:name_tag"},
    {"pageEditor","Page Editor","minecraft:map"},
    {"avatarStore","Avatar Store Viewer","minecraft:skull_banner_pattern"},
+   {"chloePiano","Chloe Piano","minecraft:player_head{SkullOwner:\"ChloeSpacedIn\"}"},
+   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }
 
 local page = Pages.newPage("home")
@@ -48,10 +50,10 @@ page.INIT:register(function (box)
       
       local icon = GNUI.newBox(button):setAnchor(0.5,0.5)
       
-      icon.ModelPart:newItem("icon"):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(0,0,-16)
+      icon.ModelPart:newItem("icon"):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(0,0,-32)
       for j = 1, 8, 1 do
          local o = offset[j]
-         icon.ModelPart:newItem("outline"..j):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(o.x,o.y,-8):setLight(0,10)
+         icon.ModelPart:newItem("outline"..j):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(o.x,o.y,-16):setLight(0,10)
       end
    end
 end)

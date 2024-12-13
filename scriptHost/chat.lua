@@ -253,10 +253,61 @@ local filters = {
   function (message)
     local matched = false
     ---@param c Minecraft.RawJSONText.Component
+    utils.filterPattern(message.json,"*.+*",function (c)
+      c.color = c.text
+      c.italic = true
+      c.text = c.text:sub(2,-2)
+      matched = true
+      c.antiTamper = true
+    end)
+    if not matched then
+      ---@param c table
+      utils.filterPattern(message.json,"#%x%x%x",function (c)
+        local r,g,b = c.text:sub(2,2),c.text:sub(3,3),c.text:sub(4,4)
+        c.color = "#"..r..r..g..g..b..b
+        c.clickEvent = {action = "copy_to_clipboard", value = c.text}
+        c.hoverEvent = {action = "show_text", contents = {text="Copy to Clipboard"}}
+        c.antiTamper = true
+      end)
+    end
+    --if message.translate == ""
+  end,
+  function (message)
+    local matched = false
+    ---@param c Minecraft.RawJSONText.Component
     utils.filterPattern(message.json,"__.+__",function (c)
       c.color = c.text
       c.underlined = true
       c.text = c.text:sub(3,-3)
+      matched = true
+      c.antiTamper = true
+    end)
+    if not matched then
+      ---@param c table
+      utils.filterPattern(message.json,"#%x%x%x",function (c)
+        local r,g,b = c.text:sub(2,2),c.text:sub(3,3),c.text:sub(4,4)
+        c.color = "#"..r..r..g..g..b..b
+        c.clickEvent = {action = "copy_to_clipboard", value = c.text}
+        c.hoverEvent = {action = "show_text", contents = {text="Copy to Clipboard"}}
+        c.antiTamper = true
+      end)
+    end
+    --if message.translate == ""
+  end,
+  function (message)
+    local matched = false
+    ---@param c Minecraft.RawJSONText.Component
+    utils.filterPattern(message.json,"||.+||",function (c)
+      local text = c.text
+      c.color = "gray"
+      c.text = ("|"):rep(client.getTextWidth(text)/2)
+      c.hoverEvent = {
+        action = "show_text",
+        contents = {
+          text = text:sub(3,-3),
+          color = c.color
+        }
+      }
       matched = true
       c.antiTamper = true
     end)

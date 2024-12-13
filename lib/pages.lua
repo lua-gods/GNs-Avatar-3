@@ -5,6 +5,10 @@
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/pages.lua]]
 local CONFIG_KEY = avatar:getName()..".lastPage"
 
+
+local BLUR_BACKGROUND = true
+
+
 local eventLib = require"lib.eventLib"
 local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
@@ -69,7 +73,12 @@ function pageRizzler.setPage(name)
 		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
 		nextPage.INIT:invoke(box)
 		local hideHud = nextPage.bgOpacity > 0
-		renderer:postEffect((hideHud and nextPage.blur) and "blur" or nil)
+      if BLUR_BACKGROUND then
+         local ok = pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
+         if not ok then
+            BLUR_BACKGROUND = false
+         end
+      end
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
  		host.unlockCursor = nextPage.unlockCursor
@@ -106,6 +115,7 @@ end
 ---@field screen GNUI.Box?
 ---@field bgOpacity number
 ---@field unlockCursor boolean
+---@field blur boolean
 ---@field INIT EventLib
 ---@field EXIT EventLib
 ---@field TICK EventLib

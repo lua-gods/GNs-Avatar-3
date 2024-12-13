@@ -4,7 +4,7 @@ local config = {
    patpatKey = "key.mouse.right", -- keybind that will be used for patpat
 
    requireEmptyOffHand = false,
-   patDelay = 3, -- delay between pats when holding patpat key in ticks
+   patDelay = 1, -- delay between pats when holding patpat key in ticks
    holdFor = 10, -- amount of ticks before patting stops, if this value is smaller than patDelay it might cause issues
 
    patpatBlocks = { -- list of blocks that can be patted 
@@ -207,7 +207,9 @@ function pings.patpat(a, b, c)
       pos = blockPos + vec(0.5, 0, 0.5)
       boundingBox = vec(0.8, 0.8, 0.8)
       -- call petpet function
-      pcall(avatarVars["petpet.playerHead"], myUuid, config.holdFor, pos.x, pos.y, pos.z)
+      for i = 1, 10, 1 do
+         pcall(avatarVars["petpet.playerHead"], myUuid, config.holdFor, pos.x, pos.y, pos.z)
+      end
    else -- entity
       local entity = world.getEntity(unpackUuid(a))
       if not entity then return end
