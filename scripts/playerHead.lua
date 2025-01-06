@@ -13,7 +13,6 @@ end
 local base = models.playerHead
 :setParentType("SKULL")
 :setPrimaryRenderType("CUTOUT_CULL")
-local modelPlushie = base.plushie
 local modelHead = base.head:scale(1.15,1.15,1.15)
 local modelItem = base.item:scale(1.2,1.2,1.2)
 --local modelStatue = recursiveCopy(models.player):setParentType("Skull"):setPos(0,-19.5,0):scale(0.8)
@@ -88,12 +87,11 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
   --  
   end
   modelHead:setVisible(situation == 2)
-  modelPlushie:setVisible(situation == 1)
+  --modelPlushie:setVisible(situation == 1)
   modelItem:setVisible(situation == 0)
   --modelStatue:setVisible(situation == 3)
   
 end)
-
 events.WORLD_RENDER:register(function (delta)
   avatarVars = world.avatarVars()
 end)
