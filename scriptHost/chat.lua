@@ -368,7 +368,6 @@ events.POST_WORLD_RENDER:register(function ()
 						
 						table.insert(data.json.extra,1,{text="",hoverEvent = {action="show_text",contents = "Processed"}})
 						host:setChatMessage(recivedMsgs,toJson(data.json))
-						host:setClipboard(toJson(data.json))
 					end
 				end
 			end
