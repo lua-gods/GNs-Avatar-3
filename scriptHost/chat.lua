@@ -125,7 +125,7 @@ local filters = {
 		---@param c table
 		utils.filterPattern(message.json,"https?://[%a%d;,/?:@&=+%%bruh%$-_.!~*'()#]+",function (c)
 			c.color = "yellow"
-			c.underlined = "true"
+			c.underlined = true
 			c.clickEvent = {action = "open_url", value = c.text}
 			c.hoverEvent = {action = "show_text", contents = {text="Open URL"}}
 			c.antiTamper = true
