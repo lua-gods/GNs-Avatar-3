@@ -82,7 +82,7 @@ NOT_HOST = not IS_HOST
 
 for key, value in pairs(listFiles("preload", true)) do require(value)end
 
-for key, value in pairs(listFiles("scripts", true)) do require(value)end
+for key, value in pairs(listFiles("scripts", false)) do require(value)end
 
 if IS_HOST then
   for key, value in pairs(listFiles("scriptHost", true)) do require(value)end

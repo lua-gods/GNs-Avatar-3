@@ -18,10 +18,10 @@ local offset = {
 ---@type {[1]:string,[2]:string,[3]:Minecraft.itemID}[]
 local items = {
    {"nameplate","Nameplate","minecraft:name_tag"},
-   {"pageEditor","Page Editor","minecraft:map"},
+--   {"pageEditor","Page Editor","minecraft:map"},
    {"avatarStore","Avatar Store Viewer","minecraft:skull_banner_pattern"},
-   {"chloePiano","Chloe Piano","minecraft:player_head{SkullOwner:\"ChloeSpacedIn\"}"},
-   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
+--   {"chloePiano","Chloe Piano","minecraft:player_head{SkullOwner:\"ChloeSpacedIn\"}"},
+--   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }
 
 local page = Pages.newPage("home")
