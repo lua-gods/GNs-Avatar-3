@@ -1,0 +1,9 @@
+local SkullSystem = require("scripts.skullSystem")
+local skullType = SkullSystem.registerType("TEMPLATE")
+
+
+skullType.init = function (skull)
+end
+
+skullType.render = function (skull, deltaTick, deltaFrame)
+end

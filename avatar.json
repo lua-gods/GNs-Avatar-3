@@ -2,5 +2,10 @@
   "authors":["GNamimates","Auriafoxgirl","§f§nInfo§r","GN's Figura Avatar v6","Code Name: \"on GNUI\""],
   "color":"#4dd966",
   "description":"GN's 6th Generation avatar",
-  "autoScripts": ["main"]
+  "autoScripts": ["main"],
+  "customizations": {
+   "waffle": {
+      "smooth":true
+   }
+  }
 }
