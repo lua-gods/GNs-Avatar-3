@@ -7,11 +7,11 @@ local TRANSFORMS = {
 	{
 		title = {
 			pos = vec(0,-3,1),
-			scale = 0,
+			scale = vec(0.15, 0, 1),
 		},
 		desc = {
 			pos = vec(0,-5,1),
-			scale = 0,
+			scale = vec(0.15, 0, 1),
 		},
 		icon = {
 			pos = vec(0,1,0),
@@ -21,11 +21,11 @@ local TRANSFORMS = {
 	{
 		title = {
 			pos = vec(0,-3,1),
-			scale = 0.3,
+			scale = vec(0.3, 0.3, 1),
 		},
 		desc = {
 			pos = vec(0,-5,1),
-			scale = 0.25,
+			scale = vec(0.25, 0.25, 1),
 		},
 		icon = {
 			pos = vec(0,1,0),
@@ -40,10 +40,10 @@ local function applyTransforms(title,desc,icon,blend)
 	local iconScale = math.lerp(TRANSFORMS[1].icon.scale,TRANSFORMS[2].icon.scale,blend)
 	title
 	:pos(math.lerp(TRANSFORMS[1].title.pos,TRANSFORMS[2].title.pos,blend))
-	:scale(titleScale):setVisible(titleScale > 0.01)
+	:scale(titleScale):setVisible(titleScale.y > 0.01)
 	desc
 	:pos(math.lerp(TRANSFORMS[1].desc.pos,TRANSFORMS[2].desc.pos,blend))
-	:scale(descScale):setVisible(descScale > 0.01)
+	:scale(descScale):setVisible(descScale.y > 0.01)
 	icon
 	:pos(math.lerp(TRANSFORMS[1].icon.pos,TRANSFORMS[2].icon.pos,blend))
 	:scale(iconScale):setVisible(iconScale > 0.01)
