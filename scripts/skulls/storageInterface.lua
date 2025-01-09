@@ -142,15 +142,16 @@ skullType.init = function (skull)
 		:seeThrough(true)
 		
 		local icon
+		if itemLine:find("^@") then
+			isItem = true
+			data.item = world.newItem('player_head{"SkullOwner":"'..itemLine:sub(2,-1)..'"}',1)
+		end
 		if isItem then
 			icon = display
 			:newItem("icon")
 			:item(data.item)
 			:displayMode("FIXED")
 		else
-			if itemLine:find("^@") then
-				itemLine = 'player_head{"SkullOwner":"'..itemLine:sub(2,-1)..'"}'
-			end
 			icon = display
 			:newText("icon")
 			:text(itemLine)
