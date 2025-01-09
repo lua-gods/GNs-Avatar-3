@@ -32,8 +32,12 @@ local skulls = {}
 ---@field dir Vector3
 ---@field rot number
 ---@field offset Vector3
+---@field isWall boolean
 ---@field blockModel ModelPart
 ---@field headModel ModelPart
+---@field worldModel ModelPart
+---@field type GN.SkullSystem.Type
+---@field support Minecraft.blockID
 ---@field data table
 local Skull = {}
 Skull.__index = Skull
@@ -87,14 +91,16 @@ events.WORLD_RENDER:register(function (deltaTick)
 	if not canStart then return end
 	firstHead = true
 	
+	local cpos = client:getCameraPos()
 	-- remove skulls that dint show up in skull render
 	for id, instance in pairs(toRemove) do
-      if not world.getBlockState(instance.pos).id:find("head$") then
+      if (not world.getBlockState(instance.pos).id:find("head$")) or (instance.pos - cpos):lengthSquared() > 16^2 then
          instance.blockModel:remove()
+         instance.worldModel:remove()
          if skullTypes[instance.type].exit then
             skullTypes[instance.type].exit(instance)
-            skullTypeInstances[skullTypes[instance.type]][instance.id] = nil
          end
+			skullTypeInstances[skullTypes[instance.type]][instance.id] = nil
          skulls[id] = nil
       end
 	end
@@ -152,7 +158,8 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
 			offset = skull.offset
 			toRemove[id] = nil -- remove the skull from the remove queue because it updated
 		else
-			if block.id == "minecraft:player_wall_head" then
+			local isWall = block.id == "minecraft:player_wall_head"
+			if isWall then
             local facing = block.properties.facing
 				dir = FACE_2_DIR[facing]
 				rot = FACE_2_ROT[facing]
@@ -179,6 +186,8 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
 				offset = offset,
 				blockModel = blockModel,
 				headModel = headModel,
+				worldModel = worldPart:newPart(id),
+				isWall = isWall,
 				data = {}
 			}
          setmetatable(skull,Skull)

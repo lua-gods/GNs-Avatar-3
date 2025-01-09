@@ -76,7 +76,7 @@ if events.ERROR then
     return true
   end)
 end
-
+--figuraMetatables.HostAPI.__index.isHost = function () return false end
 IS_HOST = host:isHost()
 NOT_HOST = not IS_HOST
 
