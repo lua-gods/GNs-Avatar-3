@@ -72,12 +72,12 @@ function pageRizzler.setPage(name)
 		nextPage.INIT:invoke(box)
 		local hideHud = nextPage.bgOpacity > 0
 		
-		if BLUR_BACKGROUND then
-		   pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
-		end
+		--if BLUR_BACKGROUND then
+		--   pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
+		--end
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
- 		host.unlockCursor = nextPage.unlockCursor
+		host.unlockCursor = nextPage.unlockCursor
 		nextPage.screen = box
 		currentPage = nextPage
 	end

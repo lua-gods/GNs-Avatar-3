@@ -20,6 +20,7 @@ local items = {
    {"nameplate","Nameplate","minecraft:name_tag"},
 --   {"pageEditor","Page Editor","minecraft:map"},
    {"avatarStore","Avatar Store Viewer","minecraft:skull_banner_pattern"},
+   {"mailman","Mailman REPL","minecraft:paper"},
 --   {"chloePiano","Chloe Piano","minecraft:player_head{SkullOwner:\"ChloeSpacedIn\"}"},
 --   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }

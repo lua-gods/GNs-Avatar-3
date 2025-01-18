@@ -1,0 +1,59 @@
+local GNUI = require"lib.GNUI.main"
+
+local screen = GNUI.getScreenCanvas()
+
+local box = {}
+
+local c = client.getSystemTime()
+local function rand()
+	c = c + 41591.11
+	math.randomseed(c)
+	return (math.random()-0.5)*50
+end
+
+local S = 75
+for i = 1, 10, 1 do
+	local b = GNUI.newBox(screen):setAnchorMax()
+	box[i] = b
+	local backgroundImage = GNUI.newNineslice():setOpacity(0.3)
+	b:setNineslice(backgroundImage):setPos(rand(),rand())
+end
+
+
+
+
+local timer = 0
+
+events.RENDER:register(function (delta, ctx, matrix)
+	if ctx == "FIRST_PERSON" then
+		timer = timer + 1
+		if timer > 1 then
+			timer = 0
+			local trueRes = client:getWindowSize()
+			local res = (trueRes/S):ceil()
+			local screenshot = host:screenshot("screenshot")
+			local blurOverlay = textures:newTexture("blur",res.x,res.y)
+			
+			local function sample(x,y)
+				return screenshot:getPixel(math.min(math.max(x,0),trueRes.x-1),math.min(math.max(y,0),trueRes.y-1)).xyz:augmented(1)
+			end
+			
+			local function avarage(...)
+				local av = vec(0,0,0,0)
+				for index, value in ipairs{...} do
+					av = av + value
+				end
+				return av/#{...}
+			end
+			
+			blurOverlay:applyFunc(0,0,res.x,res.y,function (clr, x, y) return sample(x * S,y * S)end)
+			blurOverlay:update()
+			for index, b in ipairs(box) do
+				local backgroundImage = b.Nineslice
+				backgroundImage:setTexture(blurOverlay)
+				backgroundImage:setRenderType("BLURRY")
+				backgroundImage:updateRenderTasks()
+			end
+		end
+	end
+end)

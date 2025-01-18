@@ -188,7 +188,7 @@ skullType.tick = function (skull)
 	local pos = skull.pos
 	local hit = ray2PlaneIntersection(cpos,cdir,pos + vec(0.5,0.5,0.5)-dir*2.4,dir)
 	if hit and skull.dir:dot(cdir) > 0 then
-		particles["end_rod"]:pos(hit):spawn()
+		--particles["end_rod"]:pos(hit):spawn()
 		hit = hit:floor()+skull.dir*2
 		if hit ~= skull.data.lastHit then
 			local hitID = toID(hit)
