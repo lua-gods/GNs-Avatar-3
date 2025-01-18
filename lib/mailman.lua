@@ -8,14 +8,16 @@
 local eventLib = require("./eventLib")
 
 -- CONFIG
-local VERBOSE = true -- whether to print debug actions
+local VERBOSE = false -- whether to print debug actions
 
 local ACCENT = host:isHost() and "red" or "blue"
 
 ---@param uuid stringUUID
 ---@return string
 local function dispUUID(uuid)
-   return uuid:sub(1,3) .. "..." .. uuid:sub(-3,-1)
+	if uuid then
+		return uuid:sub(1,3) .. "..." .. uuid:sub(-3,-1)
+	end
 end
 
 ---@param uuid stringUUID
@@ -77,8 +79,9 @@ local peers = {}
 ---@field RECIVED EventLib # Gets called when the peer recives a packet. Parameters: `metadata: table`,`callbackData: table`, `packetData: ...`
 ---@field SENT EventLib
 --- -- Syncronization tables
----@field package waitingRecive table<string,{config:table, onRecive:fun(id:stringUUID,content:table)?}>
----@field package waitingConfirm table<string,fun(id:stringUUID,content:table)>
+---@field package waitingRecive table<string,{config:table,onRecive:fun(id:stringUUID,content:table)?}>
+---@field package waitingConfirm table<string,{content:table,confirm:fun()?}>
+---@field package waitingForBack table<string,table>
 local Peer = {}
 Peer.__index = Peer
 
@@ -96,6 +99,7 @@ function Peer.newPeer(username)
       SENT = eventLib.newEvent(),
       waitingRecive = {},
 		waitingConfirm = {},
+		waitingForBack = {},
    }
    setmetatable(self,Peer)
    peers[self.id] = self
@@ -112,9 +116,8 @@ end
 
 ---Makes the peer recive a packet
 ---@param parcelData Parcel
----@param content table
 ---@return Mailman.Peer
-function Peer:recive(parcelData,content)
+function Peer:recive(parcelData)
    if VERBOSE then
       printJson(toJson({{text="-----"},
          {text="[RECIVE]\n",color=ACCENT},
@@ -126,16 +129,10 @@ function Peer:recive(parcelData,content)
          {text=" P"},{text=" : "},{text=parcelData.reciverPeerID,color="gray"},
          {text="\nPacket:",color=ACCENT},
          {text="\n  ID:"},{text=" : "},{text=dispUUID(parcelData.parcelUUID),color="gray"},
-         {text="\n  Data:"},{text=" : "},{text=toJson(content),color="gray"},
+         {text="\n  Data:"},{text=" : "},{text=toJson(parcelData.content),color="gray"},
          {text="\n"}}))
    end
    local parcelUUID = parcelData.parcelUUID
-	
-   local recivedData = {
-      parcelData = parcelData,
-      content = content,
-      returnData = {}
-   }
 	
    if parcelData.type == "SEND" then
       self:send({
@@ -143,14 +140,19 @@ function Peer:recive(parcelData,content)
          targetID = parcelData.senderPeerID,
          uuid = parcelUUID,
          sendType = "BACK",
-         content = recivedData.returnData
       })
+		local content = parcelData.content
 		self.waitingConfirm[parcelUUID] = {
 			confirm = function ()
 				self.RECIVED:invoke(content)
 				self.waitingConfirm[parcelUUID] = nil
 			end
 		}
+	elseif parcelData.type == "BACK" then
+		if self.waitingForBack[parcelUUID] then
+			self.SENT:invoke(self.waitingForBack[parcelUUID])
+			self.waitingForBack[parcelUUID] = nil
+		end
 	elseif parcelData.type == "CONF" then
 		local confirmingParcel = self.waitingConfirm[parcelUUID]
 		if confirmingParcel then
@@ -164,10 +166,9 @@ function Peer:recive(parcelData,content)
 			targetID = parcelData.senderPeerID,
 			uuid = parcelUUID,
 			sendType = "CONF",
-			content = recivedData.returnData
 		})
 		if self.waitingRecive[parcelUUID].onRecive then
-			self.waitingRecive[parcelUUID].onRecive(parcelUUID,content)
+			self.waitingRecive[parcelUUID].onRecive(parcelUUID,parcelData.content)
 		end
       self.waitingRecive[parcelUUID] = nil
    end
@@ -176,23 +177,15 @@ end
 
 function pings.MAILMANSEND(data)
    local senderUUID,senderPeerID,reciverUUID,reciverPeerID,parcelUUID,parcelType,parcelContent = table.unpack(data)
-   if peers[senderPeerID] then
-      peers[senderPeerID].SENT:invoke({
-         senderUUID = senderUUID,
-         senderPeerID = senderPeerID,
-         reciverUUID = reciverUUID,
-         reciverPeerID = reciverPeerID,
-         parcelUUID = parcelUUID,
-         type = parcelType,
-         content = parcelContent
-      })
-   end
    senderUUID = unpackUUID(senderUUID)
    senderPeerID = senderPeerID
    reciverUUID = unpackUUID(reciverUUID)
    reciverPeerID = reciverPeerID
    parcelUUID = unpackUUID(parcelUUID)
-   if VERBOSE then
+	
+	peers[reciverPeerID].waitingForBack[parcelUUID] = parcelContent
+   
+	if VERBOSE then
       printJson(toJson({{text="-----"},
          {text="[SEND]\n",color=ACCENT},
          {text="F:",color=ACCENT},
@@ -313,17 +306,17 @@ function MAILMAN.request(senderUUID,senderPeerID,reciverPeerID,uuid,type,content
          {text="\n"}}))
    end
    ---@type Parcel
-   local metadata = {
+   local parcelData = {
       senderUUID = senderUUID,
       senderPeerID = senderPeerID,
       reciverUUID = hostUUID,
       reciverPeerID = reciverPeerID,
       parcelUUID = uuid,
       type = type,
-		content = {},
+		content = content,
    }
    if peers[reciverPeerID] then -- recives the parcel
-      peers[reciverPeerID]:recive(metadata,content)
+      peers[reciverPeerID]:recive(parcelData)
       return true
    else
       return false
