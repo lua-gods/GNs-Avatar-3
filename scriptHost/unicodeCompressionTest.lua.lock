@@ -1,0 +1,83 @@
+--Goal: String -> concatinated Bits -> 
+
+
+
+
+
+local function int2char(codepoint)
+	if codepoint <= 0x7F then
+		return string.char(codepoint)
+	elseif codepoint <= 0x7FF then
+		return string.char(
+			0xC0 + math.floor(codepoint / 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	elseif codepoint <= 0xFFFF then
+		return string.char(
+			0xE0 + math.floor(codepoint / 0x1000),
+			0x80 + (math.floor(codepoint / 0x40) % 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	elseif codepoint <= 0x10FFFF then
+		return string.char(
+			0xF0 + math.floor(codepoint / 0x40000),
+			0x80 + (math.floor(codepoint / 0x1000) % 0x40),
+			0x80 + (math.floor(codepoint / 0x40) % 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	else
+		error("Invalid Unicode code point: " .. codepoint)
+	end
+end
+
+local function char2int(character)
+	local byte1, byte2, byte3, byte4 = string.byte(character, 1, 4)
+
+	if byte1 <= 0x7F then
+		return byte1 -- Single-byte character (ASCII)
+	elseif byte1 >= 0xC0 and byte1 <= 0xDF then
+		return ((byte1 - 0xC0) * 0x40) + (byte2 - 0x80)
+	elseif byte1 >= 0xE0 and byte1 <= 0xEF then
+		return ((byte1 - 0xE0) * 0x1000) + ((byte2 - 0x80) * 0x40) + (byte3 - 0x80)
+	elseif byte1 >= 0xF0 and byte1 <= 0xF7 then
+		return ((byte1 - 0xF0) * 0x40000) + ((byte2 - 0x80) * 0x1000) + ((byte3 - 0x80) * 0x40) + (byte4 - 0x80)
+	else
+		error("Invalid UTF-8 character")
+	end
+end
+
+
+local input = "aaaaaaaaaa"
+local buffer = data:createBuffer(#input)
+buffer:writeString(input)
+buffer:setPosition(0)
+
+
+local outputBase = 12
+local output = {}
+
+local bits = {}
+for i = 1, #input, 1 do
+	local byte = buffer:read()
+	for j = 1, 8, 1 do
+		bits[#bits+1] = bit32.band(bit32.rshift(byte, 8 - j), 1)
+		if #bits == outputBase then -- convert bits to number
+			local number = 0
+			for k = 1, #bits, 1 do
+				number = bit32.bor(bit32.lshift(number, 1), bits[k])
+			end
+			output[#output+1] = number
+			bits = {}
+		end
+	end
+end
+
+local outputString = ""
+print(#output)
+for i = 1, #output, 1 do
+	outputString = outputString .. "," .. int2char(output[i])
+end
+
+print("--")
+print(input)
+print(outputString)

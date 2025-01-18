@@ -6,15 +6,13 @@
 local CONFIG_KEY = avatar:getName()..".lastPage"
 
 
-local BLUR_BACKGROUND = true
-
-
 local eventLib = require"lib.eventLib"
 local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
 
 local background = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
 
+local BLUR_BACKGROUND = true
 
 local pages = {} ---@type table<string, GNUI.page>
 local currentPage ---@type GNUI.page?
@@ -73,12 +71,10 @@ function pageRizzler.setPage(name)
 		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
 		nextPage.INIT:invoke(box)
 		local hideHud = nextPage.bgOpacity > 0
-		--if BLUR_BACKGROUND then
-		--   local ok = pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
-		--   if not ok then
-		--      BLUR_BACKGROUND = false
-		--   end
-		--end
+		
+		if BLUR_BACKGROUND then
+		   pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
+		end
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
  		host.unlockCursor = nextPage.unlockCursor

@@ -1,0 +1,43 @@
+local image = file:openReadStream("images/cat.png")
+local buffer = data:createBuffer(image:available())
+buffer:readFromStream(image)
+buffer:setPosition(0)
+local base64 = buffer:readBase64(buffer:available())
+buffer:close()
+image:close()
+
+local MAX_LENGTH = client.getTextWidth(("."):rep(770))
+
+local pages = {}
+
+local page = "16;16;0;0;"
+for i = 1, #base64, 1 do
+	local char = string.sub(base64, i, i)
+	if client.getTextWidth(page..char) > MAX_LENGTH then
+		pages[#pages + 1] = page
+		page = ""
+	end
+	page = page..char
+end
+pages[#pages + 1] = page
+
+local ctrl = false
+
+local c = 0
+events.KEY_PRESS:register(function (key, state, modifiers)
+	if key == 341 then -- ctrl
+		ctrl = (state == 1)
+	end
+	if key == 86 and state == 1 then -- v
+		if ctrl then
+			c = c + 1
+			sounds:playSound("minecraft:entity.experience_orb.pickup",client:getCameraPos():add(client:getCameraDir()))
+			host:setClipboard(pages[c])
+			print(#pages-c,"left")
+			if c == #pages then
+				events.KEY_PRESS:remove("image2book")
+				sounds:playSound("minecraft:entity.player.levelup",client:getCameraPos():add(client:getCameraDir()))
+			end
+		end
+	end
+end,"image2book")

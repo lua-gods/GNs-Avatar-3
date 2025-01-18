@@ -186,12 +186,13 @@ end
 skullType.tick = function (skull)
 	local dir = skull.dir
 	local pos = skull.pos
-	local hit = ray2PlaneIntersection(cpos,cdir,pos-dir*2,dir)
+	local hit = ray2PlaneIntersection(cpos,cdir,pos + vec(0.5,0.5,0.5)-dir*2.4,dir)
 	if hit and skull.dir:dot(cdir) > 0 then
+		particles["end_rod"]:pos(hit):spawn()
 		hit = hit:floor()+skull.dir*2
 		if hit ~= skull.data.lastHit then
 			local hitID = toID(hit)
-			--particles["end_rod"]:pos(hit + vec(0.5,0.5,0.5) - dir * 0.5):spawn()
+			--particles["end_rod"]:pos(hit + vec(0.5,0.5,0.5) - dir * 3.5):spawn()
 			local node = skull.data.nodes[hitID]
 			if node then
 			tween.tweenFunction(0,1,0.4,"outBack",function (t)

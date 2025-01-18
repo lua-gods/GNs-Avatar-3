@@ -1,0 +1,1 @@
+local cm,lr,r,m;events.WORLD_RENDER:register(function (delta);r=client:getActionbar();if r and lr~=r then;lr=r;local j = parseJson(r).translate;if j and j:sub(9,10)=="Fr"then;if j:sub(-4,-4)=="N"then;m = matrices.mat4();m.v43 = -19;renderer:setCameraMatrix(m);else;renderer:setCameraMatrix();end;end;end;end)

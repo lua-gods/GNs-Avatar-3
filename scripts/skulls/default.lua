@@ -9,7 +9,7 @@ local modelPlushie = models.playerHead.plushie
 skullType.init = function (skull)
    
 	local pos = skull.pos + skull.offset / 16
-	local block, hitpos = raycast:block(pos,pos+vec(0,-1,0),"VISUAL","NONE")
+	local block, hitpos = raycast:block(pos,pos+vec(0,-1,0),"OUTLINE","NONE")
 	local height = (hitpos.y - pos.y) * 16
 
 	local plushie = skull:attachToHead(modelPlushie):setPos(0,height,0)
