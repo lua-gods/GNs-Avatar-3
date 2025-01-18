@@ -1,14 +1,14 @@
 --[[______   __
   / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
  / / __/  |/ / Mailman.
-/ /_/ / /|  / a simple communication system for avatars.
+/ /_/ / /|  / a communication system for avatars. v1.0
 \____/_/ |_/ Source: link]]
 
 -- DEPENDENCIES
 local eventLib = require("./eventLib")
 
 -- CONFIG
-local VERBOSE = false -- whether to print debug actions
+local VERBOSE = true -- whether to print debug actions
 
 local ACCENT = host:isHost() and "red" or "blue"
 
@@ -78,7 +78,7 @@ local peers = {}
 ---@field SENT EventLib
 --- -- Syncronization tables
 ---@field package waitingRecive table<string,{config:table, onRecive:fun(id:stringUUID,content:table)?}>
----@field package waitingConfirm table<string,{config:table, onRecive:fun(id:stringUUID,content:table)?}>
+---@field package waitingConfirm table<string,fun(id:stringUUID,content:table)>
 local Peer = {}
 Peer.__index = Peer
 
@@ -136,16 +136,7 @@ function Peer:recive(parcelData,content)
       content = content,
       returnData = {}
    }
-	if not parcelData.onRecive then -- confirmer dosent need confirmation
-		self.waitingConfirm[parcelUUID] = {
-			config = parcelData,
-			onRecive = function (id, data)
-				self.waitingConfirm[parcelUUID] = nil
-				data.returnData = data
-				self.RECIVED:invoke(recivedData)
-			end
-		}
-	end
+	
    if parcelData.type == "SEND" then
       self:send({
          target = parcelData.senderUUID,
@@ -154,6 +145,17 @@ function Peer:recive(parcelData,content)
          sendType = "BACK",
          content = recivedData.returnData
       })
+		self.waitingConfirm[parcelUUID] = {
+			confirm = function ()
+				self.RECIVED:invoke(content)
+				self.waitingConfirm[parcelUUID] = nil
+			end
+		}
+	elseif parcelData.type == "CONF" then
+		local confirmingParcel = self.waitingConfirm[parcelUUID]
+		if confirmingParcel then
+			confirmingParcel.confirm()
+		end
    end
    
    if self.waitingRecive[parcelUUID] then

@@ -10,9 +10,7 @@ if player:getUUID() == "dc912a38-2f0f-40f8-9d6d-57c400185362" then
 	})
 end
 
-if host:isHost() then
-	peer.RECIVED:register(function (data)
-		print("RECIVED: ",toJson(data.content))
-		end)
-end
+peer.RECIVED:register(function (data)
+	print("RECIVED: ",toJson(data))
+	end)
 end)
