@@ -53,7 +53,7 @@ local defaultPage = pageRizzler.newPage("default",{bgOpacity = 0,unlockCursor = 
 ---@param name string?
 function pageRizzler.setPage(name)
 	if currentPage then
-		currentPage.EXIT:invoke()
+		currentPage.EXIT:invoke(currentPage.screen)
 		currentPage.screen:free()
 	end
 	local nextPage = pages[name] or defaultPage

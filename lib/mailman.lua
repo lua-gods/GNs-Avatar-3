@@ -182,9 +182,8 @@ function pings.MAILMANSEND(data)
    reciverUUID = unpackUUID(reciverUUID)
    reciverPeerID = reciverPeerID
    parcelUUID = unpackUUID(parcelUUID)
-	
 	peers[reciverPeerID].waitingForBack[parcelUUID] = parcelContent
-   
+	
 	if VERBOSE then
       printJson(toJson({{text="-----"},
          {text="[SEND]\n",color=ACCENT},
@@ -255,6 +254,9 @@ local hostUUID
 events.ENTITY_INIT:register(function ()
    hostUUID = user:getUUID()
 end)
+if player:isLoaded() then
+	hostUUID = user:getUUID()
+end
 ---@class Mailman
 MAILMAN = {}
 MAILMAN.__index = MAILMAN
