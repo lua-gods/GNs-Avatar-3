@@ -1,5 +1,5 @@
 --[[______  __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / A library that makes it easier to deal with Minecraft's Raw Json Text format. (1.21 and lower)
 / /_/ / /|  / 
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/rawjsonUtils.lua]]

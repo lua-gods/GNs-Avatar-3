@@ -1,5 +1,5 @@
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / Mailman.
 / /_/ / /|  / a communication system for avatars. v1.0
 \____/_/ |_/ Source: link]]

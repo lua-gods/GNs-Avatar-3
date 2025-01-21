@@ -1,4 +1,9 @@
-local animLib = require("lib.GNanim")
+local nouns = {
+	"apple", "book", "car", "dog", "elephant", "flower", "guitar", "house", "island", "jungle",
+	"kite", "lamp", "mountain", "notebook", "ocean", "pencil", "queen", "river", "star", "tree",
+	"umbrella", "village", "window", "yacht", "zebra"
+}
+
 
 local isIdle = false
 local alive = 40

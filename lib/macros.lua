@@ -1,7 +1,7 @@
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / Simple system for macros
-/ /_/ / /|  / by macros I mean a instantiatable process.
+/ /_/ / /|  / an instantiatable process.
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/macros.lua]]
 ---@class Macro
 ---@field instantiate fun(events:Macro.Events)

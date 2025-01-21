@@ -10,7 +10,7 @@ all my libraries are layed out in this specific order in every script, follow th
 1. Info
 ```
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / <Broader Title>
 / /_/ / /|  / <Description>
 \____/_/ |_/ Source: <link to source code>]]

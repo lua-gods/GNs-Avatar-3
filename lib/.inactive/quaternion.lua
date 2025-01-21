@@ -1,5 +1,5 @@
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / Quaternion
 / /_/ / /|  /
 \____/_/ |_/ Source: link]]

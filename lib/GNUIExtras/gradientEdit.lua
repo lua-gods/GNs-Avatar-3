@@ -1,6 +1,6 @@
 ---@diagnostic disable: assign-type-mismatch
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / a gradient edit box
 / /_/ / /|  / made to edit gradients from the https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/gradient.lua
 \____/_/ |_/ Source: ...]]

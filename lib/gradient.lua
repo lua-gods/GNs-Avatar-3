@@ -1,5 +1,5 @@
 --[[______   __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / Gradient object
 / /_/ / /|  / easily create gradients.
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/gradient.lua]]

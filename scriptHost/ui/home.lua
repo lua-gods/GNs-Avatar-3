@@ -21,6 +21,7 @@ local items = {
 --   {"pageEditor","Page Editor","minecraft:map"},
    {"avatarStore","Avatar Store Viewer","minecraft:skull_banner_pattern"},
    {"mailman","Mailman Test","minecraft:paper"},
+   {"testPage","Testing Page","minecraft:piston"},
 --   {"chloePiano","Chloe Piano","minecraft:player_head{SkullOwner:\"ChloeSpacedIn\"}"},
 --   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }

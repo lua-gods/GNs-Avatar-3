@@ -1,7 +1,7 @@
 local GNUI = require("lib.GNUI.main")
 
 local Pages = require"lib.pages"
-local Button = require"lib.GNUI.element.button"
+local Button = require"GNUI.element.button"
 
 local page = Pages.newPage("home")
 ---@param screen GNUI.Box

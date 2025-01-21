@@ -1,5 +1,5 @@
 --[[______  __
-  / ____/ | / / by: GNamimates, Discord: "@gn8.", Youtube: @GNamimates
+  / ____/ | / / By: GNamimates | https://gnon.top | Discord: @gn8.
  / / __/  |/ / a library for base64 decoding/encoding
 / /_/ / /|  /
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/libraries/base64inator.lua]]
