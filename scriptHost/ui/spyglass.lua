@@ -3,21 +3,19 @@ local Pages = require"lib.pages"
 local use = keybinds:fromVanilla("key.use")
 local zoom = 0.2
 local isActive = false
---#region
-local page = Pages.newPage("spyglass",{bgOpacity=0,unlockCursor=false})
-page.INIT:register(function (screen)
-   screen.zoomBox = GNUI.newBox(screen)
+
+local page = Pages.newPage("spyglass",{bgOpacity=0,unlockCursor=false},function (events, screen)
+	screen.zoomBox = GNUI.newBox(screen)
    :setAnchor(0,1,1,1)
    :setPos(0,-50)
    :setText("hello")
    :setTextAlign(0.5,0.5)
    :setTextEffect("OUTLINE")
    :setSize(0,20)
-end)
---#endregion
-
-page.TICK:register(function (screen)
-   screen.zoomBox:setText("Zoom: x"..(math.floor(1/zoom * 10) / 10))
+	
+	function events.TICK()
+		screen.zoomBox:setText("Zoom: x"..(math.floor(1/zoom * 10) / 10))
+	end
 end)
 
 

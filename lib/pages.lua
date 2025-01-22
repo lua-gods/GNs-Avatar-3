@@ -3,16 +3,26 @@
  / / __/  |/ / A service library for handling which page should be displayed at the screen.
 / /_/ / /|  / 
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/pages.lua]]
-local CONFIG_KEY = avatar:getName()..".lastPage"
-
-
+-- DEPENDENCIES
+local Macros = require"lib.macros"
 local eventLib = require"lib.eventLib"
 local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()
 
-local background = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
 
-local BLUR_BACKGROUND = true
+local BACKGROUND = textures["1x1white"] or textures:newTexture("1x1white",1,1):setPixel(0,0,vec(1,1,1))
+local CONFIG_KEY = avatar:getName()..".lastPage"
+
+
+---@class GNUI.page
+---@field name string
+---@field screen GNUI.Box?
+---@field bgOpacity number
+---@field unlockCursor boolean
+---@field blur boolean
+---@field macro Macro
+
+
 
 local pages = {} ---@type table<string, GNUI.page>
 local currentPage ---@type GNUI.page?
@@ -25,21 +35,20 @@ local pageRizzler = {
 }
 
 
-
 ---@param name string
 ---@param config {bgOpacity:number?,unlockCursor:boolean?,blur:boolean}?
+---@param init fun(events:Macro.Events, screen:GNUI.Box)?
 ---@return GNUI.page
-function pageRizzler.newPage(name,config)
+function pageRizzler.newPage(name,config,init)
 	config = config or {}
 	local page = {
 		bgOpacity = config.bgOpacity or 0.5,
 		unlockCursor = not (config and config.unlockCursor ~= nil and not config.unlockCursor),
 		blur = not (config and config.blur ~= nil and not config.blur),
-		INIT = eventLib.new(),
-		EXIT = eventLib.new(),
-		TICK = eventLib.new(),
-		RENDER = eventLib.new(),
 	}
+	if init then
+		page.macro = Macros.new("Page."..name,init)
+	end
 	if pages[name] then error("page "..name.." already exists",2) end
 	pages[name] = page
 	return page
@@ -53,7 +62,9 @@ local defaultPage = pageRizzler.newPage("default",{bgOpacity = 0,unlockCursor = 
 ---@param name string?
 function pageRizzler.setPage(name)
 	if currentPage then
-		currentPage.EXIT:invoke(currentPage.screen)
+		if currentPage.macro then
+			currentPage.macro:setActive(false,currentPage.screen)
+		end
 		currentPage.screen:free()
 	end
 	local nextPage = pages[name] or defaultPage
@@ -66,10 +77,12 @@ function pageRizzler.setPage(name)
 	pageRizzler.PAGE_CHANGED:invoke(nextPage)
 	
 	if nextPage then
-		local box = GNUI.newBox(screen)
+		local subScreen = GNUI.newBox(screen)
 		:setAnchor(0,0,1,1)
-		:setNineslice(GNUI.newNineslice(background):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
-		nextPage.INIT:invoke(box)
+		:setNineslice(GNUI.newNineslice(BACKGROUND):setRenderType("TRANSLUCENT"):setColor(0,0,0):setOpacity(nextPage.bgOpacity or 0.5))
+		if nextPage and nextPage.macro then
+			nextPage.macro:setActive(true,subScreen)
+		end
 		local hideHud = nextPage.bgOpacity > 0
 		
 		--if BLUR_BACKGROUND then
@@ -78,7 +91,7 @@ function pageRizzler.setPage(name)
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
 		host.unlockCursor = nextPage.unlockCursor
-		nextPage.screen = box
+		nextPage.screen = subScreen
 		currentPage = nextPage
 	end
 end
@@ -106,16 +119,7 @@ function pageRizzler.getDefaultPage()
 end
 
 
----@class GNUI.page
----@field name string
----@field screen GNUI.Box?
----@field bgOpacity number
----@field unlockCursor boolean
----@field blur boolean
----@field INIT EventLib
----@field EXIT EventLib
----@field TICK EventLib
----@field RENDER EventLib
+
 
 
 events.ENTITY_INIT:register(function ()
@@ -124,15 +128,5 @@ events.ENTITY_INIT:register(function ()
 	pageRizzler.setPage(page)
 end)
 
-events.WORLD_TICK:register(function ()
-	if currentPage then currentPage.TICK:invoke(currentPage.screen) end
-end)
-
-local lastSystemTime = client:getSystemTime()
-events.WORLD_RENDER:register(function (delta)
-	local systemTime = client:getSystemTime()
-	local deltaFrame = (systemTime - lastSystemTime) / 1000
-	if currentPage then currentPage.RENDER:invoke(currentPage.screen,delta,deltaFrame) end
-end)
 
 return pageRizzler

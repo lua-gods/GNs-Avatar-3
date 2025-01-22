@@ -26,10 +26,8 @@ local items = {
 --   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }
 
-local page = Pages.newPage("home")
----@param box GNUI.Box
-page.INIT:register(function (box)
-   local grid = GridStacker.new(vec(70,80),box)
+Pages.newPage("home",{},function (events, screen)
+	local grid = GridStacker.new(vec(70,80),screen)
    grid
    :setAnchor(0.5,0,0.5,1)
    :setDimensions(-70*3,64,70*3,-64)

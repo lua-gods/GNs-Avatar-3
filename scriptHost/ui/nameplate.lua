@@ -6,10 +6,11 @@ local Button = require"lib.GNUI.element.button"
 local TextField = require"lib.GNUI.element.textField"
 local GradientEdit = require("lib.GNUIExtras.gradientEdit")
 
-local page = Pages.newPage("nameplate",{bgOpacity = 0.1,blur=false})
----@param screen GNUI.Box
-page.INIT:register(function (screen)
-   renderer:setFOV(0.5)
+local page = Pages.newPage(
+"nameplate",
+{bgOpacity = 0.1,blur=false},
+function (events, screen)
+	renderer:setFOV(0.5)
    Button.new(screen)
    :setSize(18,18)
    :setPos(40,40)
@@ -69,8 +70,8 @@ page.INIT:register(function (screen)
       updatePreview()
       plate.save()
    end)
-end)
-
-page.EXIT:register(function ()
-   renderer:setFOV()
+	
+	function events.EXIT()
+		renderer:setFOV()
+	end
 end)
