@@ -1,6 +1,5 @@
 local GNUI = require("lib.GNUI.main")
 local Pages = require"lib.pages"
-local GridStacker = require"lib.GNUI.element.gridStacker"
 local Button = require"lib.GNUI.element.button"
 local Slider = require"lib.GNUI.element.slider"
 
@@ -26,34 +25,35 @@ local items = {
 --   {"unitTest","GUI Unit Tests","minecraft:ender_eye"},
 }
 
+local ICON_SCALE = 1
+local MARGIN = 20
+local WIDTH = 100
+
 Pages.newPage("home",{},function (events, screen)
-	local grid = GridStacker.new(vec(70,80),screen)
-   grid
-   :setAnchor(0.5,0,0.5,1)
-   :setDimensions(-70*3,64,70*3,-64)
+	local stack = GNUI.newBox(screen)
+	stack:setAnchor(0.5,0,0.5,1):setDimensions(MARGIN-WIDTH,MARGIN,-MARGIN+WIDTH,-MARGIN)
    for i = 1, #items, 1 do
-      local area = GNUI.newBox(grid)
-      :setSize(70,80)
       local item = items[i]
-      local button = Button.new(area)
-      :setDimensions(10,5,60,55)
-      button.PRESSED:register(function ()
+      local button = Button.new(stack)
+		:setAnchor(0,0,1,0)
+      :setSize(0,22)
+		:setPos(0,(i-1)*25)
+		
+		:setTextAlign(0,0.5)
+		:setTextOffset(25,0)
+      :setText(item[2])
+		
+		button.PRESSED:register(function ()
          Pages.setPage(item[1])
       end)
-      local label = GNUI.newBox(area)
-      :setAnchor(0,1,1,1):setDimensions(0,-25,0,0)
-      :setText(item[2])
-      :setTextBehavior("WRAP")
-      :setTextAlign(0.5,0.5)
-      :setTextEffect("OUTLINE")
-      :setCanCaptureCursor(false)
+		
       
-      local icon = GNUI.newBox(button):setAnchor(0.5,0.5)
+      local icon = GNUI.newBox(button):setAnchor(0,0.5):setPos(12,-2)
       
-      icon.ModelPart:newItem("icon"):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(0,0,-32)
+      icon.ModelPart:newItem("icon"):item(item[3]):displayMode("GUI"):setScale(ICON_SCALE,ICON_SCALE,ICON_SCALE):setPos(0,0,-32)
       for j = 1, 8, 1 do
          local o = offset[j]
-         icon.ModelPart:newItem("outline"..j):item(item[3]):displayMode("GUI"):setScale(2.5,2.5,2.5):setPos(o.x,o.y,-16):setLight(0,10)
+         icon.ModelPart:newItem("outline"..j):item(item[3]):displayMode("GUI"):setScale(ICON_SCALE,ICON_SCALE,ICON_SCALE):setPos(o.x,o.y,-16):setLight(0,0)
       end
    end
 end)

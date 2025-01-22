@@ -90,6 +90,9 @@ function pageRizzler.setPage(name)
 		--end
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
+		if goofy then
+			goofy:setDisableGUIElement("CHAT", hideHud)
+		end
 		host.unlockCursor = nextPage.unlockCursor
 		nextPage.screen = subScreen
 		currentPage = nextPage
