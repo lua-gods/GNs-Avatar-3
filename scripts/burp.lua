@@ -10,6 +10,12 @@ local sound
 function pings.burp(pitch)
 	if player:isLoaded() then
 		if sound then sound:stop() end
-		sound = sounds.burp:volume(0.25):pos(player:getPos()):pitch(pitch):play()
+		sound = sounds["lore"]:volume(1):pos(player:getPos()):pitch(pitch):play()
 	end
 end
+
+events.TICK:register(function ()
+	if sound then
+		sound:pitch((-player:getRot().x+90)/200 + 0.7)
+	end
+end)
