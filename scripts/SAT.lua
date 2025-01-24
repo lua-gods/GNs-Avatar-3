@@ -1,3 +1,8 @@
+---@diagnostic disable: redefined-local
+-- Separating Axis Theorem
+
+local Lines = require"lib.line"
+local Colors = require"lib.palettes.endesga64"
 
 local modelWorld = models:newPart("SATWorld","WORLD")
 
@@ -25,41 +30,108 @@ local cubeA = matrices.mat4()
 local cubeB = matrices.mat4()
 
 cubeA
+:rotateX(45)
+:rotateZ(45)
 :translate(offset)
-:translate(0,1,0.5)
+:translate(1.4,0,0.5)
 
 cubeB
-:rotate(15,45,45)
 :translate(offset)
-:translate(0.25,-0.1,0.5)
+:translate(0.25,-0.2,0.5)
 --:translate(0.25,2.2,0.5)
 
 
 modelWorld:newBlock("cubeA"):block("minecraft:light_blue_stained_glass"):setMatrix(toModelMatrix(cubeA))
 modelWorld:newBlock("cubeB"):block("minecraft:orange_stained_glass"):setMatrix(toModelMatrix(cubeB))
 
-
-local cubeApos = cubeA:apply(0,0,0)
-local cubeAmin = math.huge
-local cubeAmax = -math.huge
-for _, p in pairs(points) do
-	local w = utils.closestPointOnAxis(cubeA:apply(p), cubeApos, cubeA:applyDir(0,1,0))
-	cubeAmin = math.min(cubeAmin,w)
-	cubeAmax = math.max(cubeAmax,w)
+local function testForProj(matA, matB, axis, axisPos)
+	local Apos = axisPos
+	local Amin = math.huge
+	local Amax = -math.huge
+	for _, p in pairs(points) do
+		local w = utils.closestPointOnAxis(matA:apply(p), Apos, axis)
+		Amin = math.min(Amin,w)
+		Amax = math.max(Amax,w)
+	end
+	
+	local Bmin = math.huge
+	local Bmax = -math.huge
+	for _, p in pairs(points) do
+		local w = utils.closestPointOnAxis(matB:apply(p), Apos, axis)
+		Bmin = math.min(Bmin,w)
+		Bmax = math.max(Bmax,w)
+	end
+	local dist = math.max((Amin - Bmax), (Bmin - Amax))
+	local intersecting = dist <= 0
+	if intersecting then
+		Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.blue):setWidth(0.015)
+		Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.darkOrange):setWidth(0.01)
+	else
+		Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.lightBlue):setWidth(0.055)
+		Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.orange):setWidth(0.05)
+	end
+	return dist, intersecting
 end
 
-local cubeBpos = cubeB:apply(0,0,0)
-local cubeBmin = math.huge
-local cubeBmax = -math.huge
-for _, p in pairs(points) do
-	local w = utils.closestPointOnAxis(cubeB:apply(p), cubeApos, cubeA:applyDir(0,1,0))
-	cubeBmin = math.min(cubeBmin,w)
-	cubeBmax = math.max(cubeBmax,w)
+local function testForIntersection(A,B)
+	local Apos = A:apply(0,0,0)
+	local BPos = B:apply(0,0,0)
+	
+	local isIntersecting = true
+	
+	local Ax,Ay,Az = A:applyDir(1,0,0),A:applyDir(0,1,0),A:applyDir(0,0,1)
+	local Bx,By,Bz = B:applyDir(1,0,0),B:applyDir(0,1,0),B:applyDir(0,0,1)
+	
+	local closestDist, closestAxis, closestPos = -math.huge,nil,nil
+	
+	local dist, intersect
+	local function check(A,B,axis,pos)
+		dist,intersect = testForProj(A,B,axis,pos)
+		if isIntersecting then
+			if intersect and closestDist < dist then
+				closestDist = dist
+				closestAxis = axis
+				closestPos = pos
+			end
+		else isIntersecting = false end
+	end
+	
+	check(A,B,Ax,Apos)
+	check(A,B,Ay,Apos)
+	check(A,B,Az,Apos)
+	
+	check(A,B,Bx,BPos)
+	check(A,B,By,BPos)
+	check(A,B,Bz,BPos)
+	
+	local function checkCross(A,B,Aaxis,Baxis)
+		if Aaxis:dot(Baxis) < 0.99 then check(A,B,(Baxis*1):cross(Aaxis):normalize(),BPos) end
+	end
+	
+	checkCross(A,B,Ax,Bx)
+	checkCross(A,B,Ax,By)
+	checkCross(A,B,Ax,Bz)
+	
+	checkCross(A,B,Ay,Bx)
+	checkCross(A,B,Ay,By)
+	checkCross(A,B,Ay,Bz)
+	
+	checkCross(A,B,Az,Bx)
+	checkCross(A,B,Az,By)
+	checkCross(A,B,Az,Bz)
+	
+	if closestAxis then -- displays the least amount of movement to resolve the collision
+		Lines.new():setAB(closestPos-closestAxis,closestPos + closestAxis):setColor(Colors.white):setWidth(0.05):setDepth(0.1)
+	end
+	
+	return isIntersecting
 end
 
-utils.lineDisplayMatrix(cubeA)
-utils.lineDisplayMatrix(cubeB)
 
-print("collective reprojections:",cubeAmin, cubeAmax, cubeBmin, cubeBmax)
-print("check intersections:",(cubeAmin - cubeBmax), (cubeBmin - cubeAmax))
-print("spotted intersection:",math.max((cubeAmin - cubeBmax), (cubeBmin - cubeAmax)))
+
+print(testForIntersection(cubeA,cubeB) and "intersecting" or "not intersecting")
+
+
+--utils.lineDisplayMatrix(cubeA)
+--utils.lineDisplayMatrix(cubeB)
+

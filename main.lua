@@ -72,7 +72,7 @@ if events.ERROR then
   events.ERROR:register(function (error)
     errors = errors + 1
     tracebackError(error)
-    if errors > 10 then goofy:stopAvatar() end
+    if errors > 1 or true then goofy:stopAvatar() end
     return true
   end)
 end
