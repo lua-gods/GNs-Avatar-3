@@ -82,6 +82,7 @@ end,"GN.SkullSystem.startup_cooldown")
 
 local toRemove = {}
 local firstHead = false
+local firstHeadPos = vec(0, 0, 0)
 local lastSystemTime = client:getSystemTime()
 events.WORLD_RENDER:register(function (deltaTick)
    local systemTime = client:getSystemTime()
@@ -199,7 +200,8 @@ events.SKULL_RENDER:register(function (delta, block, item, entity, ctx)
 			skullTypes[skullType].init(skull)
 		end
 		
-		if firstHead then
+		if firstHead or firstHeadPos == pos then
+			firstHeadPos = pos
 			firstHead = false
 			local rad = math.rad(rot)
 			local fpos = pos * 16 + offset
