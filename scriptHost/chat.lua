@@ -127,7 +127,8 @@ local filters = {
 			c.color = "yellow"
 			c.underlined = true
 			c.clickEvent = {action = "open_url", value = c.text}
-			c.hoverEvent = {action = "show_text", contents = {text="Open URL"}}
+			c.hoverEvent = {action = "show_text", contents = {text=c.text}}
+			c.text = "<link>"
 			c.antiTamper = true
 		end)
 	end,

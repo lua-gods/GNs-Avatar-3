@@ -24,16 +24,17 @@ local function toModelMatrix(matrix)
 end
 
 
-local offset = vec(628,65,-113)
-
+local offset = --vec(628,65,-113)
+vec(0,1,0)
 local cubeA = matrices.mat4()
 local cubeB = matrices.mat4()
 
 cubeA
+:scale(1,1,1)
 :rotateX(45)
 :rotateZ(45)
 :translate(offset)
-:translate(1.4,0,0.5)
+:translate(-1,0.4,0.5)
 
 cubeB
 :translate(offset)
@@ -63,13 +64,13 @@ local function testForProj(matA, matB, axis, axisPos)
 	end
 	local dist = math.max((Amin - Bmax), (Bmin - Amax))
 	local intersecting = dist <= 0
-	if intersecting then
-		Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.blue):setWidth(0.015)
-		Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.darkOrange):setWidth(0.01)
-	else
-		Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.lightBlue):setWidth(0.055)
-		Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.orange):setWidth(0.05)
-	end
+	--if intersecting then
+	--	Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.blue):setWidth(0.015)
+	--	Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.darkOrange):setWidth(0.01)
+	--else
+	--	Lines:new():setAB(Apos + axis * Amin, Apos + axis * Amax):setColor(Colors.lightBlue):setWidth(0.055)
+	--	Lines:new():setAB(Apos + axis * Bmin, Apos + axis * Bmax):setColor(Colors.orange):setWidth(0.05)
+	--end
 	return dist, intersecting
 end
 
@@ -78,6 +79,8 @@ local function testForIntersection(A,B)
 	local BPos = B:apply(0,0,0)
 	
 	local isIntersecting = true
+	local Aintersection
+	local Bintersection
 	
 	local Ax,Ay,Az = A:applyDir(1,0,0),A:applyDir(0,1,0),A:applyDir(0,0,1)
 	local Bx,By,Bz = B:applyDir(1,0,0),B:applyDir(0,1,0),B:applyDir(0,0,1)
@@ -87,8 +90,8 @@ local function testForIntersection(A,B)
 	local dist, intersect
 	local function check(A,B,axis,pos)
 		dist,intersect = testForProj(A,B,axis,pos)
-		if isIntersecting then
-			if intersect and closestDist < dist then
+		if isIntersecting and intersect then
+			if closestDist < dist then
 				closestDist = dist
 				closestAxis = axis
 				closestPos = pos
@@ -105,7 +108,9 @@ local function testForIntersection(A,B)
 	check(A,B,Bz,BPos)
 	
 	local function checkCross(A,B,Aaxis,Baxis)
-		if Aaxis:dot(Baxis) < 0.99 then check(A,B,(Baxis*1):cross(Aaxis):normalize(),BPos) end
+		if Aaxis:dot(Baxis) < 0.99 then
+			check(A,B,(Baxis*1):cross(Aaxis):normalize(),BPos)
+		end
 	end
 	
 	checkCross(A,B,Ax,Bx)
@@ -120,7 +125,7 @@ local function testForIntersection(A,B)
 	checkCross(A,B,Az,By)
 	checkCross(A,B,Az,Bz)
 	
-	if closestAxis then -- displays the least amount of movement to resolve the collision
+	if isIntersecting and closestAxis then -- displays the least amount of movement to resolve the collision
 		Lines.new():setAB(closestPos-closestAxis,closestPos + closestAxis):setColor(Colors.white):setWidth(0.05):setDepth(0.1)
 	end
 	
