@@ -8,13 +8,32 @@ local PATH = "macros"
 
 local CONFIG_PATH = avatar:getName()..".macros"
 
+local categories = {}
+local paths = listFiles(PATH,true)
+for i = 1,#paths do
+	local path = paths[i]
+	local category
+	local name
+	if paths[i]:find("%.") then
+		category,name = paths[i]:match(PATH.."%.(.*)%.(.*)") --bobbies
+	end
+	if not categories[category] then
+		categories[category] = {}
+	end
+	local macro,description = require(path)
+	categories[category][name] = {macro=macro,description=description or "No description provided"}
+	config:setName(CONFIG_PATH)
+	local enabled = config:load(category.."."..name) or false
+	macro:setActive(enabled)
+end
+
 local Pages = require"lib.pages"
 Pages.newPage(
 "macros",
 {},
 function (events, screen)
 	
-	local categories = {}
+	
 	
 	local returnButton = Button.new(screen)
 	:setPos(10,10):setSize(11,11):setText("x"):setTextOffset(0.5,-1.5)
@@ -44,23 +63,6 @@ function (events, screen)
 	:setDimensions(0,0,-10,-10)
 	:setText("Hover over a Macro to see it's description")
 	
-	
-	local paths = listFiles(PATH,true)
-	for i = 1,#paths do
-		local path = paths[i]
-		local category
-		local name
-		if paths[i]:find("%.") then
-			category,name = paths[i]:match(PATH.."%.(.*)%.(.*)") --bobbies
-			
-		end
-		if not categories[category] then
-			categories[category] = {}
-		end
-		local macro,description = require(path)
-		categories[category][name] = {macro=macro,description=description or "No description provided"}
-	end
-	
 	local function loadCategory(category)
 		macrosBox:removeChild(macrosSlider)
 		:purgeAllChildren()
@@ -71,8 +73,8 @@ function (events, screen)
 			local macroBtn = Button.new(macrosBox)
 			:setAnchor(0,0,1,0)
 			:setText(name)
-			:setPos(i*20)
-			:setSize(-10,(i+1)*20)
+			:setPos(0,i*20)
+			:setSize(-10,20)
 			:setTextAlign(0,0.5)
 			:setTextOffset(10,0)
 			
