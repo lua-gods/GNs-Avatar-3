@@ -13,7 +13,6 @@ skullType.init = function (skull)
 	local board = origin:newSprite("board"):setTexture(atlas,atlas:getDimensions().yy:unpack()):scale(0.2):pos(10,16):setRenderType("BLURRY")
    skull.data.board = board
    skull.data.origin = origin:pos(0,-10,0)
-	skull.data.music = sounds.Sunflower:play():loop(true):attenuation(1)
 	
 	local verts = board:getVertices()
 	verts[1]:setUV(0,1)
@@ -21,11 +20,15 @@ skullType.init = function (skull)
 	verts[3]:setUV(invFRAMES,0)
 end
 
+local music = sounds.Sunflower:play():loop(true)
+
 local time = 0
 local closest = math.huge
 skullType.firstRender = function (skull, deltaTick, deltaFrame)
 	time = client:getSystemTime() / 38
 	
+	music:volume(math.clamp(math.map(closest,10,1,0,2),0,1))
+	closest = math.huge
 end
 
 skullType.render = function (skull, deltaTick, deltaFrame)
@@ -39,12 +42,11 @@ skullType.render = function (skull, deltaTick, deltaFrame)
 	verts[4]:setUV(x-invFRAMES,0)
 	local diff = client:getCameraPos()-(skull.pos+vec(0.5,0.5,0.5))
 	local dist = diff:length()
+	closest = math.min(dist,closest)
 	
-	skull.data.music:pos(client:getCameraPos() + client:getCameraDir())
-	:volume(math.clamp(math.map(dist,3,1,0,2),0,1))
-	skull.data.origin:rot(0,math.deg(math.atan2(diff.x,diff.z)))
+	music:pos(client:getCameraPos() + client:getCameraDir())
+	
+	skull.data.origin:rot(0,math.deg(math.atan2(diff.x,diff.z))-skull.rot)
 end
 
-skullType.exit = function (skull)
-	skull.data.music:stop()
-end
+skullType.exit = function (skull) closest = math.huge end

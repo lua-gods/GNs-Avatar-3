@@ -85,9 +85,7 @@ function pageRizzler.setPage(name)
 		end
 		local hideHud = nextPage.bgOpacity > 0
 		
-		--if BLUR_BACKGROUND then
-		--   pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
-		--end
+		pcall(renderer.postEffect,renderer,(hideHud and nextPage.blur) and "blur" or nil)
 		renderer:setRenderHUD(not hideHud)
 		renderer:setRenderCrosshair(not hideHud)
 		if goofy then

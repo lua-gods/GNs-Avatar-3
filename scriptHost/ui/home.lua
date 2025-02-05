@@ -79,8 +79,8 @@ Pages.newPage("home",{},function (events, screen)
 	function events.WORLD_RENDER(df)
 		local window = client:getScaledWindowSize()
 		local rot = client:getMousePos() / client:getGuiScale() - window * 0.5
-		playerModel.Torso.Head:setRot(-rot.y*0.5-15,rot.x*0.15+10)
-		playerModel.Torso:setRot(0,rot.x*0.1)
+		playerModel.Base.Torso.Head:setRot(-rot.y*0.5-15,rot.x*0.15+10)
+		playerModel.Base.Torso:setRot(0,rot.x*0.1)
 	end
 	
 	function events.EXIT()
