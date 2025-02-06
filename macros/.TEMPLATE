@@ -1,5 +1,5 @@
 local Macros = require("lib.macros")
 
-return Macros.new("Extura Web",function (events)
+return Macros.new("TEMPLATE",function (events)
    -- code here
 end),"Example Macro, does absolutely nothing"
