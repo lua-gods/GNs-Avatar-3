@@ -10,7 +10,7 @@ local use = keybinds:fromVanilla("key.use")
 return Macros.new("RightClickMakesArmSwing",function (events)
 	use.press = function ()
 		if player:getHeldItem().id == "minecraft:air" then
-			host:swingArm()
+			host:swingArm(player:isLeftHanded())
 		end
 	end
 	
