@@ -6,11 +6,12 @@ local blacklist = {
 }
 
 local use = keybinds:fromVanilla("key.use")
+local alt = keybinds:newKeybind("alt","key.keyboard.left.alt")
 
 return Macros.new("RightClickMakesArmSwing",function (events)
 	use.press = function ()
 		if player:getHeldItem().id == "minecraft:air" then
-			host:swingArm(player:isLeftHanded())
+			host:swingArm(alt:isPressed())
 		end
 	end
 	
