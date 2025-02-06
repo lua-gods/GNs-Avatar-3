@@ -29,10 +29,13 @@ local macros = {} -- list of registered macros
 ---@param sync boolean?
 ---@return table
 function Macro.new(name,init,sync)
+	if macros[name] then
+		error("Attempted to register already existing macro:"..name)
+	end
 	local self = {
    	init = init,
    	name = name,
-   	sync = sync,
+   	sync = sync or false,
 	}
 	setmetatable(self,Macro)
 	macros[name] = self
@@ -66,12 +69,14 @@ events.RENDER:register(function (delta, ctx, matrix)
 end)
 
 events.WORLD_TICK:register(function ()
+	if client:getViewer():isLoaded() and client:getViewer():getUUID() == "dc912a38-2f0f-40f8-9d6d-57c400185362" then
+	end
 for key, value in pairs(activeInstances) do if value.TICK then value.TICK() end end
 end)
 
 local queueSync = {}
 
-local function sync(id,state) queueSync[#queueSync+1] = {id,state} end
+local function sync(id,state) queueSync[#queueSync+1] = {id,state}  end
 
 if isHost then
 	local timer = 0
@@ -91,7 +96,7 @@ if isHost then
 end
 
 function pings.SYNC_MACRO(id,state)
-  	if not isHost then
+  	if not isHost or true then
   		macros[id]:setActive(state)
   	end
 end
@@ -100,7 +105,7 @@ end
 ---@param ... any
 function Macro:setActive(active,...)
 	if active ~= self.isActive then
-		if isHost then
+		if isHost and self.sync then
 			sync(self.name,active)
 		end
 		if active then
@@ -108,13 +113,12 @@ function Macro:setActive(active,...)
 				local events = {}
 				self.init(events,...)
 				self.instance = events
-				self.instanceID = #activeInstances+1
-				activeInstances[self.instanceID] = events
+				activeInstances[self.name] = events
 			end
 		else
 			if self.instance then
 				if self.instance.EXIT then self.instance.EXIT() end
-				activeInstances[self.instanceID] = nil
+				activeInstances[self.name] = nil
 				self.instance = nil
 			end
 		end

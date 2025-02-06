@@ -1,5 +1,5 @@
 local Macros = require("lib.macros")
 
 return Macros.new("Extura Web",function (events)
-   --goofy:setVelocity(0,0.1,0)
+   -- code here
 end),"Example Macro, does absolutely nothing"

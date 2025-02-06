@@ -2,7 +2,7 @@ local Macros = require("lib.macros")
 
 local jump = keybinds:fromVanilla("key.jump")
 
-return Macros.new("Extura Web",function (events)
+return Macros.new("Spacebar Jump",function (events)
    function events.TICK()
 		if host:isHost() then
 			if jump:isPressed() then
