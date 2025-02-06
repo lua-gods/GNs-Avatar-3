@@ -27,4 +27,4 @@ return Macros.new("ButtonAsEntireSurface",function (events)
 			end
 		end
 	end
-end),"Example Macro, does absolutely nothing"
+end),"Makes it so the hitbox of the button extends to the entire surface it is attatched to"
