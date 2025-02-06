@@ -4,6 +4,7 @@ local forward = keybinds:fromVanilla("key.forward")
 
 local enabled = false
 local throttle = 0
+local sthrottle = 0
 function pings.throttle(toggle,throt)
 		throttle = throt
 		enabled = toggle
@@ -24,13 +25,16 @@ return Macros.new("Thruster",function (events)
    function events.TICK()
 		local vel = vec(table.unpack(player:getNbt().Motion))
 		if host:isHost() then
-			goofy:setVelocity(player:getLookDir():mul(1,0,1):normalize()*throttle * 0.1)
+			if player:isOnGround() then
+				goofy:setVelocity(vel+player:getLookDir():mul(1,0,1):normalize()*throttle * 0.3)
+			end
+			sthrottle = math.lerp(sthrottle,pitch(throttle),0.3)
 			if enabled ~= forward:isPressed() then
 				enabled = forward:isPressed()
 				pings.throttle(enabled,throttle)
 			end
 		end
-		engine:setPitch(0.75+pitch(throttle)*3)
+		engine:setPitch(0.75+sthrottle*3)
 		if player:isLoaded() then
 			engine:pos(player:getPos())
 		end
