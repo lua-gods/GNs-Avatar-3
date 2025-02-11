@@ -20,7 +20,7 @@ local function pitch(value)
 	return value
 end
 
-return Macros.new("Thruster",function (events)
+return Macros.new("VroomVroom",function (events)
 	local engine = sounds["engine"]:play():loop(true)
    function events.TICK()
 		local vel = vec(table.unpack(player:getNbt().Motion))

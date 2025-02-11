@@ -20,7 +20,7 @@ skullType.init = function (skull)
 	verts[3]:setUV(invFRAMES,0)
 end
 
-local music = sounds.Sunflower:play():loop(true)
+local music = sounds.Sunflower:play():loop(true):pos(0,-10000,0)
 
 local time = 0
 local closest = math.huge
@@ -49,4 +49,4 @@ skullType.render = function (skull, deltaTick, deltaFrame)
 	skull.data.origin:rot(0,math.deg(math.atan2(diff.x,diff.z))-skull.rot)
 end
 
-skullType.exit = function (skull) closest = math.huge end
+skullType.exit = function (skull) closest = math.huge music:volume(0) end
