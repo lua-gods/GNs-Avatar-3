@@ -68,39 +68,44 @@ function (events, screen)
 			previewBox:setNineslice(GNUI.newNineslice(renderTexture))
 			local x,y = 0,0
 			local resolution = faces.front:getDimensions()
-			local z = resolution.x*0.5-resolution.y*0.5
-			local vectors_angleToDir = vectors.angleToDir
 			local maxResY = resolution.y - 1
+			local halfMaxResY = maxResY * 0.5
+			local z = resolution.x*0.5-resolution.y*0.5 + 1 * halfMaxResY
+			local vectors_angleToDir = vectors.angleToDir
+			local renderSize2_x, renderSize2_y = -360 / renderSize.x, 180 / renderSize.y
 			local math_abs = math.abs
 			local math_max = math.max
+			local facesRight, facesLeft = faces.right, faces.left
+			local facesTop, facesBottom = faces.top, faces.bottom
+			local facesFront, facesBack = faces.front, faces.back
 			local time = client.getSystemTime()
 			repeatUntiltrue(function () -->====================[ RENDERING ]====================<--
-				local dir = vectors_angleToDir(y/renderSize.y*180-90,x/renderSize.x*-360-180)
+				local dir = vectors_angleToDir(y*renderSize2_y-90,x*renderSize2_x-180)
 				local axis_x, axis_y = math_abs(dir.x), math_abs(dir.y)
 				local maxAxis = math_max(axis_x, axis_y, math_abs(dir.z))
 				if maxAxis == axis_x then
 					if dir.x > 0 then
-						local uv = dir.zy / dir.x
-						renderTexture:setPixel(x,y,faces.right:getPixel(math.map(uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
-					else
 						local uv = dir.zy / -dir.x
-						renderTexture:setPixel(x,y,faces.left:getPixel(math.map(uv.x,-1,1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+						renderTexture:setPixel(x,y,facesRight:getPixel(uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
+					else
+						local uv = dir.zy / dir.x
+						renderTexture:setPixel(x,y,facesLeft:getPixel(-uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
 					end
 				elseif maxAxis == axis_y then
 					if dir.y > 0 then
 						local uv = dir.xz / dir.y
-						renderTexture:setPixel(x,y,faces.top:getPixel(math.map(-uv.x,1,-1,0,maxResY) + z,math.map(-uv.y,1,-1,0,maxResY)))
+						renderTexture:setPixel(x,y,facesTop:getPixel(uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
 					else
-						local uv = dir.xz / -dir.y
-						renderTexture:setPixel(x,y,faces.bottom:getPixel(math.map(-uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+						local uv = dir.xz / dir.y
+						renderTexture:setPixel(x,y,facesBottom:getPixel(-uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
 					end
 				else
 					if dir.z > 0 then
-						local uv = dir.xy / dir.z
-						renderTexture:setPixel(x,y,faces.front:getPixel(math.map(uv.x,-1,1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
-					else
 						local uv = dir.xy / -dir.z
-						renderTexture:setPixel(x,y,faces.back:getPixel(math.map(uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+						renderTexture:setPixel(x,y,facesFront:getPixel(-uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
+					else
+						local uv = dir.xy / dir.z
+						renderTexture:setPixel(x,y,facesBack:getPixel(uv.x * halfMaxResY + z, (uv.y + 1) * halfMaxResY))
 					end
 				end
 				
@@ -113,28 +118,34 @@ function (events, screen)
 					end
 					if renderSize.y <= y then
 						renderTexture:update()
-						print('time', (client.getSystemTime() - time) / 1000)
+						print('Rendered in:', (client.getSystemTime() - time) / 1000)
 						return true
 					end
 				end
-				
 			end,1000,
 		function () -->====================[ SAVING ]====================<--
 			if not file:isDirectory("panoramas") then file:mkdir("panoramas") end
-			for i = 1, 10000, 1 do
-				local path = "panoramas/PANO_"..i..".png"
-				if not file:isFile(path) then
-					local write = file:openWriteStream(path)
-					local content = renderTexture:save()
-					host:setClipboard(content)
-					local buff = data:createBuffer(#content)
-					buff:writeBase64(content)
-					buff:setPosition(0)
-					buff:writeToStream(write)
-					buff:close()
-					write:close()
-					break
+			local fileIMin, fileIMax = 1, 2 ^ 32
+			local path = "panoramas/PANO_unknown.png"
+			for _ = 1, 33 do
+				if fileIMax == fileIMin then break end
+				local middle = math.floor((fileIMin + fileIMax) * 0.5)
+				path = "panoramas/PANO_"..middle..".png"
+				if file:isFile(path) then
+					fileIMin = middle + 1
+				else
+					fileIMax = middle
 				end
+			end
+			if not file:isFile(path) then
+				local write = file:openWriteStream(path)
+				local content = renderTexture:save()
+				local buff = data:createBuffer(#content)
+				buff:writeBase64(content)
+				buff:setPosition(0)
+				buff:writeToStream(write)
+				buff:close()
+				write:close()
 			end
 		end)
 		
