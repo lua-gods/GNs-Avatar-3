@@ -2,22 +2,8 @@ local GNUI = require("lib.GNUI.main")
 local Button = require"lib.GNUI.element.button"
 local Slider = require"lib.GNUI.element.slider"
 
-
 local quickTween = require"scriptHost.ui.quickTween"
 local Pages = require"lib.pages"
-
----@param rayDir Vector3
----@param planeDir Vector3
----@return Vector3?
-local function ray2plane(rayDir, planeDir)
-   rayDir = rayDir:normalize()
-   planeDir = planeDir:normalize()
-   local dot = rayDir:dot(planeDir)
-   local t = (planeDir):dot(planeDir) / dot
-   local intersection = rayDir * t
-   return intersection
-end
-
 
 Pages.newPage(
 "screenshot",
@@ -83,48 +69,55 @@ function (events, screen)
 			local x,y = 0,0
 			local resolution = faces.front:getDimensions()
 			local z = resolution.x*0.5-resolution.y*0.5
+			local vectors_angleToDir = vectors.angleToDir
+			local maxResY = resolution.y - 1
+			local math_abs = math.abs
+			local math_max = math.max
+			local time = client.getSystemTime()
 			repeatUntiltrue(function () -->====================[ RENDERING ]====================<--
-				local dir = vectors.angleToDir(y/renderSize.y*180-90,x/renderSize.x*-360-180)
-				local sign_dir = vectors.vec3()
-				local axis = {x = math.abs(dir.x), y = math.abs(dir.y), z = math.abs(dir.z)}
-				local maxAxis = math.max(axis.x, axis.y, axis.z)
-				if maxAxis == axis.x then
-					sign_dir.x = math.sign(dir.x)
-				elseif maxAxis == axis.y then
-					sign_dir.y = math.sign(dir.y)
+				local dir = vectors_angleToDir(y/renderSize.y*180-90,x/renderSize.x*-360-180)
+				local axis_x, axis_y = math_abs(dir.x), math_abs(dir.y)
+				local maxAxis = math_max(axis_x, axis_y, math_abs(dir.z))
+				if maxAxis == axis_x then
+					if dir.x > 0 then
+						local uv = dir.zy / dir.x
+						renderTexture:setPixel(x,y,faces.right:getPixel(math.map(uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+					else
+						local uv = dir.zy / -dir.x
+						renderTexture:setPixel(x,y,faces.left:getPixel(math.map(uv.x,-1,1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+					end
+				elseif maxAxis == axis_y then
+					if dir.y > 0 then
+						local uv = dir.xz / dir.y
+						renderTexture:setPixel(x,y,faces.top:getPixel(math.map(-uv.x,1,-1,0,maxResY) + z,math.map(-uv.y,1,-1,0,maxResY)))
+					else
+						local uv = dir.xz / -dir.y
+						renderTexture:setPixel(x,y,faces.bottom:getPixel(math.map(-uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+					end
 				else
-					sign_dir.z = math.sign(dir.z)
-				end
-				if sign_dir.x == 1 and sign_dir.y == 0 and sign_dir.z == 0 then
-					local uv = ray2plane(dir,vectors.vec3(1,0,0))
-					renderTexture:setPixel(x,y,faces.right:getPixel(math.map(uv.z,1,-1,0,(resolution.y-1)) + z,math.map(uv.y,1,-1,0,(resolution.y-1))))
-				elseif sign_dir.x == 0 and sign_dir.y == 0 and sign_dir.z == 1 then
-					local uv = ray2plane(dir,vectors.vec3(0,0,1))
-					renderTexture:setPixel(x,y,faces.front:getPixel(math.map(uv.x,-1,1,0,(resolution.y-1)) + z,math.map(uv.y,1,-1,0,(resolution.y-1))))
-				elseif sign_dir.x == -1 and sign_dir.y == 0 and sign_dir.z == 0 then
-					local uv = ray2plane(dir,vectors.vec3(-1,0,0))
-					renderTexture:setPixel(x,y,faces.left:getPixel(math.map(uv.z,-1,1,0,(resolution.y-1)) + z,math.map(uv.y,1,-1,0,(resolution.y-1))))
-				elseif sign_dir.x == 0 and sign_dir.y == 0 and sign_dir.z == -1 then
-					local uv = ray2plane(dir,vectors.vec3(0,0,-1))
-					renderTexture:setPixel(x,y,faces.back:getPixel(math.map(uv.x,1,-1,0,(resolution.y-1)) + z,math.map(uv.y,1,-1,0,(resolution.y-1))))
-				elseif sign_dir.x == 0 and sign_dir.y == 1 and sign_dir.z == 0 then
-					local uv = ray2plane(dir,vectors.vec3(0,1,0))
-					renderTexture:setPixel(x,y,faces.top:getPixel(math.map(-uv.x,1,-1,0,(resolution.y-1)) + z,math.map(-uv.z,1,-1,0,(resolution.y-1))))
-				elseif sign_dir.x == 0 and sign_dir.y == -1 and sign_dir.z == 0 then
-					local uv = ray2plane(dir,vectors.vec3(0,-1,0))
-					renderTexture:setPixel(x,y,faces.bottom:getPixel(math.map(-uv.x,1,-1,0,(resolution.y-1)) + z,math.map(uv.z,1,-1,0,(resolution.y-1))))
+					if dir.z > 0 then
+						local uv = dir.xy / dir.z
+						renderTexture:setPixel(x,y,faces.front:getPixel(math.map(uv.x,-1,1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+					else
+						local uv = dir.xy / -dir.z
+						renderTexture:setPixel(x,y,faces.back:getPixel(math.map(uv.x,1,-1,0,maxResY) + z,math.map(uv.y,1,-1,0,maxResY)))
+					end
 				end
 				
 				x = x + 1
 				if renderSize.x <= x then
 					x = 0
 					y = y + 1
+					if y % 10 == 0 then
+						renderTexture:update()
+					end
 					if renderSize.y <= y then
+						renderTexture:update()
+						print('time', (client.getSystemTime() - time) / 1000)
 						return true
 					end
 				end
 				
-				renderTexture:update()
 			end,1000,
 		function () -->====================[ SAVING ]====================<--
 			if not file:isDirectory("panoramas") then file:mkdir("panoramas") end
