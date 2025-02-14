@@ -80,7 +80,7 @@ end
 IS_HOST = host:isHost()
 NOT_HOST = not IS_HOST
 
-for key, value in pairs(listFiles("preload", true)) do require(value)end
+for key, value in pairs(listFiles("singletons", true)) do require(value)end
 
 for key, value in pairs(listFiles("scripts", true)) do require(value)end
 

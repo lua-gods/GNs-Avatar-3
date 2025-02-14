@@ -2,8 +2,8 @@ local Macros = require("lib.macros")
 
 local POWER = 2
 
-local sprint = keybinds:fromVanilla("key.sprint")
-local sneak = keybinds:fromVanilla("key.sneak")
+local contrl = keybinds:newKeybind("Ctrl","key.keyboard.left.control")
+local c = keybinds:newKeybind("Ctrl","key.keyboard.c")
 
 function pings.macroDash(dir)
 	if not player:isLoaded() then return end
@@ -24,24 +24,17 @@ function pings.macroDash(dir)
 	end
 end
 
-return Macros.new("Thruster",function (events)
+return Macros.new("CopyBlockPos",function (events)
 	
-   sneak.press = function ()
-		if sprint:isPressed() then
-			local force = player:getLookDir() * POWER
-			renderer:setFOV(1.2)
-			wait(50,function ()
-				renderer:setFOV(1)
-				wait(50,function ()
-					renderer:setFOV()
-				end)
-			end)
-			pings.macroDash(force)
-			goofy:setVelocity(force)
-			return true
+   c.press = function ()
+		local block = player:getTargetedBlock(true,10)
+		if block:hasCollision() then
+			local pos = block:getPos()
+			host:setClipboard(pos.x.." "..pos.y.." "..pos.z)
+			host:setActionbar("Copied Block position to Clipboard")
 		end
 	end
 	function events.EXIT()
-		sneak.press = nil
+		c.press = nil
 	end
-end),"Holding the Jump button will make the player levitate"
+end),"Pressing [Ctrl] + [C] would copy the selected block's position"

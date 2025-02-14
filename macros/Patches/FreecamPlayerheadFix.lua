@@ -12,7 +12,7 @@ return Macros.new("Freecam Fix",function (macro)
 			lastActionBar = actionBar
 			if actionBar then
 				local component = parseJson(actionBar)
-				if component.translate:sub(9,10)=="Fr" then
+				if component and component.translate and component.translate:sub(9,10)=="Fr" then
 					renderer:setCameraMatrix(component.translate:sub(-4,-4) == "N" and mat or nil)
 				end
 			end

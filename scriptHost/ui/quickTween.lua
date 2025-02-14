@@ -26,6 +26,14 @@ function api.up(box, dist) dist=dist or DEFAULT process(box,vec(0,-dist)) end
 ---@param dist number?
 function api.down(box, dist) dist=dist or DEFAULT process(box,vec(0,dist)) end
 
+---@param box GNUI.Box
+---@param dist number?
+function api.zoom(box, dist) dist=dist or DEFAULT
+	tween.tweenFunction(box.Dimensions + vec(dist,dist,-dist,-dist),box.Dimensions,DURATION,"outCirc",function (dim)
+		box:setDimensions(dim)
+	end)
+end
+
 api.tween = tween.tweenFunction
 
 return api

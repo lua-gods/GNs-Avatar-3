@@ -6,7 +6,7 @@ return Macros.new("Spacebar Jump",function (events)
    function events.TICK()
 		if host:isHost() then
 			if jump:isPressed() then
-				goofy:setVelocity(vec(table.unpack(player:getNbt().Motion)):add(0,0.1,0))
+				goofy:setVelocity((vec(table.unpack(player:getNbt().Motion))*0.9):add(player:getLookDir()*0.2))
 			end
 		end
 	end

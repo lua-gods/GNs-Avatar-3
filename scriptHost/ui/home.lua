@@ -20,6 +20,7 @@ local offset = {
 local items = {
    {"nameplate","Nameplate","minecraft:name_tag"},
    {"macros","Macros","minecraft:redstone_torch"},
+   {"screenshot","Panorama Screenshot","minecraft:ender_eye"},
    --{"avatarStore","Avatar Store Viewer","minecraft:skull_banner_pattern"},
    --{"mailman","Mailman Test","minecraft:paper"},
    --{"testPage","Testing Page","minecraft:piston"},
