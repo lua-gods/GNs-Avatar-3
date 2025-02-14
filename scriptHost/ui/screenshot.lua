@@ -126,17 +126,16 @@ function (events, screen)
 		function () -->====================[ SAVING ]====================<--
 			if not file:isDirectory("panoramas") then file:mkdir("panoramas") end
 			local fileIMin, fileIMax = 1, 2 ^ 32
-			local path = "panoramas/PANO_unknown.png"
 			for _ = 1, 33 do
 				if fileIMax == fileIMin then break end
 				local middle = math.floor((fileIMin + fileIMax) * 0.5)
-				path = "panoramas/PANO_"..middle..".png"
-				if file:isFile(path) then
+				if file:isFile("panoramas/PANO_"..middle..".png") then
 					fileIMin = middle + 1
 				else
 					fileIMax = middle
 				end
 			end
+			local path = "panoramas/PANO_"..fileIMin..".png"
 			if not file:isFile(path) then
 				local write = file:openWriteStream(path)
 				local content = renderTexture:save()
