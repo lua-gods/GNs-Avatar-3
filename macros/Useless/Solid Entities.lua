@@ -42,4 +42,4 @@ return Macros.new("Solid Entities",function (macro)
 			end
 		end
 	end
-end,true),"Duplicates the player modelPart and squishes it onto the ground"
+end),"Duplicates the player modelPart and squishes it onto the ground"
