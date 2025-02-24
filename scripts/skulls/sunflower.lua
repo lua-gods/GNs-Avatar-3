@@ -26,7 +26,7 @@ local time = 0
 local closest = math.huge
 skullType.firstRender = function (skull, deltaTick, deltaFrame)
 	time = client:getSystemTime() / 38
-	
+	if not music:isPlaying() then music = music:play():loop(true):pos(0,-10000,0) end
 	music:volume(math.clamp(math.map(closest,10,1,0,2),0,1))
 	closest = math.huge
 end
