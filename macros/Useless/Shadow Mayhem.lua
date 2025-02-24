@@ -1,6 +1,6 @@
 
 
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 
 return Macros.new("Shadow Mayhem",function (macro)
@@ -11,7 +11,7 @@ return Macros.new("Shadow Mayhem",function (macro)
 	models:addChild(shadow)
 	renderer:setShadowRadius(0)
 	
-	function macro.WORLD_RENDER(deltaFrame,deltaTick)
+	function macro.RENDER(deltaTick)
 		if not player:isLoaded() then return end
 		local dayTime = (((world.getTimeOfDay()) % 24000) / 24000 - 0.25) % 1
     	local sunAngle = (dayTime * 2 + (0.5 - math.cos(dayTime * math.pi) / 2)) / 3 * 360

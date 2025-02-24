@@ -1,4 +1,4 @@
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 local face2dir = {
    ["north"] = vectors.vec3(0,0,-1),

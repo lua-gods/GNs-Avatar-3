@@ -453,6 +453,47 @@ local tween = {}
 tween.ease = easing
 local queue_free = {}
 
+local isActive = false
+local activeTweens = 0
+
+local function free(id)
+	queue_free[#queue_free+1] = id
+end
+
+
+---@param toggle boolean
+local function setActive(toggle)
+	if toggle ~= isActive then
+		isActive = toggle
+		
+		events.WORLD_RENDER[toggle and "register" or "remove"](events.WORLD_RENDER,function()
+			
+			local system_time = client:getSystemTime()
+			for id, ease in pairs(queries) do
+				local time = (system_time - ease.start) / 1000
+				if time < ease.duration then
+					ease.tick(easing[ease.type](time, ease.from, ease.to-ease.from, ease.duration),time/ease.duration)
+				else
+					ease.tick(ease.to,1)
+					activeTweens = activeTweens - 1
+					setActive(activeTweens < 1)
+					free(id)
+				end
+			end
+			if #queue_free > 0 then
+				for _, id in pairs(queue_free) do
+					 local ease = queries[id]
+					 if ease then
+						 queries[id] = nil
+						 if ease.on_finish then ease.on_finish() end
+					end
+				end
+				queue_free = {}
+			end
+		end)
+	end
+end
+
 ---@class GNtween
 ---@field from number
 ---@field to number
@@ -472,57 +513,35 @@ local queue_free = {}
 ---@param id any?
 ---@return GNtween
 function tween.tweenFunction(from, to, duration, ease, tick, finish, id)
-  ---@type GNtween
-  local compose = {
-   start = client:getSystemTime(),
-   from = from or 0,
-   to = to or 1,
-   duration = duration,
-   type = ease,
-   tick = tick,
-   on_finish = finish,
-   id = nil,
-  }
-  if id then
-   compose.id = id
-   queries[id] = compose
-  else
-   for i = 1, #queries+1, 1 do
-    if not queries[i] then
-      compose.id = i
-      queries[i] = compose
-      break
-    end
-   end
-  end
-  return compose
+	---@type GNtween
+	local compose = {
+		start = client:getSystemTime(),
+		from = from or 0,
+		to = to or 1,
+		duration = duration,
+		type = ease,
+		tick = tick,
+		on_finish = finish,
+		id = nil,
+	}
+	if id then
+		compose.id = id
+		queries[id] = compose
+	else
+		for i = 1, #queries+1, 1 do
+			if not queries[i] then
+				compose.id = i
+				queries[i] = compose
+				break
+			end
+		end
+	end
+	activeTweens = activeTweens + 1
+	setActive(true)
+	return compose
 end
 
-local function free(id)
-  queue_free[#queue_free+1] = id
-end
 
-events.WORLD_RENDER:register(function()
-  local system_time = client:getSystemTime()
-  for id, ease in pairs(queries) do
-   local time = (system_time - ease.start) / 1000
-   if time < ease.duration then
-    ease.tick(easing[ease.type](time, ease.from, ease.to-ease.from, ease.duration),time/ease.duration)
-   else
-    ease.tick(ease.to,1)
-    free(id)
-   end
-  end
-  if #queue_free > 0 then
-   for _, id in pairs(queue_free) do
-    local ease = queries[id]
-    if ease then
-      queries[id] = nil
-      if ease.on_finish then ease.on_finish() end
-    end
-   end
-   queue_free = {}
-  end
-end)
+
 
 return tween

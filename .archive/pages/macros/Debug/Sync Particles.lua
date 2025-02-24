@@ -1,4 +1,4 @@
-local macro = require"lib.macros"
+local macro = require"scriptHost.macros"
 return macro.new("sync particles",function (events)
   function events.TICK()
     if player:isLoaded() then

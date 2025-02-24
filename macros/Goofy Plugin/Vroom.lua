@@ -1,4 +1,4 @@
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 local forward = keybinds:fromVanilla("key.forward")
 

@@ -1,76 +1,115 @@
-local model = models.accessories.sword.model
-local model_blade = models.accessories.sword.model.anchor.handle
-local model_control = models.accessories.sword.model.control
-local model_glow = models.accessories.sword.model.anchor.handle.glow
+if avatar:getPermissionLevel() ~= "MAX" then models.sword:setVisible(false) return end
 
-local trailLib = require("libraries.trail")
+models.sword:setPrimaryRenderType("CUTOUT_CULL")
+models.sword.Roll.Pole.Handle.bone.glow:setPrimaryRenderType("EMISSIVE_SOLID")
 
-local colors = {
-  "#d3fc7e",
-  "#99e65f",
-  "#5ac54f",
-  "#33984b",
-}
+local is_holding_sword = false
+local was_holding_sword
 
-local trails = {}
-local trail_datas = {}
+local GNanim = require("lib.GNanimClassic")
+local trail = require("lib.GNtrailLib")
 
--- 8 19
+local state = GNanim.new()
 
-math.randomseed(8)
-for i = 1, 1, 1 do
-  local j = 1.0/i
-  trails[i] = trailLib:newTwoLeadTrail(textures["textures.glow"]):setDuration(2 + (math.random() * 10)):setDivergeness(math.random() * .5):setRenderType("EMISSIVE_SOLID")
-  trail_datas[i] = {math.random(),1*j,math.random(),math.random()}
-end
 
-local model_parent = model:getParent()
-model_parent:setParentType("Body"):setPivot(0,24,0)
-model_glow:setPrimaryRenderType("EMISSIVE_SOLID")
-animations["accessories.sword.model"].rest:play()
+local lpos = vectors.vec3()
+local pos = vectors.vec3()
+local lrot = 0
+local rot = 0
 
-local left_handed = false
-local active = false
+local swing_count = 0
+local roll2 = 0
+local roll1 = 0
+local weary = 0.9
+local sword = models.sword
+sword:setParentType("WORLD")
+local sword_trail = trail:newTwoLeadTrail(textures["textures.trail"])
+sword_trail:setDivergeness(0)
+sword_trail:setDuration(10)
+sword_trail:setRenderType("EMISSIVE_SOLID")
 
 events.ENTITY_INIT:register(function ()
-  left_handed = player:isLeftHanded()
+   pos = player:getPos()
+   lpos = pos:copy()
+   rot = player:getRot().y
+   lrot = rot
 end)
-local item
+
+local speed = 1
+for key, value in pairs(animations.sword) do
+   value:speed(speed)
+end
+state:setBlendTime(0.1 / speed)
 
 events.TICK:register(function ()
-  if player:getSwingTime() == 1 then -- player swung
-    if active then
-      sounds.oof:pos(player:getPos()):play():pitch(0.5)
-    end
-    animations["accessories.sword.model"].swing1:stop()
-    animations["accessories.sword.model"].rest:stop()
-    animations["accessories.sword.model"].swing1:play()
-  end
-  
-  local held = player:getHeldItem().id
-  if held ~= item then
-    item = held
-    active = held:find("sword") and true or false
-    model:setVisible(active)
-    if left_handed then
-      vanilla_model.LEFT_ITEM:setVisible(not active)
-    else
-      vanilla_model.RIGHT_ITEM:setVisible(not active)
-    end
-  end
+   lrot = rot
+   lpos = pos
+   pos = math.lerp(pos,player:getPos(),vectors.vec3(0.8,0.3,0.8))
+   rot = math.lerp(rot,player:getBodyYaw(),0.3)
+   if was_holding_sword ~= is_holding_sword then
+      state:setAnimation(is_holding_sword and animations.sword.idle2prepare or animations.sword.prepare2idle)
+      was_holding_sword = is_holding_sword
+      if not is_holding_sword then
+         swing_count = 0
+      end
+   end
+   if is_holding_sword then
+      if player:getSwingTime() == 1 then
+         sounds:playSound("swing",player:getPos():add(0,1,0),0.3,1+(math.random()-0.5)*0.2)
+         if swing_count % 2 == 1 then
+            roll1 = math.random(-45,45)
+            state:setAnimation(animations.sword.swing2swing2)
+         else
+            roll2 = math.random(-45,45)
+            state:setAnimation(animations.sword.swing2swing)
+         end
+         swing_count = swing_count + 1
+      end
+   end
 end)
 
-events.RENDER:register(function (delta, ctx, matrix)
-  if ctx == "RENDER" then
-    local scale = model_control:getAnimPos().x
-    local mat = model_blade:partToWorldMatrix()
-    for key, trail in pairs(trails) do
-      local trail_data = trail_datas[key]
-      local y = trail_data[2]
-      trail:setLeads(
-        mat:apply(0,trail_data[1] * 16,y),
-        mat:apply(0,trail_data[2] * 32 ,y),
-        scale)
-    end
-  end
+local gm = ""
+events.WORLD_RENDER:register(function (dt)
+   if player:isLoaded() then
+      local meta = models.sword.metadata:getAnimPos()
+      local mat = models.sword.Roll.Pole.Handle:partToWorldMatrix()
+      sword_trail:setLeads (mat:apply(0,0,1),mat:apply(0,0,-28),meta.x * 2) 
+      local r = player:getBodyYaw(dt)
+      local sneak = player:isSneaking() and player:isOnGround()
+      local dir = vectors.rotateAroundAxis(-r,vectors.vec3(0,.25,1),vectors.vec3(0,1,0))
+      sword:pos(math.lerp(player:getPos(dt),math.lerp(lpos,pos,dt),weary) * 16 + (sneak and dir*-10 or vectors.vec3(0,0,0)))
+      sword:rot(sneak and -30 or 0,180-math.lerp(r,math.lerp(lrot,rot,dt),weary),0)
+      sword.Roll:setRot(0,0,math.lerp(roll1,roll2,meta.x) * meta.y)
+      is_holding_sword = (player:getHeldItem().id:find("sword") and true or false)
+   end
+end)
+
+events.ITEM_RENDER:register(function ()
+   if is_holding_sword then
+      return sword.Item
+   end
+end)
+
+events.RENDER:register(function (delta, context)
+   if context == "FIRST_PERSON" then
+      if weary == 0 then
+         sword:setVisible(false)
+      else
+         sword:setOpacity(weary):setVisible(true)
+      end
+   else
+      sword:setVisible(context == "RENDER"):setOpacity(1)
+   end
+   vanilla_model.RIGHT_ARM:setOffsetRot(is_holding_sword and -15 or 0,0,0)
+   local meta = models.sword.metadata:getAnimPos()
+   local systime = client:getSystemTime() / 10000
+   weary = meta.y
+   models.sword.Roll.Pole.Handle
+   :rot(
+      utils.fractralSine(systime,135351,10,0.5,1.4)*90 * weary,
+      utils.fractralSine(systime,253631,10,0.5,1.4)*90 * weary,
+      utils.fractralSine(systime,34124 ,10,0.5,1.4)*90 * weary):pos(
+      utils.fractralSine(systime,4214 ,10,0.5,1.2)*16 * weary,
+      utils.fractralSine(systime,53631,10,0.5,1.2)*16 * weary,
+      utils.fractralSine(systime,4124 ,10,0.5,1.2)*16 * weary)
 end)

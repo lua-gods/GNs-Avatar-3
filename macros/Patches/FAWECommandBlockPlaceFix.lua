@@ -1,4 +1,4 @@
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 
 return Macros.new("FAWECommandBlockPlace",function (macro)

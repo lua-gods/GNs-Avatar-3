@@ -1,5 +1,5 @@
 local NAME = "GN" -- any name
-local IGN = "GNamimates" -- must be your IGN for DMs to work
+local IGN = "GNUI" -- must be your IGN for DMs to work
 local INITIAL_CHAR = "@"
 local CHAT_MARK = "§l§u§a§g§o§o§f§s"
 local DM_MARK = "§l§u§a§g§o§o§f§y"

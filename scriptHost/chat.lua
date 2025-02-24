@@ -89,14 +89,6 @@ local keywords = {
 local filters = {
 -- Theme
 	---@param message chatscript.data
-	function (message,i)
-		local json = message.json
-		if json.extra[1].text == "<" then
-			json.extra[1] = ""
-			json.extra[3] = {text = " : ",color="gray"}
-		end
-	end,
-	---@param message chatscript.data
 	function (message)
 		local matched = false
 		---@param c table
@@ -104,7 +96,6 @@ local filters = {
 			c.color = c.text
 			c.clickEvent = {action = "copy_to_clipboard", value = c.text}
 			c.hoverEvent = {action = "show_text", contents = {text="Copy to Clipboard"}}
-			matched = true
 			c.antiTamper = true
 		end)
 		if not matched then
@@ -360,15 +351,18 @@ events.POST_WORLD_RENDER:register(function ()
 	while 0 < recivedMsgs do
 		local data = host:getChatMessage(recivedMsgs)
 		if data then
+			local originalJson = data.json
 			if data.json then data.json = parseJson(data.json)end
 			---@cast data chatscript.data
-			if data.message:sub(1,5) ~= "[lua]" then
+			if data.message:sub(1,5) ~= "[lua]" and(not data.message:find("Screenshot")) then
 				if data.json.extra or (data.json[1] and data.json[1].text) then
 				if not (data.json.extra[1].hoverEvent and data.json.extra[1].hoverEvent.contents and (data.json.extra[1].hoverEvent.contents == "Processed" or data.json.extra[1].hoverEvent.contents.text == "Processed")) then
-						for _, fun in pairs(filters) do fun(data) end
-						
+					for _, fun in pairs(filters) do fun(data) end
 						table.insert(data.json.extra,1,{text="",hoverEvent = {action="show_text",contents = "Processed"}})
-						host:setChatMessage(recivedMsgs,toJson(data.json))
+						local finalJson = toJson(data.json)
+						if finalJson ~= originalJson then
+							host:setChatMessage(recivedMsgs,finalJson)
+						end
 					end
 				end
 			end

@@ -1,7 +1,7 @@
 local mat = matrices.mat4()
 mat.v43 = -19
 
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 
 return Macros.new("Freecam Fix",function (macro)

@@ -8,7 +8,7 @@ local side2dir = {
 	down = vec(0,-1,0)
 }
 
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 return Macros.new("Solid Entities",function (macro)
 	local lvel = vec(0,0,0)

@@ -88,3 +88,10 @@ if IS_HOST then
   for key, value in pairs(listFiles("scriptHost", true)) do require(value)end
 end
 
+--local og = figuraMetatables.EventsAPI.__index
+--figuraMetatables.EventsAPI.__index = function (self, key, value)
+--	if key == "WORLD_RENDER" then
+--		error("IGNORE THIS")
+--	end
+--	return og(self,key,value)
+--end

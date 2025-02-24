@@ -4,7 +4,7 @@
 / /_/ / /|  / 
 \____/_/ |_/ Source: https://github.com/lua-gods/GNs-Avatar-3/blob/main/lib/pages.lua]]
 -- DEPENDENCIES
-local Macros = require"lib.macros"
+local Macros = require"scriptHost.macros"
 local eventLib = require"lib.eventLib"
 local GNUI = require"lib.GNUI.main"
 local screen = GNUI.getScreenCanvas()

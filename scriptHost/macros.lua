@@ -85,40 +85,12 @@ events.WORLD_TICK:register(function ()
 for key, value in pairs(activeInstances) do if value.TICK then value.TICK() end end
 end)
 
-local queueSync = {}
 
-local function sync(id,state) queueSync[#queueSync+1] = {id,state}  end
-
-if isHost then
-	local timer = 0
-	local waitTime = 60
-	events.WORLD_TICK:register(function ()
-		if host:isAvatarUploaded() and #queueSync > 0 then
-			timer = timer + 1
-			if timer > waitTime then
-				waitTime = 5
-				timer = 0
-				local data = queueSync[#queueSync]
-				pings.SYNC_MACRO(data[1],data[2])
-				queueSync[#queueSync] = nil
-			end
-		end
-	end,"MacroStartupWait")
-end
-
-function pings.SYNC_MACRO(id,state)
-  	if not isHost or true then
-  		macros[id]:setActive(state)
-  	end
-end
 
 ---@param active boolean
 ---@param ... any
 function Macro:setActive(active,...)
 	if active ~= self.isActive then
-		if isHost and self.sync then
-			sync(self.name,active)
-		end
 		if active then
 			if not self.instance then
 				local events = {}

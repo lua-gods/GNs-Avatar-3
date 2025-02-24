@@ -1,9 +1,8 @@
-local Macros = require("lib.macros")
+local Macros = require("scriptHost.macros")
 
 local c = keybinds:newKeybind("Ctrl","key.keyboard.c")
 
 return Macros.new("CopyBlockPos",function (events)
-	
    c.press = function ()
 		local block = player:getTargetedBlock(true,10)
 		if not block:isAir() then
