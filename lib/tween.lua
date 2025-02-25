@@ -476,8 +476,8 @@ local function setActive(toggle)
 				else
 					ease.tick(ease.to,1)
 					activeTweens = activeTweens - 1
-					setActive(activeTweens < 1)
 					free(id)
+					setActive(activeTweens < 1)
 				end
 			end
 			if #queue_free > 0 then
@@ -524,6 +524,10 @@ function tween.tweenFunction(from, to, duration, ease, tick, finish, id)
 		on_finish = finish,
 		id = nil,
 	}
+	if (id and not queries[id]) or (not id) then
+		activeTweens = activeTweens + 1
+	end
+	setActive(true)
 	if id then
 		compose.id = id
 		queries[id] = compose
@@ -536,8 +540,6 @@ function tween.tweenFunction(from, to, duration, ease, tick, finish, id)
 			end
 		end
 	end
-	activeTweens = activeTweens + 1
-	setActive(true)
 	return compose
 end
 
