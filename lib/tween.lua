@@ -459,38 +459,39 @@ local activeTweens = 0
 local function free(id)
 	queue_free[#queue_free+1] = id
 end
-
+local setActive
+local function process()
+			
+	local system_time = client:getSystemTime()
+	for id, ease in pairs(queries) do
+		local time = (system_time - ease.start) / 1000
+		if time < ease.duration then
+			ease.tick(easing[ease.type](time, ease.from, ease.to-ease.from, ease.duration),time/ease.duration)
+		else
+			ease.tick(ease.to,1)
+			activeTweens = activeTweens - 1
+			free(id)
+			setActive(activeTweens < 1)
+		end
+	end
+	if #queue_free > 0 then
+		for _, id in pairs(queue_free) do
+			 local ease = queries[id]
+			 if ease then
+				 queries[id] = nil
+				 if ease.on_finish then ease.on_finish() end
+			end
+		end
+		queue_free = {}
+	end
+end
 
 ---@param toggle boolean
-local function setActive(toggle)
+function setActive(toggle)
 	if toggle ~= isActive then
 		isActive = toggle
 		
-		events.WORLD_RENDER[toggle and "register" or "remove"](events.WORLD_RENDER,function()
-			
-			local system_time = client:getSystemTime()
-			for id, ease in pairs(queries) do
-				local time = (system_time - ease.start) / 1000
-				if time < ease.duration then
-					ease.tick(easing[ease.type](time, ease.from, ease.to-ease.from, ease.duration),time/ease.duration)
-				else
-					ease.tick(ease.to,1)
-					activeTweens = activeTweens - 1
-					free(id)
-					setActive(activeTweens < 1)
-				end
-			end
-			if #queue_free > 0 then
-				for _, id in pairs(queue_free) do
-					 local ease = queries[id]
-					 if ease then
-						 queries[id] = nil
-						 if ease.on_finish then ease.on_finish() end
-					end
-				end
-				queue_free = {}
-			end
-		end)
+		events.WORLD_RENDER[toggle and "register" or "remove"](events.WORLD_RENDER,process)
 	end
 end
 

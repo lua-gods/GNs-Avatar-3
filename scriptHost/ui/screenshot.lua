@@ -23,7 +23,7 @@ function (events, screen)
 	:setSize(-30,10)
 	:setValue(client:getCameraRot().y % 360)
 	
-	local waitSlider = Slider.new(controls,{min=1,max=1000,value=0,isVertical=false,step=100,showNumber=true})
+	local waitSlider = Slider.new(controls,{min=10,max=1000,value=0,isVertical=false,step=100,showNumber=true})
 	:setPos(140,10)
 	:setSize(50,11)
 	:setValue(1)
