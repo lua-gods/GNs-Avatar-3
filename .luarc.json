@@ -67,7 +67,7 @@
 
     // Figura does not use non-standard features.
     "nonstandardSymbol": [],
-    "plugin": "",
+    "plugin": ".plugin.compilerpatcher.lua",
     "pluginArgs": [],
     "special": {},
     "unicodeName": false

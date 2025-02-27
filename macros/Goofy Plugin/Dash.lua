@@ -1,9 +1,23 @@
 local Macros = require("scriptHost.macros")
 
 local POWER = 2
-
+local combo = 0
+local sinceLastCombo = 0
 local sprint = keybinds:fromVanilla("key.sprint")
 local sneak = keybinds:fromVanilla("key.sneak")
+
+
+local endesga = require"lib.palettes.endesga64"
+
+
+local COLORS = {
+	endesga.brightGreen,
+	endesga.lightGreen,
+	endesga.green,
+	endesga.darkGreen,
+	endesga.darkerGreen
+	}
+
 
 function pings.macroDash(dir)
 	if not player:isLoaded() then return end
@@ -20,16 +34,23 @@ function pings.macroDash(dir)
 			math.map(math.random(),0,1,0,size.y),
 			math.map(math.random(),-0.5,1.5,-size.z,size.z)
 		)
-		particles["end_rod"]:pos(ppos):spawn():velocity(dir*math.random()):lifetime(20)
+		local clr = COLORS[math.random(1,#COLORS)]
+		particles["end_rod"]:pos(ppos):spawn():color(clr):velocity(dir*math.random()):lifetime(math.random(20,50))
 	end
 end
 
-return Macros.new("Thruster",function (events)
-	
+return Macros.new("Dash",function (events)
    sneak.press = function ()
 		if sprint:isPressed() then
-			local force = player:getLookDir() * POWER
-			renderer:setFOV(1.2)
+			local time = client:getSystemTime()
+			if time - sinceLastCombo < 500 then
+				combo = combo + 1
+			else
+				combo = 0
+			end
+			sinceLastCombo = time
+			local force = player:getLookDir() * (POWER + combo)
+			renderer:setFOV(1.1)
 			wait(50,function ()
 				renderer:setFOV(1)
 				wait(50,function ()
@@ -44,4 +65,4 @@ return Macros.new("Thruster",function (events)
 	function events.EXIT()
 		sneak.press = nil
 	end
-end),"Holding the Jump button will make the player levitate"
+end),"Pressing [Ctrl] + [Shift] will make the player dash"
