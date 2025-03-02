@@ -45,11 +45,12 @@ local playerEvents = { -- list of tables containing functions that get called wh
          if player:isLoaded() then
             local diff = -(entity:getPos() - player:getPos())
             local pos = entity:getPos()
-            for i = 1, 10, 1 do
+            for i = 1, 4, 1 do
                local particle = particles["end_rod"]
                :pos(pos+vec(math.random()-0.5,math.random()*2,math.random()-0.5))
                :color(defaultColors[math.random(1,#defaultColors)])
                :setVelocity(diff/10)
+					:scale(1+math.random(1,4))
                :spawn()
             end
          end
