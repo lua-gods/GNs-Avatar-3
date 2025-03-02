@@ -8,9 +8,9 @@
 ---@field accel number
 ---@field target number
 ---@field ltarget number
----@field f number
----@field z number
----@field r number
+---@field f number # Describes the speed in which the system will respond to the changes of the target
+---@field z number # also known as the damping coefficient, it describes how the system settles on the target, 0 means it will never settle
+---@field r number # Controls the initial response of the system. when r is 0, the system takes time to begin accelerating from rest. when positive, the system reacts immidiately
 local Spring = {}
 Spring.__index = Spring
 

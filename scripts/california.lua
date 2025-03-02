@@ -12,7 +12,7 @@ end
 function pings.california(toggle)
 	active = toggle
 	if toggle then
-		music = sounds["californ"]:play():loop(true)
+		music = sounds["california"]:play():loop(true)
 		events.TICK:register(process)
 		animations.player.california:play()
 	else

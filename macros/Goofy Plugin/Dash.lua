@@ -9,14 +9,13 @@ local sneak = keybinds:fromVanilla("key.sneak")
 
 local endesga = require"lib.palettes.endesga64"
 
-
 local COLORS = {
 	endesga.brightGreen,
 	endesga.lightGreen,
 	endesga.green,
 	endesga.darkGreen,
 	endesga.darkerGreen
-	}
+}
 
 
 function pings.macroDash(dir)
@@ -28,14 +27,14 @@ function pings.macroDash(dir)
 	sounds:playSound("minecraft:particle.soul_escape",pos,1,1)
 	sounds:playSound("minecraft:particle.soul_escape",pos,1,0.5)
 	
-	for i = 1, 500, 1 do
+	for i = 1, 200, 1 do
 		local ppos = pos + 
 		vec(math.map(math.random(),-0.5,1.5,-size.x,size.x),
 			math.map(math.random(),0,1,0,size.y),
 			math.map(math.random(),-0.5,1.5,-size.z,size.z)
 		)
 		local clr = COLORS[math.random(1,#COLORS)]
-		particles["end_rod"]:pos(ppos):spawn():color(clr):velocity(dir*math.random()):lifetime(math.random(20,50))
+		particles["end_rod"]:pos(ppos):spawn():scale(1+math.random()*4):color(clr):velocity(dir*math.random()):lifetime(math.random(10,20))
 	end
 end
 
