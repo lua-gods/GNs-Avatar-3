@@ -176,23 +176,23 @@ function ColorPicker.new(parent,x,y)
    :setDimensions(-HEX_FIELD_SIZE,MODE_HEIGHT,0,MODE_HEIGHT+HEX_FIELD_SIZE)
    :setText("+")
    
-   local hexField = TextField.new(infoBox,"none")
+   local hexField = TextField.new(infoBox,false,"none")
    :setAnchor(0,0,1,0)
    :setDimensions(0,MODE_HEIGHT,-HEX_FIELD_SIZE,MODE_HEIGHT+HEX_FIELD_SIZE)
    :setTextAlign(0.5,0.5)
    :setText("#000000")
    
-   local slider1 = Slider.new(false,0,255,1,0,infoBox)
+   local slider1 = Slider.new(infoBox,{isVertical=false,min=0,max=255,step=1})
    :setAnchor(0,1,1,1)
    :setPos(0,-SLIDER_WIDTH*3)
    :setSize(0,SLIDER_WIDTH)
    
-   local slider2 = Slider.new(false,0,255,1,0,infoBox)
+   local slider2 = Slider.new(infoBox,{isVertical=false,min=0,max=255,step=1})
    :setAnchor(0,1,1,1)
    :setPos(0,-SLIDER_WIDTH*2)
    :setSize(0,SLIDER_WIDTH)
    
-   local slider3 = Slider.new(false,0,255,1,0,infoBox)
+   local slider3 = Slider.new(infoBox,{isVertical=false,min=0,max=255,step=1})
    :setAnchor(0,1,1,1)
    :setPos(0,-SLIDER_WIDTH)
    :setSize(0,SLIDER_WIDTH)
@@ -205,9 +205,8 @@ function ColorPicker.new(parent,x,y)
    local function updateInputs(forced)
       local clr = box.Color
       local hsv = box.ColorHSV
-      local thisTime = client:getSystemTime()
-      if thisTime-lastTime > 10 or forced then
-         lastTime = thisTime
+      if lastColor ~= hsv then
+			lastColor = hsv
          brightnessSlider
          :setAnchor(0,1-hsv.z,1,1-hsv.z)
          :setPos(0,SLIDER_SIZE*(hsv.z-1))
@@ -221,13 +220,10 @@ function ColorPicker.new(parent,x,y)
             slider3:setValue(clr.z*255)
          end
          hexField:setTextField("#"..vectors.rgbToHex(clr))
-         
+			
          pickerSelector:setAnchor(-math.sin(hsv.x * TAU)*0.5*hsv.y+0.5,math.cos(hsv.x * TAU)*0.5*hsv.y+0.5)
          wheelBox.Nineslice:setColor(hsv.zzz)
-         if lastColor ~= clr then
-            lastColor = clr
-            box.COLOR_CHANGED:invoke(clr)
-         end
+         box.COLOR_CHANGED:invoke(clr)
       end
       
       
@@ -254,7 +250,7 @@ function ColorPicker.new(parent,x,y)
       :setText(MODES[i])
       .PRESSED:register(function ()
          mode = o
-         updateInputs()
+         updateInputs(true)
       end)
    end
    
@@ -275,32 +271,32 @@ function ColorPicker.new(parent,x,y)
          local dist = math.min(mpos:length(),1)
          box.ColorHSV = vec(angle,dist,hsv.z)
          box.Color = vectors.hsvToRGB(box.ColorHSV)
-         updateInputs()
+         updateInputs(true)
       end
    end)
    
    hexField.FIELD_CONFIRMED:register(function (text)
       local hex = text:gsub("#","")
       box.Color = vectors.hexToRGB(hex)
-      updateInputs()
+      updateInputs(true)
    end)
    
    slider1.VALUE_CHANGED:register(function (value)
       if mode == 1 then box:setColor(value/255,box.Color.y,box.Color.z)
       elseif mode == 2 then local hsv = box.ColorHSV; box:setColorHSV(value/255,hsv.y,hsv.z)
-      end updateInputs()
+      end updateInputs(true)
    end)
    
    slider2.VALUE_CHANGED:register(function (value)
       if mode == 1 then box:setColor(box.Color.x,value/255,box.Color.z)
       elseif mode == 2 then local hsv = box.ColorHSV; box:setColorHSV(hsv.x,value/255,hsv.z)
-      end updateInputs()
+      end updateInputs(true)
    end)
    
    slider3.VALUE_CHANGED:register(function (value)
       if mode == 1 then box:setColor(box.Color.x,box.Color.y,value/255)
       elseif mode == 2 then local hsv = box.ColorHSV; box:setColorHSV(hsv.x,hsv.y,value/255)
-      end updateInputs()
+      end updateInputs(true)
    end)
    
    
