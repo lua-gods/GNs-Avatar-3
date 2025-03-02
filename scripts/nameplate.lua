@@ -20,12 +20,7 @@ local plate = {
 	hoverText = config:load("hoverText") or ""
 }
 
-function plate.save()
-	config:setName("gn.nameplate")
-	config:save("name", plate.name)
-	config:save("gradient", plate.gradient:pack())
-	config:save("hoverText", plate.hoverText)
-end
+
 
 local cluster = {"^:.+:", "^${.+}", "."}
 
@@ -67,6 +62,28 @@ end
 plate.makeNameplate = makeNameplate
 
 if IS_HOST then
+	
+	local waitingSave = false
+	local saveCooldown = 20
+	
+	function plate.save()
+		waitingSave = true
+		saveCooldown = 20
+	end
+	
+	events.WORLD_TICK:register(function()
+		if waitingSave then
+			saveCooldown = saveCooldown - 1
+			if saveCooldown < 0 then
+				waitingSave = false
+				config:setName("gn.nameplate")
+				config:save("name", plate.name)
+				config:save("gradient", plate.gradient:pack())
+				config:save("hoverText", plate.hoverText)
+			end
+		end
+	end)
+	
 	local function sync() pings.syncNameplate(plate.name, plate.gradient:pack()) end
 	local timer = 0
 	events.WORLD_TICK:register(function()

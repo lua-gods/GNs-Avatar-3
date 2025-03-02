@@ -68,7 +68,7 @@ function (events, screen)
    gradientBox.GRADIENT_CHANGED:register(function ()
       plate.gradient = gradientBox.gradient
       updatePreview()
-      plate.save()
+      --plate.save()
    end)
 	
 	function events.EXIT()
