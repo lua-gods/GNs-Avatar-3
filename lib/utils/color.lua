@@ -10,7 +10,7 @@ local clr = require "lib.palettes.endesga64"
 utils.parseColor = function (r,g,b,a)
 	local t = type(r)
 	if t == "string" then
-		if r:find("^#") then
+		if r:find("^#") or r:match("%x%x%x%x%x%x") then
 			return vectors.hexToRGB(r):augmented()
 		else
 			if clr[r] then

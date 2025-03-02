@@ -67,8 +67,13 @@ function tracebackError(input)
 	printJson(toJson(compose))
 end
 
+
+--figuraMetatables.HostAPI.__index.isHost = function () return false end
+IS_HOST = host:isHost()
+NOT_HOST = not IS_HOST
+
 local errors = 0
-if events.ERROR then
+if events.ERROR and IS_HOST then
 	events.ERROR:register(function (error)
 		errors = errors + 1
 		tracebackError(error)
@@ -76,9 +81,6 @@ if events.ERROR then
 		return true
 	end)
 end
---figuraMetatables.HostAPI.__index.isHost = function () return false end
-IS_HOST = host:isHost()
-NOT_HOST = not IS_HOST
 
 for key, value in pairs(listFiles("singletons", true)) do require(value)end
 

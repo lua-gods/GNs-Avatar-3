@@ -10,8 +10,8 @@ local spring = require"lib.spring"
 
 local accel = vec(0,0,0)
 local lvel = vec(0,0,0)
-local vx = spring.new({f=0.3,z=0.2,r=2})
-local vz = spring.new({f=0.3,z=0.2,r=2})
+local vx = spring.new({f=0.6,z=0.4,r=2})
+local vz = spring.new({f=0.6,z=0.4,r=2})
 
 events.TICK:register(function ()
 	local vel = vectors.rotateAroundAxis(player:getBodyYaw(delta), player:getVelocity(delta)*-25, vectors.vec3(0, 1, 0))
@@ -30,10 +30,14 @@ events.TICK:register(function ()
 	end
 end)
 
+local lastSystemTime = client:getSystemTime()
 events.RENDER:register(function (delta, ctx, matrix)
 	if ctx == "RENDER" then
+		local systemTime = client:getSystemTime()
+		local deltaFrame = (systemTime - lastSystemTime) / 1000
+		lastSystemTime = systemTime
 		if floaty >= 0 then
-			spring.update(0.05)
+			spring.update(deltaFrame)
 			local swing = vec(vz.pos,0,vx.pos) * floaty
 			local swingRot = vanilla_model.LEFT_LEG:getOriginRot() * floaty
 			LEFT_LEG:setRot(-swingRot+swing)
