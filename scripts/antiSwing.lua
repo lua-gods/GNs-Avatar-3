@@ -19,7 +19,7 @@ events.TICK:register(function ()
 	vx.target = accel.x * 10 + vel.x
 	vz.target = accel.z * 10 + vel.z
 	lvel = vel
-	if player:isOnGround() or (player:isUnderwater()) then
+	if player:isOnGround() or (player:isUnderwater()) or player:getVehicle() then
 		if floaty > 0 then
 			floaty = math.max(0, floaty - 0.2)
 		end

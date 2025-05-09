@@ -21,7 +21,7 @@ return Macros.new("ButtonAsEntireSurface",function (events)
 			local _,hit,side = player:getTargetedBlock(true,5)
 			local dir = face2dir[side]
 			local block = world.getBlockState(hit+dir*0.1)
-			if block.id:find("button") then
+			if block.id:find("button") or block.id:find("lever") then
 				local offset = (block.properties.face == "wall" and -face2dir[block.properties.facing] or vec(0,0,0)) * 0.45 + vec(0.5,0,0.5) + vec(0,offsetLookup[block.properties.face] or 0,0)
 				renderer:setEyeOffset(block:getPos():add(offset)-player:getPos():add(0,player:getEyeHeight()))
 			end
